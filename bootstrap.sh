@@ -10,5 +10,5 @@ mint install SwiftGen/SwiftGen
 echo "==== Dependencies succesfully installed ✅ ===="
 
 # echo "==== Running SwiftGen ===="
-# mint run swiftgen
+mint run swiftgen
 # echo "==== Bootstrap competed 🎉 ===="
