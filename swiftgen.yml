@@ -29,7 +29,7 @@ xcassets:
     - Assets/Assets.xcassets
     - Assets/Colors.xcassets
   outputs:
-    - templateName: swift5
+    - templatePath: Utilites/swiftui-xcassets.stencil
       params:
         forceProvidesNamespaces: false
         publicAccess: 1
