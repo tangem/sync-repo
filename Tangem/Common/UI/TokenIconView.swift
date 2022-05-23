@@ -40,7 +40,7 @@ extension TokenIconView {
             self.tokenItem = .token(token, blockchain)
             return
         }
-        Asset.Colors.tangemBg.color
+
         self.tokenItem = .blockchain(blockchain)
     }
 }
