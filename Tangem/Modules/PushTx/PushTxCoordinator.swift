@@ -25,18 +25,13 @@ class PushTxCoordinator: CoordinatorObject {
     }
 
     func start(with options: PushTxCoordinator.Options) {
-        pushTxViewModel = PushTxViewModel(transaction: options.tx,
-                                          blockchainNetwork: options.blockchainNetwork,
-                                          cardViewModel: options.cardModel,
-                                          coordinator: self)
+        pushTxViewModel = PushTxViewModel(input: options.input, coordinator: self)
     }
 }
 
 extension PushTxCoordinator {
     struct Options {
-        let tx: BlockchainSdk.Transaction
-        let blockchainNetwork: BlockchainNetwork
-        let cardModel: CardViewModel
+        let input: PushTxInput
     }
 }
 

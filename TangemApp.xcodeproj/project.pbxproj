@@ -568,6 +568,10 @@
 		EF130EB628E1C6CB00D37EFC /* MultiWalletContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF130EB528E1C6CB00D37EFC /* MultiWalletContentViewModel.swift */; };
 		EF130EBA28E1D33000D37EFC /* SingleWalletContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF130EB928E1D33000D37EFC /* SingleWalletContentView.swift */; };
 		EF130EBC28E1D34500D37EFC /* MultiWalletContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF130EBB28E1D34500D37EFC /* MultiWalletContentView.swift */; };
+		EF3B580A28F582CA00C93810 /* TokenDetailsInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B580928F582CA00C93810 /* TokenDetailsInput.swift */; };
+		EF3B580C28F58A3300C93810 /* PushTxInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B580B28F58A3300C93810 /* PushTxInput.swift */; };
+		EF3B580F28F58B2900C93810 /* SDKErrorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B580E28F58B2900C93810 /* SDKErrorLogger.swift */; };
+		EF3B581128F58C2000C93810 /* SendInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581028F58C2000C93810 /* SendInput.swift */; };
 		EF3EC523289AB2DE0071BA7F /* TangemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3EC522289AB2DE0071BA7F /* TangemProvider.swift */; };
 		EF48288F28D1C99D002809C6 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = EF48288D28D1C99D002809C6 /* Localizable.stringsdict */; };
 		EF48289528D1CD1F002809C6 /* Collection+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF48289428D1CD1F002809C6 /* Collection+.swift */; };
@@ -1241,6 +1245,10 @@
 		EF130EBB28E1D34500D37EFC /* MultiWalletContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiWalletContentView.swift; sourceTree = "<group>"; };
 		EF2EFDE12865C05D00798051 /* Production.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Production.xcconfig; sourceTree = "<group>"; };
 		EF2EFDE22865C07100798051 /* Beta.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Beta.xcconfig; sourceTree = "<group>"; };
+		EF3B580928F582CA00C93810 /* TokenDetailsInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDetailsInput.swift; sourceTree = "<group>"; };
+		EF3B580B28F58A3300C93810 /* PushTxInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushTxInput.swift; sourceTree = "<group>"; };
+		EF3B580E28F58B2900C93810 /* SDKErrorLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKErrorLogger.swift; sourceTree = "<group>"; };
+		EF3B581028F58C2000C93810 /* SendInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendInput.swift; sourceTree = "<group>"; };
 		EF3EC522289AB2DE0071BA7F /* TangemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TangemProvider.swift; sourceTree = "<group>"; };
 		EF48288E28D1C99D002809C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		EF48289028D1C9A1002809C6 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -1671,6 +1679,7 @@
 				DC66BC17285C65C900CDF765 /* TokenDetailsRoutable.swift */,
 				DC295B3F2861C27D006CB7B6 /* TokenDetailsCoordinator.swift */,
 				DC295B412861C444006CB7B6 /* TokenDetailsCoordinatorView.swift */,
+				EF3B580928F582CA00C93810 /* TokenDetailsInput.swift */,
 			);
 			path = TokenDetails;
 			sourceTree = "<group>";
@@ -1825,6 +1834,7 @@
 				DC66BC05285B6C7300CDF765 /* SendCoordinatorView.swift */,
 				DC66BC15285C529600CDF765 /* SendRoutable.swift */,
 				B09BB86C259A080900B92000 /* SendAdditionalFields.swift */,
+				EF3B581028F58C2000C93810 /* SendInput.swift */,
 			);
 			path = Send;
 			sourceTree = "<group>";
@@ -2052,6 +2062,7 @@
 				B074BAC026779B28005D641B /* PushTxView.swift */,
 				B074BAC226779BC8005D641B /* PushTxViewModel.swift */,
 				DC66BC09285B755800CDF765 /* PushTxRoutable.swift */,
+				EF3B580B28F58A3300C93810 /* PushTxInput.swift */,
 			);
 			path = PushTx;
 			sourceTree = "<group>";
@@ -2516,6 +2527,7 @@
 		DC0A57DA2822A4DC0031BECC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				EF3B580D28F58B1E00C93810 /* SDKErrorLogger */,
 				DC194D2428EC6A4B007FBC99 /* SaltPay */,
 				EF5A5ACC28D86089002544AC /* TotalBalanceProvider */,
 				EF5A5AD128D86094002544AC /* CardImageProvider */,
@@ -2798,7 +2810,6 @@
 			children = (
 				EF130EB828E1D32400D37EFC /* SingleWalletContentView */,
 				EF130EB728E1C6EF00D37EFC /* MultiWalletContentView */,
-				EF105A9328A3E59F000BFD71 /* TokenList */,
 				DC295B5C2862E6DE006CB7B6 /* BackUpWarningView.swift */,
 				DC295B3B2861C19C006CB7B6 /* MainCoordinator.swift */,
 				DC295B3D2861C1AD006CB7B6 /* MainCoordinatorView.swift */,
@@ -2886,13 +2897,6 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		EF105A9328A3E59F000BFD71 /* TokenList */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = TokenList;
-			sourceTree = "<group>";
-		};
 		EF130EB728E1C6EF00D37EFC /* MultiWalletContentView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2923,6 +2927,14 @@
 				5D5CE1B52625FFD8009023EC /* GoogleService-Info-Production.plist */,
 			);
 			path = Configurations;
+			sourceTree = "<group>";
+		};
+		EF3B580D28F58B1E00C93810 /* SDKErrorLogger */ = {
+			isa = PBXGroup;
+			children = (
+				EF3B580E28F58B2900C93810 /* SDKErrorLogger.swift */,
+			);
+			path = SDKErrorLogger;
 			sourceTree = "<group>";
 		};
 		EF3EC51D289A7A1B0071BA7F /* Appearance */ = {
@@ -3467,6 +3479,7 @@
 				DC66BBED2859B68100CDF765 /* ShopCoordinator.swift in Sources */,
 				B06917E0270444CE0000E6C1 /* OnboardingWalletInfoPager.swift in Sources */,
 				DC295B422861C444006CB7B6 /* TokenDetailsCoordinatorView.swift in Sources */,
+				EF3B580A28F582CA00C93810 /* TokenDetailsInput.swift in Sources */,
 				5DD966F925499E8B006070F3 /* WebView.swift in Sources */,
 				B0BA7BC526C4F96B00D7066F /* NonDismissableModalView.swift in Sources */,
 				DC3F54AB28EB1D6700BC9A6D /* CustomContentView.swift in Sources */,
@@ -3576,6 +3589,7 @@
 				DC5E32CF28EEAC3200D6096A /* SaltPayUtil.swift in Sources */,
 				DC295B4C2861D7CF006CB7B6 /* WalletConnectCoordinator.swift in Sources */,
 				DC0A5801282500460031BECC /* SellCryptoRequest.swift in Sources */,
+				EF3B580F28F58B2900C93810 /* SDKErrorLogger.swift in Sources */,
 				5D09381425E6CB2D0049B8F0 /* HorizontalButtonStack.swift in Sources */,
 				DA5970EC27FC1C1B0050387C /* TangemApiTarget.swift in Sources */,
 				DC0A5818282526E30031BECC /* RateAppService.swift in Sources */,
@@ -3643,6 +3657,7 @@
 				DAA153BC2876CBFC002254D1 /* GeoResponse.swift in Sources */,
 				EF9CFC14288FECE100329BE0 /* ScanCardSettingsRoutable.swift in Sources */,
 				B0C807232620549F00F7DADE /* WalletConnectSessionItemView.swift in Sources */,
+				EF3B580C28F58A3300C93810 /* PushTxInput.swift in Sources */,
 				EFA580632893E6AA00110DB0 /* BiometricAuthorizationUtils.swift in Sources */,
 				DC22535D28A514030094F30C /* WalletModelFactory.swift in Sources */,
 				B069B6DB268AFEBA004E7928 /* BnbSignHandler.swift in Sources */,
@@ -3775,6 +3790,7 @@
 				5D15F9E8258A522500392BA5 /* PickerView.swift in Sources */,
 				B0C6B4C326CE678900FA990B /* CGSize+.swift in Sources */,
 				DC0A584C282C07B10031BECC /* WalletConnectServiceProvider.swift in Sources */,
+				EF3B581128F58C2000C93810 /* SendInput.swift in Sources */,
 				5D73C9862513C85D00487CA5 /* CurrencySelectView.swift in Sources */,
 				5D4B8BBB27EDB354002CE87C /* NetworkIcon.swift in Sources */,
 				5D78D113261DFB2C00F98B18 /* CreateWalletAndReadTask.swift in Sources */,

@@ -20,33 +20,27 @@ class TokenDetailsViewModel: ObservableObject {
     @Published var isRefreshing: Bool = false
     @Published var isHidingInProcess: Bool = false
 
-    let card: CardViewModel
-
-    var wallet: Wallet? {
-        return walletModel?.wallet
+    var wallet: Wallet {
+        return walletModel.wallet
     }
 
-    var walletModel: WalletModel?
-
     var incomingTransactions: [PendingTransaction] {
-        walletModel?.incomingPendingTransactions.filter { $0.amountType == amountType } ?? []
+        walletModel.incomingPendingTransactions.filter { $0.amountType == amountType }
     }
 
     var outgoingTransactions: [PendingTransaction] {
-        walletModel?.outgoingPendingTransactions.filter { $0.amountType == amountType } ?? []
+        walletModel.outgoingPendingTransactions.filter { $0.amountType == amountType }
     }
 
     var canBuyCrypto: Bool {
-        card.canExchangeCrypto && buyCryptoUrl != nil
+        config.hasFeature(.exchange) && buyCryptoUrl != nil
     }
 
     var canSellCrypto: Bool {
-        card.canExchangeCrypto && sellCryptoUrl != nil
+        config.hasFeature(.exchange) && sellCryptoUrl != nil
     }
 
     var buyCryptoUrl: URL? {
-        if let wallet = wallet {
-
             if blockchainNetwork.blockchain.isTestnet {
                 return blockchainNetwork.blockchain.testnetFaucetURL
             }
@@ -58,10 +52,8 @@ class TokenDetailsViewModel: ObservableObject {
             case .token(let token):
                 return exchangeService.getBuyUrl(currencySymbol: token.symbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
             case .reserve:
-                break
+                return nil
             }
-        }
-        return nil
     }
 
     var buyCryptoCloseUrl: String {
@@ -73,24 +65,19 @@ class TokenDetailsViewModel: ObservableObject {
     }
 
     var sellCryptoUrl: URL? {
-        if let wallet = wallet {
-
-            let address = wallet.address
-            switch amountType {
-            case .coin:
-                return exchangeService.getSellUrl(currencySymbol: blockchainNetwork.blockchain.currencySymbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
-            case .token(let token):
-                return exchangeService.getSellUrl(currencySymbol: token.symbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
-            case .reserve:
-                break
-            }
+        let address = wallet.address
+        switch amountType {
+        case .coin:
+            return exchangeService.getSellUrl(currencySymbol: blockchainNetwork.blockchain.currencySymbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
+        case .token(let token):
+            return exchangeService.getSellUrl(currencySymbol: token.symbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
+        case .reserve:
+            return nil
         }
-
-        return nil
     }
 
     var canSend: Bool {
-        guard card.canSend else {
+        guard config.hasFeature(.send) else {
             return false
         }
 
@@ -98,12 +85,11 @@ class TokenDetailsViewModel: ObservableObject {
             return false
         }
 
-        return wallet?.canSend(amountType: self.amountType) ?? false
+        return wallet.canSend(amountType: self.amountType)
     }
 
     var sendBlockedReason: String? {
-        guard let wallet = walletModel?.wallet,
-              let currentAmount = wallet.amounts[amountType], amountType.isToken else { return nil }
+        guard let currentAmount = wallet.amounts[amountType], amountType.isToken else { return nil }
 
         if wallet.hasPendingTx && !wallet.hasPendingTx(for: amountType) { // has pending tx for fee
             return String(format: "token_details_send_blocked_tx_format".localized, wallet.amounts[.coin]?.currencySymbol ?? "")
@@ -117,9 +103,9 @@ class TokenDetailsViewModel: ObservableObject {
     }
 
     var existentialDepositWarning: String? {
-        guard
-            let blockchain = walletModel?.blockchainNetwork.blockchain,
-            let existentialDepositProvider = walletModel?.walletManager as? ExistentialDepositProvider
+        let blockchain = walletModel.blockchainNetwork.blockchain
+        
+        guard let existentialDepositProvider = walletModel.walletManager as? ExistentialDepositProvider
         else {
             return nil
         }
@@ -142,7 +128,7 @@ class TokenDetailsViewModel: ObservableObject {
         if let token = amountType.token {
             return token.name
         } else {
-            return wallet?.blockchain.displayName ?? ""
+            return wallet.blockchain.displayName
         }
     }
 
@@ -156,12 +142,18 @@ class TokenDetailsViewModel: ObservableObject {
 
     @Published var solanaRentWarning: String? = nil
     let amountType: Amount.AmountType
-    let blockchainNetwork: BlockchainNetwork
+    let walletModel: WalletModel
+    var blockchainNetwork: BlockchainNetwork { walletModel.blockchainNetwork }
 
     private var bag = Set<AnyCancellable>()
     private var rentWarningSubscription: AnyCancellable?
     private var refreshCancellable: AnyCancellable? = nil
     private lazy var testnetBuyCryptoService: TestnetBuyCryptoService = .init()
+    
+    private let config: UserWalletConfig
+    // Temp userWalletModel, refactor and remove
+    private var userWalletModel: UserWalletModel
+    private var tokenDetailsMaintainer: TokenDetailsMaintainer { userWalletModel }
     private unowned let coordinator: TokenDetailsRoutable
 
     private var currencySymbol: String {
@@ -169,29 +161,38 @@ class TokenDetailsViewModel: ObservableObject {
     }
 
     private var canSignLongTransactions: Bool {
-        if let blockchain = walletModel?.blockchainNetwork.blockchain,
-           NFCUtils.isPoorNfcQualityDevice,
-           case .solana = blockchain
-        {
+        let blockchain = walletModel.blockchainNetwork.blockchain
+        
+        if NFCUtils.isPoorNfcQualityDevice,
+           case .solana = blockchain {
             return false
         } else {
             return true
         }
     }
-
-    init(cardModel: CardViewModel, blockchainNetwork: BlockchainNetwork, amountType: Amount.AmountType, coordinator: TokenDetailsRoutable) {
-        self.card = cardModel
-        self.blockchainNetwork = blockchainNetwork
-        self.amountType = amountType
-        self.coordinator = coordinator
-
-        walletModel = card.walletModels.first(where: { $0.blockchainNetwork == blockchainNetwork })
-
+    
+    init(input: TokenDetailsInput, coordinator: TokenDetailsRoutable) {
+        self.amountType = input.amountType
+        self.walletModel = input.walletModel
+        self.config = input.config
+        self.userWalletModel = input.userWalletModel
+        
         bind()
     }
 
+//    init(cardModel: CardViewModel, blockchainNetwork: BlockchainNetwork, amountType: Amount.AmountType, coordinator: TokenDetailsRoutable) {
+//        self.card = cardModel
+//        self.blockchainNetwork = blockchainNetwork
+//        self.amountType = amountType
+//        self.coordinator = coordinator
+//
+//        walletModel = card.walletModels.first(where: { $0.blockchainNetwork == blockchainNetwork })
+//
+//        bind()
+//    }
+
     func onAppear() {
-        rentWarningSubscription = walletModel?
+        rentWarningSubscription = walletModel
             .$state
             .filter { !$0.isLoading }
             .receive(on: RunLoop.main)
@@ -201,11 +202,6 @@ class TokenDetailsViewModel: ObservableObject {
     }
 
     func onRemove() {
-        guard let walletModel = walletModel else {
-            assertionFailure("walletModel isn't found")
-            return
-        }
-
         if walletModel.canRemove(amountType: amountType) {
             showWarningDeleteAlert()
         } else {
@@ -234,14 +230,8 @@ class TokenDetailsViewModel: ObservableObject {
 
     private func bind() {
         print("🔗 Token Details view model updates binding")
-        card.objectWillChange
-            .receive(on: RunLoop.main)
-            .sink { [weak self] in
-                self?.objectWillChange.send()
-            }
-            .store(in: &bag)
 
-        walletModel?.objectWillChange
+        walletModel.walletDidChange
             .receive(on: RunLoop.main)
             .sink { [weak self] in
                 self?.objectWillChange.send()
@@ -259,35 +249,32 @@ class TokenDetailsViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.isRefreshing = true
         }
-        refreshCancellable = walletModel?
+
+        refreshCancellable = walletModel
             .update(silent: true)
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
+            .receiveValue { [weak self] _ in
                 guard let self = self else { return }
                 print("♻️ Token wallet model loading state changed")
                 withAnimation(.default.delay(0.2)) {
                     self.isRefreshing = false
                     done()
                 }
-            } receiveValue: { _ in
-
             }
     }
 
     private func updateRentWarning() {
-        guard let rentProvider = walletModel?.walletManager as? RentProvider else {
+        guard let rentProvider = walletModel.walletManager as? RentProvider else {
             return
         }
 
         rentProvider.rentAmount()
             .zip(rentProvider.minimalBalanceForRentExemption())
             .receive(on: RunLoop.main)
-            .sink { _ in
-
-            } receiveValue: { [weak self] (rentAmount, minimalBalanceForRentExemption) in
+            .receiveValue { [weak self] (rentAmount, minimalBalanceForRentExemption) in
                 guard
                     let self = self,
-                    let amount = self.walletModel?.wallet.amounts[.coin],
+                    let amount = self.walletModel.wallet.amounts[.coin],
                     amount < minimalBalanceForRentExemption
                 else {
                     self?.solanaRentWarning = nil
@@ -299,15 +286,10 @@ class TokenDetailsViewModel: ObservableObject {
     }
 
     private func deleteToken() {
-        guard let walletModel = walletModel else {
-            assertionFailure("WalletModel didn't found")
-            return
-        }
-
         isHidingInProcess = true
 
         let item = CommonUserWalletModel.RemoveItem(amount: amountType, blockchainNetwork: walletModel.blockchainNetwork)
-        card.remove(item: item) { [weak self] in
+        tokenDetailsMaintainer.remove(item: item) { [weak self] in
             self?.isHidingInProcess = false
             self?.dismiss()
         }
@@ -318,7 +300,7 @@ class TokenDetailsViewModel: ObservableObject {
 
         let message = "token_details_unable_hide_alert_message".localized([
             currencySymbol,
-            walletModel?.blockchainNetwork.blockchain.displayName ?? "",
+            walletModel.blockchainNetwork.blockchain.displayName,
         ])
 
         alert = AlertBinder(alert: Alert(
@@ -360,21 +342,32 @@ extension Int: Identifiable {
 // MARK: - Navigation
 extension TokenDetailsViewModel {
     func openSend() {
-        guard let amountToSend = self.wallet?.amounts[amountType] else { return }
-
-        coordinator.openSend(amountToSend: amountToSend, blockchainNetwork: blockchainNetwork, cardViewModel: card)
+        guard let amountToSend = wallet.amounts[amountType] else { return }
+        let input = SendInput(amount: amountToSend,
+                              blockchainNetwork: blockchainNetwork,
+                              walletModel: walletModel,
+                              config: config,
+                              sendMaintainer: userWalletModel,
+                              sdkErrorLogger: userWalletModel)
+        
+        coordinator.openSend(input: input)
     }
 
     func openSendToSell(with request: SellCryptoRequest) {
         let amount = Amount(with: blockchainNetwork.blockchain, value: request.amount)
-        coordinator.openSendToSell(amountToSend: amount,
-                                   destination: request.targetAddress,
-                                   blockchainNetwork: blockchainNetwork,
-                                   cardViewModel: card)
+        let input = SendInput(amount: amount,
+                              blockchainNetwork: blockchainNetwork,
+                              walletModel: walletModel,
+                              config: config,
+                              sendMaintainer: userWalletModel,
+                              sdkErrorLogger: userWalletModel)
+        
+        coordinator.openSendToSell(input: input, destination: request.targetAddress)
     }
 
     func openSellCrypto() {
-        if let disabledLocalizedReason = card.getDisabledLocalizedReason(for: .exchange) {
+        let availability = config.getFeatureAvailability(.exchange)
+        if let disabledLocalizedReason = availability.disabledLocalizedReason {
             alert = AlertBuilder.makeDemoAlert(disabledLocalizedReason)
             return
         }
@@ -387,15 +380,17 @@ extension TokenDetailsViewModel {
     }
 
     func openBuyCrypto() {
-        if let disabledLocalizedReason = card.getDisabledLocalizedReason(for: .exchange) {
+        let availability = config.getFeatureAvailability(.exchange)
+        if let disabledLocalizedReason = availability.disabledLocalizedReason {
             alert = AlertBuilder.makeDemoAlert(disabledLocalizedReason)
             return
         }
 
-        if let walletModel = self.walletModel,
-           let token = amountType.token,
+        if let token = amountType.token,
            blockchainNetwork.blockchain == .ethereum(testnet: true) {
-            testnetBuyCryptoService.buyCrypto(.erc20Token(token, walletManager: walletModel.walletManager, signer: card.signer))
+            testnetBuyCryptoService.buyCrypto(
+                .erc20Token(token, walletManager: walletModel.walletManager, signer: config.tangemSigner)
+            )
             return
         }
 
@@ -403,7 +398,7 @@ extension TokenDetailsViewModel {
             coordinator.openBuyCrypto(at: url, closeUrl: buyCryptoCloseUrl) { [weak self] _ in
                 self?.sendAnalyticsEvent(.userBoughtCrypto)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self?.walletModel?.update(silent: true)
+                    self?.walletModel.update(silent: true)
                 }
             }
         }
@@ -425,9 +420,14 @@ extension TokenDetailsViewModel {
     }
 
     func openPushTx(for index: Int) {
-        guard let tx =  wallet?.pendingOutgoingTransactions[index] else { return }
-
-        coordinator.openPushTx(for: tx, blockchainNetwork: blockchainNetwork, card: card)
+        let input = PushTxInput(transaction: wallet.pendingOutgoingTransactions[index],
+                                walletModel: walletModel,
+                                blockchainNetwork: blockchainNetwork,
+                                config: config,
+                                pushTxMaintainer: userWalletModel,
+                                sdkErrorLogger: userWalletModel)
+        
+        coordinator.openPushTx(input: input)
     }
 
     func openExplorer(at url: URL) {

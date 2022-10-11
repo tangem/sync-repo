@@ -28,15 +28,11 @@ class SendCoordinator: CoordinatorObject {
 
     func start(with options: SendCoordinator.Options) {
         if let destination = options.destination {
-            sendViewModel = SendViewModel(amountToSend: options.amountToSend,
+            sendViewModel = SendViewModel(input: options.input,
                                           destination: destination,
-                                          blockchainNetwork: options.blockchainNetwork,
-                                          cardViewModel: options.cardViewModel,
                                           coordinator: self)
         } else {
-            sendViewModel = SendViewModel(amountToSend: options.amountToSend,
-                                          blockchainNetwork: options.blockchainNetwork,
-                                          cardViewModel: options.cardViewModel,
+            sendViewModel = SendViewModel(input: options.input,
                                           coordinator: self)
         }
     }
@@ -44,10 +40,8 @@ class SendCoordinator: CoordinatorObject {
 
 extension SendCoordinator {
     struct Options {
-        let amountToSend: Amount
+        let input: SendInput
         let destination: String?
-        let blockchainNetwork: BlockchainNetwork
-        let cardViewModel: CardViewModel
     }
 }
 

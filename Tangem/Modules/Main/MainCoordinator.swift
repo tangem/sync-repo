@@ -97,41 +97,33 @@ extension MainCoordinator: MainRoutable {
                                                       title: "common_explorer_format".localized(blockchainDisplayName),
                                                       withCloseButton: true)
     }
-
-    func openSend(amountToSend: Amount, blockchainNetwork: BlockchainNetwork, cardViewModel: CardViewModel) {
+    
+    func openSend(input: SendInput) {
         Analytics.log(.sendTokenTapped)
         let coordinator = SendCoordinator { [weak self] in
             self?.sendCoordinator = nil
         }
-        let options = SendCoordinator.Options(amountToSend: amountToSend,
-                                              destination: nil,
-                                              blockchainNetwork: blockchainNetwork,
-                                              cardViewModel: cardViewModel)
+        let options = SendCoordinator.Options(input: input, destination: nil)
         coordinator.start(with: options)
         self.sendCoordinator = coordinator
     }
-
-    func openSendToSell(amountToSend: Amount, destination: String, blockchainNetwork: BlockchainNetwork, cardViewModel: CardViewModel) {
+    
+    func openSendToSell(input: SendInput, destination: String) {
         let coordinator = SendCoordinator { [weak self] in
             self?.sendCoordinator = nil
         }
-        let options = SendCoordinator.Options(amountToSend: amountToSend,
-                                              destination: destination,
-                                              blockchainNetwork: blockchainNetwork,
-                                              cardViewModel: cardViewModel)
+        let options = SendCoordinator.Options(input: input, destination: destination)
         coordinator.start(with: options)
         self.sendCoordinator = coordinator
     }
 
-    func openPushTx(for tx: BlockchainSdk.Transaction, blockchainNetwork: BlockchainNetwork, card: CardViewModel) {
+    func openPushTx(input: PushTxInput) {
         let dismissAction: Action = { [weak self] in
             self?.pushTxCoordinator = nil
         }
 
         let coordinator = PushTxCoordinator(dismissAction: dismissAction)
-        let options = PushTxCoordinator.Options(tx: tx,
-                                                blockchainNetwork: blockchainNetwork,
-                                                cardModel: card)
+        let options = PushTxCoordinator.Options(input: input)
         coordinator.start(with: options)
         self.pushTxCoordinator = coordinator
     }
@@ -152,17 +144,15 @@ extension MainCoordinator: MainRoutable {
         coordinator.popToRootAction = self.popToRootAction
         detailsCoordinator = coordinator
     }
-
-    func openTokenDetails(cardModel: CardViewModel, blockchainNetwork: BlockchainNetwork, amountType: Amount.AmountType) {
+    
+    func openTokenDetails(input: TokenDetailsInput) {
         Analytics.log(.tokenTapped)
         let dismissAction: Action = { [weak self] in
             self?.tokenDetailsCoordinator = nil
         }
 
         let coordinator = TokenDetailsCoordinator(dismissAction: dismissAction)
-        let options = TokenDetailsCoordinator.Options(cardModel: cardModel,
-                                                      blockchainNetwork: blockchainNetwork,
-                                                      amountType: amountType)
+        let options = TokenDetailsCoordinator.Options(input: input)
         coordinator.start(with: options)
         tokenDetailsCoordinator = coordinator
     }

@@ -9,9 +9,10 @@
 import BlockchainSdk
 import Combine
 
-protocol UserWalletModel {
+protocol UserWalletModel: TokenDetailsMaintainer, SDKErrorLogger, SendMaintainer, PushTxMaintainer {
     /// Public until managers factory
     var userTokenListManager: UserTokenListManager { get }
+    var config: UserWalletConfig { get }
 
     func updateUserWalletModel(with config: UserWalletConfig)
     func update(userWalletId: Data)

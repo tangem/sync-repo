@@ -35,10 +35,7 @@ class PushTxViewModel: ObservableObject {
         return String(format: "send_balance_subtitle_format".localized, value)
     }
 
-    var walletModel: WalletModel {
-        cardViewModel.walletModels.first(where: { $0.blockchainNetwork ==  blockchainNetwork })!
-    }
-
+    let walletModel: WalletModel
     var previousFeeAmount: Amount { transaction.fee }
 
     var previousTotalAmount: Amount {
@@ -70,7 +67,7 @@ class PushTxViewModel: ObservableObject {
 
     @Published var shouldAmountBlink: Bool = false
 
-    let cardViewModel: CardViewModel
+//    let cardViewModel: CardViewModel
     let blockchainNetwork: BlockchainNetwork
     var transaction: BlockchainSdk.Transaction
 
@@ -86,17 +83,21 @@ class PushTxViewModel: ObservableObject {
     private var lastError: Error?
     @Published private var newTransaction: BlockchainSdk.Transaction?
 
+    private let sdkErrorLogger: SDKErrorLogger
+    private let pushTxMaintainer: PushTxMaintainer
+    private let config: UserWalletConfig
     private unowned let coordinator: PushTxRoutable
 
-    init(transaction: BlockchainSdk.Transaction,
-         blockchainNetwork: BlockchainNetwork,
-         cardViewModel: CardViewModel,
-         coordinator: PushTxRoutable) {
+    init(input: PushTxInput, coordinator: PushTxRoutable) {
+        self.blockchainNetwork = input.blockchainNetwork
+        self.pushTxMaintainer = input.pushTxMaintainer
+        self.sdkErrorLogger = input.sdkErrorLogger
+        self.walletModel = input.walletModel
+        self.transaction = input.transaction
+        self.amountToSend = input.transaction.amount
+        self.config = input.config
         self.coordinator = coordinator
-        self.blockchainNetwork = blockchainNetwork
-        self.cardViewModel = cardViewModel
-        self.transaction = transaction
-        self.amountToSend = transaction.amount
+        
         additionalFee = emptyValue
         sendTotal = emptyValue
         sendTotalSubtitle = emptyValue
@@ -129,7 +130,7 @@ class PushTxViewModel: ObservableObject {
 
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.addLoadingView()
-        pusher.pushTransaction(with: previousTxHash, newTransaction: tx, signer: cardViewModel.signer)
+        pusher.pushTransaction(with: previousTxHash, newTransaction: tx, signer: config.tangemSigner)
             .delay(for: 0.5, scheduler: DispatchQueue.main)
             .sink(receiveCompletion: { [unowned self] completion in
                 appDelegate.removeLoadingView()
@@ -139,7 +140,7 @@ class PushTxViewModel: ObservableObject {
                         return
                     }
 
-                    cardViewModel.logSdkError(error, action: .pushTx, parameters: [.blockchain: walletModel.wallet.blockchain.displayName])
+                    sdkErrorLogger.logError(error, action: .pushTx, parameters: [.blockchain: walletModel.wallet.blockchain.displayName])
                     self.lastError = error
                     self.sendError = error.alertBinder
                 } else {
@@ -336,7 +337,7 @@ class PushTxViewModel: ObservableObject {
 // MARK: - Navigation
 extension PushTxViewModel {
     func openMail() {
-        let emailDataCollector = PushScreenDataCollector(userWalletEmailData: cardViewModel.emailData,
+        let emailDataCollector = PushScreenDataCollector(userWalletEmailData: config.emailData,
                                                          walletModel: walletModel,
                                                          amountToSend: amountToSend,
                                                          feeText: newFee,
@@ -347,7 +348,7 @@ extension PushTxViewModel {
                                                          pushingTxHash: transaction.hash ?? .unknown,
                                                          lastError: lastError)
 
-        coordinator.openMail(with: emailDataCollector, recipient: cardViewModel.emailConfig.recipient)
+        coordinator.openMail(with: emailDataCollector, recipient: config.emailConfig.recipient)
     }
 
     func dismiss() {

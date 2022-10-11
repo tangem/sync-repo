@@ -105,11 +105,7 @@ class SendViewModel: ObservableObject {
 
     @Published var error: AlertBinder?
 
-    let cardViewModel: CardViewModel
-
-    var walletModel: WalletModel {
-        return cardViewModel.walletModels.first(where: { $0.blockchainNetwork == blockchainNetwork })!
-    }
+    let walletModel: WalletModel
 
     var bag = Set<AnyCancellable>()
 
@@ -147,31 +143,29 @@ class SendViewModel: ObservableObject {
 
     private var lastClipboardChangeCount: Int?
 
+    private let config: UserWalletConfig
+    private let sendMaintainer: SendMaintainer
+    private let sdkErrorLogger: SDKErrorLogger
     private unowned let coordinator: SendRoutable
 
-    init(amountToSend: Amount,
-         blockchainNetwork: BlockchainNetwork,
-         cardViewModel: CardViewModel,
-         coordinator: SendRoutable) {
-        self.blockchainNetwork = blockchainNetwork
-        self.cardViewModel = cardViewModel
-        self.amountToSend = amountToSend
+    init(input: SendInput, coordinator: SendRoutable) {
+        self.blockchainNetwork = input.blockchainNetwork
+        self.sendMaintainer = input.sendMaintainer
+        self.sdkErrorLogger = input.sdkErrorLogger
+        self.config = input.config
+        self.amountToSend = input.amount
+        self.walletModel = input.walletModel
         self.coordinator = coordinator
+        
         isSellingCrypto = false
         fillTotalBlockWithDefaults()
         bind()
         setupWarnings()
     }
 
-    convenience init(amountToSend: Amount,
-                     destination: String,
-                     blockchainNetwork: BlockchainNetwork,
-                     cardViewModel: CardViewModel,
-                     coordinator: SendRoutable) {
-        self.init(amountToSend: amountToSend,
-                  blockchainNetwork: blockchainNetwork,
-                  cardViewModel: cardViewModel,
-                  coordinator: coordinator)
+    convenience init(input: SendInput, destination: String, coordinator: SendRoutable) {
+        self.init(input: input, coordinator: coordinator)
+
         isSellingCrypto = true
         self.destination = destination
         canFiatCalculation = false
@@ -201,16 +195,8 @@ class SendViewModel: ObservableObject {
     func bind() {
         bag = Set<AnyCancellable>()
 
-        cardViewModel
-            .objectWillChange
-            .receive(on: RunLoop.main)
-            .sink { [weak self] in
-                self?.objectWillChange.send()
-            }
-            .store(in: &bag)
-
         walletModel
-            .objectWillChange
+            .walletDidChange
             .receive(on: RunLoop.main)
             .sink { [weak self] in
                 self?.objectWillChange.send()
@@ -591,7 +577,7 @@ class SendViewModel: ObservableObject {
         appDelegate.addLoadingView()
 
         let isDemo = walletModel.isDemo
-        walletModel.send(tx, signer: cardViewModel.signer)
+        walletModel.send(tx, signer: config.tangemSigner)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
 
@@ -602,7 +588,7 @@ class SendViewModel: ObservableObject {
                         return
                     }
 
-                    self.cardViewModel.logSdkError(error,
+                    self.sdkErrorLogger.logError(error,
                                                    action: .sendTx,
                                                    parameters: [.blockchain: self.walletModel.wallet.blockchain.displayName])
 
@@ -720,7 +706,7 @@ private extension SendViewModel {
 // MARK: - Navigation
 extension SendViewModel {
     func openMail() {
-        let emailDataCollector = SendScreenDataCollector(userWalletEmailData: cardViewModel.emailData,
+        let emailDataCollector = SendScreenDataCollector(userWalletEmailData: config.emailData,
                                                          walletModel: walletModel,
                                                          amountToSend: amountToSend,
                                                          feeText: sendFee,
@@ -728,7 +714,7 @@ extension SendViewModel {
                                                          amountText: amountText,
                                                          lastError: lastError)
 
-        coordinator.openMail(with: emailDataCollector, recipient: cardViewModel.emailConfig.recipient)
+        coordinator.openMail(with: emailDataCollector, recipient: config.emailConfig.recipient)
     }
 
     func close() {

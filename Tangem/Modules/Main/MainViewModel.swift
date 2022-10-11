@@ -421,19 +421,32 @@ extension MainViewModel {
     }
 
     func openSend(for amountToSend: Amount) {
-        guard let blockchainNetwork = cardModel.walletModels.first?.blockchainNetwork else { return }
+        guard let walletModel = cardModel.walletModels.first else { return }
 
-        coordinator.openSend(amountToSend: amountToSend, blockchainNetwork: blockchainNetwork, cardViewModel: cardModel)
+        let input = SendInput(
+            amount: amountToSend,
+            walletModel: walletModel,
+            config: userWalletModel.config,
+            sendMaintainer: userWalletModel,
+            sdkErrorLogger: userWalletModel
+        )
+        
+        coordinator.openSend(input: input)
     }
 
     func openSendToSell(with request: SellCryptoRequest) {
-        guard let blockchainNetwork = cardModel.walletModels.first?.blockchainNetwork else { return }
+        guard let walletModel = cardModel.walletModels.first else { return }
 
-        let amount = Amount(with: blockchainNetwork.blockchain, value: request.amount)
-        coordinator.openSendToSell(amountToSend: amount,
-                                   destination: request.targetAddress,
-                                   blockchainNetwork: blockchainNetwork,
-                                   cardViewModel: cardModel)
+        let amount = Amount(with: walletModel.blockchainNetwork.blockchain, value: request.amount)
+        let input = SendInput(
+            amount: amount,
+            walletModel: walletModel,
+            config: userWalletModel.config,
+            sendMaintainer: userWalletModel,
+            sdkErrorLogger: userWalletModel
+        )
+        
+        coordinator.openSendToSell(input: input, destination: request.targetAddress)
     }
 
     func openSellCrypto() {
@@ -503,8 +516,15 @@ extension MainViewModel {
 
 extension MainViewModel: SingleWalletContentViewModelOutput {
     func openPushTx(for index: Int, walletModel: WalletModel) {
-        let tx = walletModel.wallet.pendingOutgoingTransactions[index]
-        coordinator.openPushTx(for: tx, blockchainNetwork: walletModel.blockchainNetwork, card: cardModel)
+        let input = PushTxInput(
+            transaction: walletModel.wallet.pendingOutgoingTransactions[index],
+            walletModel: walletModel,
+            config: userWalletModel.config,
+            pushTxMaintainer: userWalletModel,
+            sdkErrorLogger: userWalletModel
+        )
+
+        coordinator.openPushTx(input: input)
     }
 
     func openQR(shareAddress: String, address: String, qrNotice: String) {
@@ -532,8 +552,15 @@ extension MainViewModel: MultiWalletContentViewModelOutput {
     }
 
     func openTokenDetails(_ tokenItem: TokenItemViewModel) {
-        coordinator.openTokenDetails(cardModel: cardModel,
-                                     blockchainNetwork: tokenItem.blockchainNetwork,
-                                     amountType: tokenItem.amountType)
+        guard let walletModel = cardModel.walletModels.first(where: { $0.blockchainNetwork = tokenItem.blockchainNetwork }) else { return }
+
+        let input = TokenDetailsInput(
+            walletModel: walletModel,
+            amountType: tokenItem.amountType,
+            config: userWalletModel.config,
+            userWalletModel: userWalletModel
+        )
+
+        coordinator.openTokenDetails(input: input)
     }
 }

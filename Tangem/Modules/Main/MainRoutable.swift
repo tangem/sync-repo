@@ -12,7 +12,7 @@ import BlockchainSdk
 protocol MainRoutable: TokenDetailsRoutable {
     func close(newScan: Bool)
     func openSettings(cardModel: CardViewModel)
-    func openTokenDetails(cardModel: CardViewModel, blockchainNetwork: BlockchainNetwork, amountType: Amount.AmountType)
+    func openTokenDetails(input: TokenDetailsInput)
     func openOnboardingModal(with input: OnboardingInput)
     func openCurrencySelection(autoDismiss: Bool)
     func openTokensList(with cardModel: CardViewModel)
