@@ -67,8 +67,7 @@ class PushTxViewModel: ObservableObject {
 
     @Published var shouldAmountBlink: Bool = false
 
-//    let cardViewModel: CardViewModel
-    let blockchainNetwork: BlockchainNetwork
+    var blockchainNetwork: BlockchainNetwork { walletModel.blockchainNetwork }
     var transaction: BlockchainSdk.Transaction
 
     lazy var amountDecimal: String = { "\(walletModel.getFiat(for: amountToSend) ?? 0)" }()
@@ -89,7 +88,6 @@ class PushTxViewModel: ObservableObject {
     private unowned let coordinator: PushTxRoutable
 
     init(input: PushTxInput, coordinator: PushTxRoutable) {
-        self.blockchainNetwork = input.blockchainNetwork
         self.pushTxMaintainer = input.pushTxMaintainer
         self.sdkErrorLogger = input.sdkErrorLogger
         self.walletModel = input.walletModel

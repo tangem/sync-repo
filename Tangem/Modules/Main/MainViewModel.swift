@@ -552,7 +552,7 @@ extension MainViewModel: MultiWalletContentViewModelOutput {
     }
 
     func openTokenDetails(_ tokenItem: TokenItemViewModel) {
-        guard let walletModel = cardModel.walletModels.first(where: { $0.blockchainNetwork = tokenItem.blockchainNetwork }) else { return }
+        guard let walletModel = cardModel.walletModels.first(where: { $0.blockchainNetwork == tokenItem.blockchainNetwork }) else { return }
 
         let input = TokenDetailsInput(
             walletModel: walletModel,

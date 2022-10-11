@@ -8,8 +8,13 @@
 
 import Combine
 import BlockchainSdk
+import struct TangemSdk.Card
 
 class CommonUserWalletModel {
+    /// Migrate it to UserWallet or get from UserWalletConfig
+    public var card: Card
+    public var config: UserWalletConfig
+    
     /// Public until managers factory
     let userTokenListManager: UserTokenListManager
     private let walletListManager: WalletListManager
@@ -17,9 +22,13 @@ class CommonUserWalletModel {
     private var reloadAllWalletModelsBag: AnyCancellable?
 
     init(
+        card: Card,
+        config: UserWalletConfig,
         userTokenListManager: UserTokenListManager,
         walletListManager: WalletListManager
     ) {
+        self.card = card
+        self.config = config
         self.userTokenListManager = userTokenListManager
         self.walletListManager = walletListManager
     }
@@ -35,6 +44,7 @@ extension CommonUserWalletModel: UserWalletModel {
 
     func updateUserWalletModel(with config: UserWalletConfig) {
         print("🔄 Updating UserWalletModel with new config")
+        self.config = config
         walletListManager.update(config: config)
     }
 
@@ -99,6 +109,17 @@ extension CommonUserWalletModel: UserWalletModel {
             removeToken(token, in: item.blockchainNetwork, completion: completion)
         case .reserve: break
         }
+    }
+}
+
+extension CommonUserWalletModel: SDKErrorLogger {
+    func logError(_ error: Error, action: Analytics.Action, parameters: [Analytics.ParameterKey : Any]) {
+        Analytics.logCardSdkError(
+            error.toTangemSdkError(),
+            for: action,
+            card: card,
+            parameters: parameters
+        )
     }
 }
 

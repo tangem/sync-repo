@@ -525,6 +525,8 @@ class CardViewModel: Identifiable, ObservableObject {
         )
 
         userWalletModel = CommonUserWalletModel(
+            card: cardInfo.card,
+            config: config,
             userTokenListManager: userTokenListManager,
             walletListManager: walletListManager
         )

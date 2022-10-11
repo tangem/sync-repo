@@ -139,7 +139,7 @@ class SendViewModel: ObservableObject {
 
     private let feeRetrySubject = CurrentValueSubject<Void, Never>(())
 
-    private var blockchainNetwork: BlockchainNetwork
+    private var blockchainNetwork: BlockchainNetwork { walletModel.blockchainNetwork }
 
     private var lastClipboardChangeCount: Int?
 
@@ -149,7 +149,6 @@ class SendViewModel: ObservableObject {
     private unowned let coordinator: SendRoutable
 
     init(input: SendInput, coordinator: SendRoutable) {
-        self.blockchainNetwork = input.blockchainNetwork
         self.sendMaintainer = input.sendMaintainer
         self.sdkErrorLogger = input.sdkErrorLogger
         self.config = input.config

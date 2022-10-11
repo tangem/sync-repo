@@ -176,6 +176,7 @@ class TokenDetailsViewModel: ObservableObject {
         self.walletModel = input.walletModel
         self.config = input.config
         self.userWalletModel = input.userWalletModel
+        self.coordinator = coordinator
         
         bind()
     }
@@ -344,7 +345,6 @@ extension TokenDetailsViewModel {
     func openSend() {
         guard let amountToSend = wallet.amounts[amountType] else { return }
         let input = SendInput(amount: amountToSend,
-                              blockchainNetwork: blockchainNetwork,
                               walletModel: walletModel,
                               config: config,
                               sendMaintainer: userWalletModel,
@@ -356,7 +356,6 @@ extension TokenDetailsViewModel {
     func openSendToSell(with request: SellCryptoRequest) {
         let amount = Amount(with: blockchainNetwork.blockchain, value: request.amount)
         let input = SendInput(amount: amount,
-                              blockchainNetwork: blockchainNetwork,
                               walletModel: walletModel,
                               config: config,
                               sendMaintainer: userWalletModel,
@@ -422,7 +421,6 @@ extension TokenDetailsViewModel {
     func openPushTx(for index: Int) {
         let input = PushTxInput(transaction: wallet.pendingOutgoingTransactions[index],
                                 walletModel: walletModel,
-                                blockchainNetwork: blockchainNetwork,
                                 config: config,
                                 pushTxMaintainer: userWalletModel,
                                 sdkErrorLogger: userWalletModel)
