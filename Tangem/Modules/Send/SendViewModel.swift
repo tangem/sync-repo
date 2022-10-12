@@ -229,6 +229,13 @@ class SendViewModel: ObservableObject {
             }
             .store(in: &bag)
 
+        $isFiatCalculation
+            .receive(on: DispatchQueue.global())
+            .dropFirst()
+            .sink { _ in
+                Analytics.log(.buttonSwapCurrency)
+            }.store(in: &bag)
+
         $isFiatCalculation // handle conversion
             .uiPublisher
             .filter { [unowned self] _ in self.amountText != "0" }
@@ -515,6 +522,7 @@ class SendViewModel: ObservableObject {
     // MARK: Validation end -
 
     func pasteClipboardTapped() {
+        Analytics.log(.buttonPaste)
         if let validatedClipboard = self.validatedClipboard {
             destination = validatedClipboard
         }
@@ -597,6 +605,7 @@ class SendViewModel: ObservableObject {
                     if !isDemo {
                         if self.isSellingCrypto {
                             Analytics.log(.transactionIsSent)
+                            Analytics.log(.transactionSent, params: [.token: "\(tx.amount.currencySymbol)"])
                             Analytics.log(event: .userSoldCrypto, with: [.currencyCode: self.blockchainNetwork.blockchain.currencySymbol])
                         } else {
                             Analytics.logTx(blockchainName: self.blockchainNetwork.blockchain.displayName)
@@ -721,6 +730,7 @@ extension SendViewModel {
     }
 
     func openQRScanner() {
+        Analytics.log(.buttonQRCode)
         if case .denied = AVCaptureDevice.authorizationStatus(for: .video) {
             self.showCameraDeniedAlert = true
         } else {

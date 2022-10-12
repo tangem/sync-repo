@@ -75,6 +75,7 @@ extension MainCoordinator: MainRoutable {
     }
 
     func openBuyCrypto(at url: URL, closeUrl: String, action: @escaping (String) -> Void) {
+        Analytics.log(.topUpScreenOpened)
         pushedWebViewModel = WebViewContainerViewModel(url: url,
                                                        title: "wallet_button_topup".localized,
                                                        addLoadingIndicator: true,
@@ -86,6 +87,7 @@ extension MainCoordinator: MainRoutable {
     }
 
     func openSellCrypto(at url: URL, sellRequestUrl: String, action: @escaping (String) -> Void) {
+        Analytics.log(.withdrawScreenOpened)
         pushedWebViewModel = WebViewContainerViewModel(url: url,
                                                        title: "wallet_button_sell_crypto".localized,
                                                        addLoadingIndicator: true,
@@ -99,7 +101,7 @@ extension MainCoordinator: MainRoutable {
     }
     
     func openSend(input: SendInput) {
-        Analytics.log(.sendTokenTapped)
+                        Analytics.log(.sendScreenOpened)
         let coordinator = SendCoordinator { [weak self] in
             self?.sendCoordinator = nil
         }
@@ -133,7 +135,7 @@ extension MainCoordinator: MainRoutable {
     }
 
     func openSettings(cardModel: CardViewModel) {
-        Analytics.log(.settingsTapped)
+        Analytics.log(.settingsScreenOpened)
         let dismissAction: Action = { [weak self] in
             self?.detailsCoordinator = nil
         }
@@ -146,7 +148,7 @@ extension MainCoordinator: MainRoutable {
     }
     
     func openTokenDetails(input: TokenDetailsInput) {
-        Analytics.log(.tokenTapped)
+        Analytics.log(.tokenIsTapped)
         let dismissAction: Action = { [weak self] in
             self?.tokenDetailsCoordinator = nil
         }
@@ -163,7 +165,7 @@ extension MainCoordinator: MainRoutable {
     }
 
     func openTokensList(with cardModel: CardViewModel) {
-        Analytics.log(.manageTokensTapped)
+        Analytics.log(.manageTokensScreenOpened)
         let dismissAction: Action = { [weak self] in
             self?.tokenListCoordinator = nil
         }
@@ -178,6 +180,7 @@ extension MainCoordinator: MainRoutable {
     }
 
     func openQR(shareAddress: String, address: String, qrNotice: String) {
+        Analytics.log(.receiveScreenOpened)
         addressQrBottomSheetContentViewVodel = .init(shareAddress: shareAddress, address: address, qrNotice: qrNotice)
     }
 
