@@ -25,13 +25,13 @@ class WalletConnectCoordinator: CoordinatorObject {
     }
 
     func start(with options: WalletConnectCoordinator.Options) {
-        walletConnectViewModel = WalletConnectViewModel(cardModel: options.cardModel, coordinator: self)
+        walletConnectViewModel = WalletConnectViewModel(input: options.input, coordinator: self)
     }
 }
 
 extension WalletConnectCoordinator {
     struct Options {
-        let cardModel: CardViewModel
+        let input: WalletConnectInput
     }
 }
 

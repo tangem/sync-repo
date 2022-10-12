@@ -11,7 +11,7 @@ import BlockchainSdk
 
 protocol MainRoutable: TokenDetailsRoutable {
     func close(newScan: Bool)
-    func openSettings(cardModel: CardViewModel)
+    func openSettings(input: DetailsInput)
     func openTokenDetails(input: TokenDetailsInput)
     func openOnboardingModal(with input: OnboardingInput)
     func openCurrencySelection(autoDismiss: Bool)

@@ -783,7 +783,7 @@ extension WalletOnboardingViewModel {
     func openSupportChat() {
         guard let cardModel = input.cardInput.cardModel else { return }
 
-        let dataCollector = DetailsFeedbackDataCollector(cardModel: cardModel,
+        let dataCollector = DetailsFeedbackDataCollector(walletModels: cardModel.walletModels,
                                                          userWalletEmailData: cardModel.emailData)
 
         coordinator.openSupportChat(cardId: cardModel.cardId,

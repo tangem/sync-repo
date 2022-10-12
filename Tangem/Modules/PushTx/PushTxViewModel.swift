@@ -95,7 +95,7 @@ class PushTxViewModel: ObservableObject {
         self.amountToSend = input.transaction.amount
         self.config = input.config
         self.coordinator = coordinator
-        
+
         additionalFee = emptyValue
         sendTotal = emptyValue
         sendTotalSubtitle = emptyValue

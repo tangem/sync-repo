@@ -31,15 +31,15 @@ class WalletConnectViewModel: ObservableObject {
         return canHandle
     }
 
-    private var cardModel: CardViewModel
+    private var config: UserWalletConfig
     private var bag = Set<AnyCancellable>()
     private var copiedValue: String?
     private var scannedQRCode: CurrentValueSubject<String?, Never> = .init(nil)
 
     private unowned let coordinator: WalletConnectRoutable
 
-    init(cardModel: CardViewModel, coordinator: WalletConnectRoutable) {
-        self.cardModel = cardModel
+    init(input: WalletConnectInput, coordinator: WalletConnectRoutable) {
+        self.config = input.config
         self.coordinator = coordinator
     }
 
@@ -67,7 +67,8 @@ class WalletConnectViewModel: ObservableObject {
     }
 
     func openSession() {
-        if let disabledLocalizedReason = cardModel.getDisabledLocalizedReason(for: .walletConnect) {
+        let availability = config.getFeatureAvailability(.walletConnect)
+        if let disabledLocalizedReason = availability.disabledLocalizedReason {
             alert = AlertBuilder.makeDemoAlert(disabledLocalizedReason)
             return
         }

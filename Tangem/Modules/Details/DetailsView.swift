@@ -157,7 +157,7 @@ struct DetailsView: View {
         }
     }
 }
-
+/*
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
@@ -167,4 +167,5 @@ struct SettingsView_Previews: PreviewProvider {
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }
+ */
 

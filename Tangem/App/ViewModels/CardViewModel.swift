@@ -633,6 +633,8 @@ extension CardViewModel {
     }
 }
 
+extension CardViewModel: DetailsInputMaintainer {}
+
 extension CardViewModel {
     enum WalletsBalanceState {
         case inProgress

@@ -575,6 +575,8 @@
 		EF3B580C28F58A3300C93810 /* PushTxInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B580B28F58A3300C93810 /* PushTxInput.swift */; };
 		EF3B580F28F58B2900C93810 /* SDKErrorLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B580E28F58B2900C93810 /* SDKErrorLogger.swift */; };
 		EF3B581128F58C2000C93810 /* SendInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581028F58C2000C93810 /* SendInput.swift */; };
+		EF3B581428F6EFBE00C93810 /* DetailsInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581328F6EFBE00C93810 /* DetailsInput.swift */; };
+		EF3B581628F6F15E00C93810 /* WalletConnectInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581528F6F15E00C93810 /* WalletConnectInput.swift */; };
 		EF3EC523289AB2DE0071BA7F /* TangemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3EC522289AB2DE0071BA7F /* TangemProvider.swift */; };
 		EF48288F28D1C99D002809C6 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = EF48288D28D1C99D002809C6 /* Localizable.stringsdict */; };
 		EF48289528D1CD1F002809C6 /* Collection+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF48289428D1CD1F002809C6 /* Collection+.swift */; };
@@ -1255,6 +1257,8 @@
 		EF3B580B28F58A3300C93810 /* PushTxInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushTxInput.swift; sourceTree = "<group>"; };
 		EF3B580E28F58B2900C93810 /* SDKErrorLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKErrorLogger.swift; sourceTree = "<group>"; };
 		EF3B581028F58C2000C93810 /* SendInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendInput.swift; sourceTree = "<group>"; };
+		EF3B581328F6EFBE00C93810 /* DetailsInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsInput.swift; sourceTree = "<group>"; };
+		EF3B581528F6F15E00C93810 /* WalletConnectInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletConnectInput.swift; sourceTree = "<group>"; };
 		EF3EC522289AB2DE0071BA7F /* TangemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TangemProvider.swift; sourceTree = "<group>"; };
 		EF48288E28D1C99D002809C6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = en; path = en.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
 		EF48289028D1C9A1002809C6 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fr; path = fr.lproj/Localizable.stringsdict; sourceTree = "<group>"; };
@@ -1448,6 +1452,7 @@
 				DC66BC07285B6E6400CDF765 /* DetailsRoutable.swift */,
 				DC295B472861C4BE006CB7B6 /* DetailsCoordinator.swift */,
 				DC295B492861C4CB006CB7B6 /* DetailsCoordinatorView.swift */,
+				EF3B581328F6EFBE00C93810 /* DetailsInput.swift */,
 			);
 			path = Details;
 			sourceTree = "<group>";
@@ -1754,6 +1759,7 @@
 				DC51185B2860925A004FB954 /* WalletConnectRoutable.swift */,
 				DC295B4B2861D7CF006CB7B6 /* WalletConnectCoordinator.swift */,
 				DC295B4D2861D871006CB7B6 /* WalletConnectCoordinatorView.swift */,
+				EF3B581528F6F15E00C93810 /* WalletConnectInput.swift */,
 			);
 			path = WalletConnect;
 			sourceTree = "<group>";
@@ -3488,6 +3494,7 @@
 				DC7127B32897ECEE00F60F71 /* GenericConfig.swift in Sources */,
 				DC66BBED2859B68100CDF765 /* ShopCoordinator.swift in Sources */,
 				B06917E0270444CE0000E6C1 /* OnboardingWalletInfoPager.swift in Sources */,
+				EF3B581428F6EFBE00C93810 /* DetailsInput.swift in Sources */,
 				DC295B422861C444006CB7B6 /* TokenDetailsCoordinatorView.swift in Sources */,
 				EF3B580A28F582CA00C93810 /* TokenDetailsInput.swift in Sources */,
 				5DD966F925499E8B006070F3 /* WebView.swift in Sources */,
@@ -3681,6 +3688,7 @@
 				B020FFB425DE7F9300EF422C /* DataCollectors.swift in Sources */,
 				DA23787C27B24222009795A8 /* ShopifyService.swift in Sources */,
 				EF661E3528C0ADC6005769E5 /* CommonError.swift in Sources */,
+				EF3B581628F6F15E00C93810 /* WalletConnectInput.swift in Sources */,
 				EF48289528D1CD1F002809C6 /* Collection+.swift in Sources */,
 				DAC53D0027BE63830027147D /* Web3StoryPage.swift in Sources */,
 				B0541DC226FB301A0043893E /* WalletOnboardingCardLayout.swift in Sources */,

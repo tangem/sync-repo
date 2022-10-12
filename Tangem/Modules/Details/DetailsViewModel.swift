@@ -19,23 +19,23 @@ class DetailsViewModel: ObservableObject {
 
     // MARK: - View State
 
-    @Published var cardModel: CardViewModel
+//    @Published var cardModel: CardViewModel
     @Published var error: AlertBinder?
 
     var canCreateBackup: Bool {
-        cardModel.canCreateBackup
+        config.hasFeature(.backup)
     }
 
     var canTwin: Bool {
-        cardModel.canTwin
+        config.hasFeature(.twinning)
     }
 
     var shouldShowWC: Bool {
-        cardModel.shouldShowWC
+        !config.getFeatureAvailability(.walletConnect).isHidden
     }
 
     var cardTouURL: URL? {
-        cardModel.cardTouURL
+        config.touURL
     }
 
     var applicationInfoFooter: String? {
@@ -51,29 +51,33 @@ class DetailsViewModel: ObservableObject {
         )
     }
 
-    deinit {
-        print("DetailsViewModel deinit")
-    }
-
     var isMultiWallet: Bool {
-        cardModel.isMultiWallet
+        config.hasFeature(.multiCurrency)
     }
 
     // MARK: - Private
 
-    private var bag = Set<AnyCancellable>()
+    private let cardId: String
+    private let config: UserWalletConfig
+    private let detailsInputMaintainer: DetailsInputMaintainer
     private unowned let coordinator: DetailsRoutable
+    
+    private var bag = Set<AnyCancellable>()
 
-    init(cardModel: CardViewModel, coordinator: DetailsRoutable) {
-        self.cardModel = cardModel
+    init(input: DetailsInput, coordinator: DetailsRoutable) {
+        self.config = input.config
+        self.cardId = input.cardId
+        self.detailsInputMaintainer = input.detailsInputMaintainer
         self.coordinator = coordinator
-
-        bind()
+    }
+    
+    deinit {
+        print("DetailsViewModel deinit")
     }
 
     func prepareBackup() {
         Analytics.log(.buttonCreateBackup)
-        if let input = cardModel.backupInput {
+        if let input = detailsInputMaintainer.backupInput {
             self.openOnboarding(with: input)
         }
     }
@@ -89,16 +93,19 @@ extension DetailsViewModel {
 
     func openMail() {
         Analytics.log(.buttonSendFeedback)
-        let dataCollector = DetailsFeedbackDataCollector(cardModel: cardModel,
-                                                         userWalletEmailData: cardModel.emailData)
+        let dataCollector = DetailsFeedbackDataCollector(
+            walletModels: detailsInputMaintainer.walletModels,
+            userWalletEmailData: config.emailData
+        )
 
         coordinator.openMail(with: dataCollector,
-                             recipient: cardModel.emailConfig.subject,
-                             emailType: .appFeedback(subject: cardModel.emailConfig.subject))
+                             recipient: config.emailConfig.subject,
+                             emailType: .appFeedback(subject: config.emailConfig.subject))
     }
 
     func openWalletConnect() {
-        coordinator.openWalletConnect(with: cardModel)
+        let input = WalletConnectInput(config: config)
+        coordinator.openWalletConnect(with: input)
     }
 
     func openCurrencySelection() {
@@ -125,11 +132,12 @@ extension DetailsViewModel {
 
     func openSupportChat() {
         Analytics.log(.buttonChat)
-        let dataCollector = DetailsFeedbackDataCollector(cardModel: cardModel,
-                                                         userWalletEmailData: cardModel.emailData)
+        let dataCollector = DetailsFeedbackDataCollector(
+            walletModels: detailsInputMaintainer.walletModels,
+            userWalletEmailData: config.emailData
+        )
 
-        coordinator.openSupportChat(cardId: cardModel.cardId,
-                                    dataCollector: dataCollector)
+        coordinator.openSupportChat(cardId: cardId, dataCollector: dataCollector)
     }
 
     func openSocialNetwork(network: SocialNetwork) {
@@ -140,18 +148,4 @@ extension DetailsViewModel {
         Analytics.log(.buttonSocialNetwork)
         coordinator.openInSafari(url: url)
     }
-}
-
-// MARK: - Private
-
-private extension DetailsViewModel {
-    func bind() {
-        cardModel.objectWillChange
-            .receive(on: RunLoop.main)
-            .sink { [weak self] in
-                self?.objectWillChange.send()
-            }
-            .store(in: &bag)
-    }
-
 }

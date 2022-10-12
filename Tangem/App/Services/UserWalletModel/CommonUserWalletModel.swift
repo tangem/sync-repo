@@ -14,7 +14,7 @@ class CommonUserWalletModel {
     /// Migrate it to UserWallet or get from UserWalletConfig
     public var card: Card
     public var config: UserWalletConfig
-    
+
     /// Public until managers factory
     let userTokenListManager: UserTokenListManager
     private let walletListManager: WalletListManager
@@ -113,7 +113,7 @@ extension CommonUserWalletModel: UserWalletModel {
 }
 
 extension CommonUserWalletModel: SDKErrorLogger {
-    func logError(_ error: Error, action: Analytics.Action, parameters: [Analytics.ParameterKey : Any]) {
+    func logError(_ error: Error, action: Analytics.Action, parameters: [Analytics.ParameterKey: Any]) {
         Analytics.logCardSdkError(
             error.toTangemSdkError(),
             for: action,

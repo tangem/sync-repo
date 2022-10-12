@@ -66,7 +66,7 @@ extension TokenDetailsCoordinator: TokenDetailsRoutable {
                                                       title: "common_explorer_format".localized(blockchainDisplayName),
                                                       withCloseButton: true)
     }
-    
+
     func openSend(input: SendInput) {
         Analytics.log(.sendScreenOpened)
         let coordinator = SendCoordinator { [weak self] in
@@ -77,7 +77,7 @@ extension TokenDetailsCoordinator: TokenDetailsRoutable {
         coordinator.start(with: options)
         self.sendCoordinator = coordinator
     }
-    
+
     func openSendToSell(input: SendInput, destination: String) {
         let coordinator = SendCoordinator { [weak self] in
             self?.sendCoordinator = nil
@@ -86,7 +86,7 @@ extension TokenDetailsCoordinator: TokenDetailsRoutable {
         coordinator.start(with: options)
         self.sendCoordinator = coordinator
     }
-    
+
     func openPushTx(input: PushTxInput) {
         let dismissAction: Action = { [weak self] in
             self?.pushTxCoordinator = nil

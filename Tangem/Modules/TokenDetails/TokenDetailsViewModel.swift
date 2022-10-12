@@ -41,19 +41,19 @@ class TokenDetailsViewModel: ObservableObject {
     }
 
     var buyCryptoUrl: URL? {
-            if blockchainNetwork.blockchain.isTestnet {
-                return blockchainNetwork.blockchain.testnetFaucetURL
-            }
+        if blockchainNetwork.blockchain.isTestnet {
+            return blockchainNetwork.blockchain.testnetFaucetURL
+        }
 
-            let address = wallet.address
-            switch amountType {
-            case .coin:
-                return exchangeService.getBuyUrl(currencySymbol: blockchainNetwork.blockchain.currencySymbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
-            case .token(let token):
-                return exchangeService.getBuyUrl(currencySymbol: token.symbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
-            case .reserve:
-                return nil
-            }
+        let address = wallet.address
+        switch amountType {
+        case .coin:
+            return exchangeService.getBuyUrl(currencySymbol: blockchainNetwork.blockchain.currencySymbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
+        case .token(let token):
+            return exchangeService.getBuyUrl(currencySymbol: token.symbol, amountType: amountType, blockchain: blockchainNetwork.blockchain, walletAddress: address)
+        case .reserve:
+            return nil
+        }
     }
 
     var buyCryptoCloseUrl: String {
@@ -104,7 +104,7 @@ class TokenDetailsViewModel: ObservableObject {
 
     var existentialDepositWarning: String? {
         let blockchain = walletModel.blockchainNetwork.blockchain
-        
+
         guard let existentialDepositProvider = walletModel.walletManager as? ExistentialDepositProvider
         else {
             return nil
@@ -149,7 +149,7 @@ class TokenDetailsViewModel: ObservableObject {
     private var rentWarningSubscription: AnyCancellable?
     private var refreshCancellable: AnyCancellable? = nil
     private lazy var testnetBuyCryptoService: TestnetBuyCryptoService = .init()
-    
+
     private let config: UserWalletConfig
     // Temp userWalletModel, refactor and remove
     private var userWalletModel: UserWalletModel
@@ -162,7 +162,7 @@ class TokenDetailsViewModel: ObservableObject {
 
     private var canSignLongTransactions: Bool {
         let blockchain = walletModel.blockchainNetwork.blockchain
-        
+
         if NFCUtils.isPoorNfcQualityDevice,
            case .solana = blockchain {
             return false
@@ -170,14 +170,14 @@ class TokenDetailsViewModel: ObservableObject {
             return true
         }
     }
-    
+
     init(input: TokenDetailsInput, coordinator: TokenDetailsRoutable) {
         self.amountType = input.amountType
         self.walletModel = input.walletModel
         self.config = input.config
         self.userWalletModel = input.userWalletModel
         self.coordinator = coordinator
-        
+
         bind()
     }
 
@@ -352,7 +352,7 @@ extension TokenDetailsViewModel {
                               config: config,
                               sendMaintainer: userWalletModel,
                               sdkErrorLogger: userWalletModel)
-        
+
         Analytics.log(.buttonSend)
         coordinator.openSend(input: input)
     }
@@ -364,7 +364,7 @@ extension TokenDetailsViewModel {
                               config: config,
                               sendMaintainer: userWalletModel,
                               sdkErrorLogger: userWalletModel)
-        
+
         coordinator.openSendToSell(input: input, destination: request.targetAddress)
     }
 
@@ -428,7 +428,7 @@ extension TokenDetailsViewModel {
                                 config: config,
                                 pushTxMaintainer: userWalletModel,
                                 sdkErrorLogger: userWalletModel)
-        
+
         coordinator.openPushTx(input: input)
     }
 

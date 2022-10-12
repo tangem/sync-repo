@@ -99,9 +99,9 @@ extension MainCoordinator: MainRoutable {
                                                       title: "common_explorer_format".localized(blockchainDisplayName),
                                                       withCloseButton: true)
     }
-    
+
     func openSend(input: SendInput) {
-                        Analytics.log(.sendScreenOpened)
+        Analytics.log(.sendScreenOpened)
         let coordinator = SendCoordinator { [weak self] in
             self?.sendCoordinator = nil
         }
@@ -109,7 +109,7 @@ extension MainCoordinator: MainRoutable {
         coordinator.start(with: options)
         self.sendCoordinator = coordinator
     }
-    
+
     func openSendToSell(input: SendInput, destination: String) {
         let coordinator = SendCoordinator { [weak self] in
             self?.sendCoordinator = nil
@@ -134,19 +134,22 @@ extension MainCoordinator: MainRoutable {
         self.popToRoot(with: .init(newScan: newScan))
     }
 
-    func openSettings(cardModel: CardViewModel) {
+    func openSettings(input: DetailsInput) {
         Analytics.log(.settingsScreenOpened)
         let dismissAction: Action = { [weak self] in
             self?.detailsCoordinator = nil
         }
 
-        let coordinator = DetailsCoordinator(dismissAction: dismissAction, popToRootAction: self.popToRootAction)
-        let options = DetailsCoordinator.Options(cardModel: cardModel)
+        let coordinator = DetailsCoordinator(
+            dismissAction: dismissAction,
+            popToRootAction: popToRootAction
+        )
+
+        let options = DetailsCoordinator.Options(input: input)
         coordinator.start(with: options)
-        coordinator.popToRootAction = self.popToRootAction
         detailsCoordinator = coordinator
     }
-    
+
     func openTokenDetails(input: TokenDetailsInput) {
         Analytics.log(.tokenIsTapped)
         let dismissAction: Action = { [weak self] in

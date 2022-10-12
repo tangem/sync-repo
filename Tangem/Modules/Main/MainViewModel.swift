@@ -411,7 +411,13 @@ extension MainViewModel {
 
 extension MainViewModel {
     func openSettings() {
-        coordinator.openSettings(cardModel: cardModel)
+        let input = DetailsInput(
+            config: userWalletModel.config,
+            cardId: cardModel.cardId,
+            detailsInputMaintainer: cardModel
+        )
+        
+        coordinator.openSettings(input: input)
     }
 
     func openSend(for amountToSend: Amount) {
@@ -424,7 +430,7 @@ extension MainViewModel {
             sendMaintainer: userWalletModel,
             sdkErrorLogger: userWalletModel
         )
-        
+
         coordinator.openSend(input: input)
     }
 
@@ -439,7 +445,7 @@ extension MainViewModel {
             sendMaintainer: userWalletModel,
             sdkErrorLogger: userWalletModel
         )
-        
+
         coordinator.openSendToSell(input: input, destination: request.targetAddress)
     }
 

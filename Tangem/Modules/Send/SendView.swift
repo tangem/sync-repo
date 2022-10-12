@@ -268,26 +268,26 @@ struct SendView: View {
     }
 }
 /*
-struct ExtractView_Previews: PreviewProvider {
-    static var previews: some View {
-        Group {
-            SendView(viewModel: .init(amountToSend: Amount(with: PreviewCard.ethereum.blockchain!,
-                                                           type: .token(value: Token(name: "DAI", symbol: "DAI", contractAddress: "0xdwekdn32jfne", decimalCount: 18)),
-                                                           value: 0.0),
-                                      destination: "Target",
-                                      blockchainNetwork: PreviewCard.ethereum.blockchainNetwork!,
-                                      cardViewModel: PreviewCard.ethereum.cardModel,
-                                      coordinator: SendCoordinator()))
-                .previewLayout(.iphone7Zoomed)
+ struct ExtractView_Previews: PreviewProvider {
+     static var previews: some View {
+         Group {
+             SendView(viewModel: .init(amountToSend: Amount(with: PreviewCard.ethereum.blockchain!,
+                                                            type: .token(value: Token(name: "DAI", symbol: "DAI", contractAddress: "0xdwekdn32jfne", decimalCount: 18)),
+                                                            value: 0.0),
+                                       destination: "Target",
+                                       blockchainNetwork: PreviewCard.ethereum.blockchainNetwork!,
+                                       cardViewModel: PreviewCard.ethereum.cardModel,
+                                       coordinator: SendCoordinator()))
+                 .previewLayout(.iphone7Zoomed)
 
-            SendView(viewModel: .init(amountToSend: Amount(with: PreviewCard.ethereum.blockchain!,
-                                                           type: .token(value: Token(name: "DAI", symbol: "DAI", contractAddress: "0xdwekdn32jfne", decimalCount: 18)),
-                                                           value: 0.0),
-                                      blockchainNetwork: PreviewCard.ethereum.blockchainNetwork!,
-                                      cardViewModel: PreviewCard.ethereum.cardModel,
-                                      coordinator: SendCoordinator()))
-                .previewLayout(.iphone7Zoomed)
-        }
-    }
-}
-*/
+             SendView(viewModel: .init(amountToSend: Amount(with: PreviewCard.ethereum.blockchain!,
+                                                            type: .token(value: Token(name: "DAI", symbol: "DAI", contractAddress: "0xdwekdn32jfne", decimalCount: 18)),
+                                                            value: 0.0),
+                                       blockchainNetwork: PreviewCard.ethereum.blockchainNetwork!,
+                                       cardViewModel: PreviewCard.ethereum.cardModel,
+                                       coordinator: SendCoordinator()))
+                 .previewLayout(.iphone7Zoomed)
+         }
+     }
+ }
+ */

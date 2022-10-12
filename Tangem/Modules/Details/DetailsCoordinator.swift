@@ -43,13 +43,13 @@ class DetailsCoordinator: CoordinatorObject {
     }
 
     func start(with options: DetailsCoordinator.Options) {
-        detailsViewModel = DetailsViewModel(cardModel: options.cardModel, coordinator: self)
+        detailsViewModel = DetailsViewModel(input: options.input, coordinator: self)
     }
 }
 
 extension DetailsCoordinator {
     struct Options {
-        let cardModel: CardViewModel
+        let input: DetailsInput
     }
 }
 
@@ -76,10 +76,10 @@ extension DetailsCoordinator: DetailsRoutable {
         mailViewModel = MailViewModel(dataCollector: dataCollector, recipient: recipient, emailType: emailType)
     }
 
-    func openWalletConnect(with cardModel: CardViewModel) {
+    func openWalletConnect(with input: WalletConnectInput) {
         Analytics.log(.myWalletsScreenOpened)
         let coordinator = WalletConnectCoordinator()
-        let options = WalletConnectCoordinator.Options(cardModel: cardModel)
+        let options = WalletConnectCoordinator.Options(input: input)
         coordinator.start(with: options)
         walletConnectCoordinator = coordinator
     }

@@ -11,7 +11,7 @@ import Foundation
 protocol DetailsRoutable: AnyObject {
     func openOnboardingModal(with input: OnboardingInput)
     func openMail(with dataCollector: EmailDataCollector, recipient: String, emailType: EmailType)
-    func openWalletConnect(with cardModel: CardViewModel)
+    func openWalletConnect(with input: WalletConnectInput)
     func openCurrencySelection()
     func openDisclaimer()
     func openCardTOU(url: URL)

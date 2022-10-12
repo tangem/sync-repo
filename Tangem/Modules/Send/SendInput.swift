@@ -10,7 +10,7 @@ import struct BlockchainSdk.Amount
 import struct BlockchainSdk.Transaction
 
 protocol SendMaintainer {
-    
+
 }
 
 struct SendInput {

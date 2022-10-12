@@ -155,7 +155,7 @@ class SendViewModel: ObservableObject {
         self.amountToSend = input.amount
         self.walletModel = input.walletModel
         self.coordinator = coordinator
-        
+
         isSellingCrypto = false
         fillTotalBlockWithDefaults()
         bind()
@@ -596,8 +596,8 @@ class SendViewModel: ObservableObject {
                     }
 
                     self.sdkErrorLogger.logError(error,
-                                                   action: .sendTx,
-                                                   parameters: [.blockchain: self.walletModel.wallet.blockchain.displayName])
+                                                 action: .sendTx,
+                                                 parameters: [.blockchain: self.walletModel.wallet.blockchain.displayName])
 
                     self.lastError = error
                     self.error = error.alertBinder
