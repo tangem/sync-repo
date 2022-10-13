@@ -8,12 +8,14 @@
 
 import BlockchainSdk
 import Combine
+import struct TangemSdk.Card
 
 protocol UserWalletModel: TokenDetailsMaintainer, SDKErrorLogger, SendMaintainer, PushTxMaintainer {
     /// Public until managers factory
     var userTokenListManager: UserTokenListManager { get }
     var config: UserWalletConfig { get }
 
+    func updateUserWalletModel(with card: Card)
     func updateUserWalletModel(with config: UserWalletConfig)
     func update(userWalletId: Data)
 

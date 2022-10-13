@@ -369,6 +369,7 @@ class CardViewModel: Identifiable, ObservableObject {
 
         cardInfo.card = card // TODO: We need to update only changed parts of card
         config = UserWalletConfigFactory(cardInfo).makeConfig()
+        userWalletModel?.updateUserWalletModel(with: card)
 
         updateModel()
     }
