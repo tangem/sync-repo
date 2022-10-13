@@ -350,7 +350,6 @@ extension TokenDetailsViewModel {
         let input = SendInput(amount: amountToSend,
                               walletModel: walletModel,
                               config: config,
-                              sendMaintainer: userWalletModel,
                               sdkErrorLogger: userWalletModel)
 
         Analytics.log(.buttonSend)
@@ -362,7 +361,6 @@ extension TokenDetailsViewModel {
         let input = SendInput(amount: amount,
                               walletModel: walletModel,
                               config: config,
-                              sendMaintainer: userWalletModel,
                               sdkErrorLogger: userWalletModel)
 
         coordinator.openSendToSell(input: input, destination: request.targetAddress)
@@ -426,7 +424,6 @@ extension TokenDetailsViewModel {
         let input = PushTxInput(transaction: wallet.pendingOutgoingTransactions[index],
                                 walletModel: walletModel,
                                 config: config,
-                                pushTxMaintainer: userWalletModel,
                                 sdkErrorLogger: userWalletModel)
 
         coordinator.openPushTx(input: input)

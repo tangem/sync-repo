@@ -83,12 +83,10 @@ class PushTxViewModel: ObservableObject {
     @Published private var newTransaction: BlockchainSdk.Transaction?
 
     private let sdkErrorLogger: SDKErrorLogger
-    private let pushTxMaintainer: PushTxMaintainer
     private let config: UserWalletConfig
     private unowned let coordinator: PushTxRoutable
 
     init(input: PushTxInput, coordinator: PushTxRoutable) {
-        self.pushTxMaintainer = input.pushTxMaintainer
         self.sdkErrorLogger = input.sdkErrorLogger
         self.walletModel = input.walletModel
         self.transaction = input.transaction

@@ -144,12 +144,10 @@ class SendViewModel: ObservableObject {
     private var lastClipboardChangeCount: Int?
 
     private let config: UserWalletConfig
-    private let sendMaintainer: SendMaintainer
     private let sdkErrorLogger: SDKErrorLogger
     private unowned let coordinator: SendRoutable
 
     init(input: SendInput, coordinator: SendRoutable) {
-        self.sendMaintainer = input.sendMaintainer
         self.sdkErrorLogger = input.sdkErrorLogger
         self.config = input.config
         self.amountToSend = input.amount

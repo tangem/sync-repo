@@ -9,15 +9,10 @@
 import struct BlockchainSdk.Amount
 import struct BlockchainSdk.Transaction
 
-protocol SendMaintainer {
-
-}
-
 struct SendInput {
     let amount: Amount
     let walletModel: WalletModel
     let config: UserWalletConfig
-    let sendMaintainer: SendMaintainer
     let sdkErrorLogger: SDKErrorLogger
 }
 

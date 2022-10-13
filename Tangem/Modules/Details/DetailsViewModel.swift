@@ -19,7 +19,6 @@ class DetailsViewModel: ObservableObject {
 
     // MARK: - View State
 
-//    @Published var cardModel: CardViewModel
     @Published var error: AlertBinder?
 
     var canCreateBackup: Bool {

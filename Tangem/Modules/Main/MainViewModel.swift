@@ -427,7 +427,6 @@ extension MainViewModel {
             amount: amountToSend,
             walletModel: walletModel,
             config: userWalletModel.config,
-            sendMaintainer: userWalletModel,
             sdkErrorLogger: userWalletModel
         )
 
@@ -442,7 +441,6 @@ extension MainViewModel {
             amount: amount,
             walletModel: walletModel,
             config: userWalletModel.config,
-            sendMaintainer: userWalletModel,
             sdkErrorLogger: userWalletModel
         )
 
@@ -518,7 +516,6 @@ extension MainViewModel: SingleWalletContentViewModelOutput {
             transaction: walletModel.wallet.pendingOutgoingTransactions[index],
             walletModel: walletModel,
             config: userWalletModel.config,
-            pushTxMaintainer: userWalletModel,
             sdkErrorLogger: userWalletModel
         )
 
