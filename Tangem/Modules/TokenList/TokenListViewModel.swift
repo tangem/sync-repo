@@ -44,17 +44,30 @@ class TokenListViewModel: ObservableObject {
     }
 
     var shouldShowAlert: Bool {
-        cardModel?.shouldShowLegacyDerivationAlert ?? false
+        config?.warningEvents.contains { $0 == .legacyDerivation } ?? false
     }
 
     var isSaveDisabled: Bool {
         pendingAdd.isEmpty && pendingRemove.isEmpty
     }
 
-    var cardModel: CardViewModel? {
-        mode.cardModel
+    // TODO: Refactor on two viewModel
+    var input: TokenListInput? {
+        mode.input
     }
-
+    
+    var config: UserWalletConfig? {
+        input?.config
+    }
+    
+    var tokenListMaintainer: TokenListMaintainer? {
+        input?.tokenListMaintainer
+    }
+    
+    var addCustomTokenMaintainer: AddCustomTokenMaintainer? {
+        tokenListMaintainer as? AddCustomTokenMaintainer
+    }
+    
     var hasNextPage: Bool {
         loader.canFetchMore
     }
@@ -72,13 +85,12 @@ class TokenListViewModel: ObservableObject {
     }
 
     func saveChanges() {
-        guard let cardModel = cardModel,
-              let userWalletModel = cardModel.userWalletModel else {
+        guard let tokenListMaintainer = tokenListMaintainer else {
             closeModule()
             return
         }
 
-        var alreadySaved = userWalletModel.userTokenListManager.getEntriesFromRepository()
+        var alreadySaved = tokenListMaintainer.getEntriesFromRepository()
 
         pendingRemove.forEach { tokenItem in
             switch tokenItem {
@@ -94,13 +106,13 @@ class TokenListViewModel: ObservableObject {
         pendingAdd.forEach { tokenItem in
             switch tokenItem {
             case let .blockchain(blockchain):
-                let network = cardModel.getBlockchainNetwork(for: blockchain, derivationPath: nil)
+                let network = tokenListMaintainer.getBlockchainNetwork(for: blockchain, derivationPath: nil)
                 if !alreadySaved.contains(where: { $0.blockchainNetwork == network }) {
                     let entry = StorageEntry(blockchainNetwork: network, tokens: [])
                     alreadySaved.append(entry)
                 }
             case let .token(token, blockchain):
-                let network = cardModel.getBlockchainNetwork(for: blockchain, derivationPath: nil)
+                let network = tokenListMaintainer.getBlockchainNetwork(for: blockchain, derivationPath: nil)
 
                 if let entry = alreadySaved.firstIndex(where: { $0.blockchainNetwork == network }) {
                     alreadySaved[entry].tokens.append(token)
@@ -112,7 +124,7 @@ class TokenListViewModel: ObservableObject {
         }
 
         isSaving = true
-        cardModel.update(entries: alreadySaved) { [weak self] result in
+        tokenListMaintainer.update(entries: alreadySaved) { [weak self] result in
             self?.isSaving = false
 
             switch result {
@@ -157,10 +169,15 @@ extension TokenListViewModel {
     }
 
     func openAddCustom() {
-        if let cardModel = self.cardModel {
-            Analytics.log(.buttonCustomToken)
-            coordinator.openAddCustom(for: cardModel)
-        }
+        guard let config = config,
+              let addCustomTokenMaintainer = addCustomTokenMaintainer else { return }
+        
+        Analytics.log(.buttonCustomToken)
+        let input = AddCustomTokenInput(
+            config: config,
+            addCustomTokenMaintainer: addCustomTokenMaintainer
+        )
+        coordinator.openAddCustomToken(with: input)
     }
 }
 
@@ -188,7 +205,7 @@ private extension TokenListViewModel {
     }
 
     func setupListDataLoader() -> ListDataLoader {
-        let supportedBlockchains = cardModel?.supportedBlockchains ?? Blockchain.supportedBlockchains
+        let supportedBlockchains = config?.supportedBlockchains ?? Blockchain.supportedBlockchains
         let networkIds = supportedBlockchains.map { $0.networkId }
         let loader = ListDataLoader(networkIds: networkIds)
 
@@ -203,12 +220,13 @@ private extension TokenListViewModel {
     }
 
     func isAdded(_ tokenItem: TokenItem) -> Bool {
-        guard let cardModel = cardModel else {
+        guard let maintainer = addCustomTokenMaintainer else {
             return false
         }
-
-        let network = cardModel.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
-        if let walletManager = cardModel.walletModels.first(where: { $0.blockchainNetwork == network })?.walletManager {
+        
+        let walletModels = maintainer.walletModels
+        let network = maintainer.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
+        if let walletManager = walletModels.first(where: { $0.blockchainNetwork == network })?.walletManager {
             if let token = tokenItem.token {
                 return walletManager.cardTokens.contains(token)
             }
@@ -220,12 +238,12 @@ private extension TokenListViewModel {
     }
 
     func canManage(_ tokenItem: TokenItem) -> Bool {
-        guard let cardModel = cardModel else {
+        guard let maintainer = addCustomTokenMaintainer else {
             return false
         }
 
-        let network = cardModel.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
-        return cardModel.canManage(amountType: tokenItem.amountType, blockchainNetwork: network)
+        let network = maintainer.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
+        return maintainer.canManage(amountType: tokenItem.amountType, blockchainNetwork: network)
     }
 
     func isSelected(_ tokenItem: TokenItem) -> Bool {
@@ -241,13 +259,15 @@ private extension TokenListViewModel {
     }
 
     func onSelect(_ selected: Bool, _ tokenItem: TokenItem) {
-        guard let cardModel = cardModel else {
+        guard let config = config,
+              let maintainer = addCustomTokenMaintainer else {
             return
         }
+
         if selected,
            case let .token(_, blockchain) = tokenItem,
            case .solana = blockchain,
-           !cardModel.longHashesSupported
+           !config.hasFeature(.longHashes)
         {
             let okButton = Alert.Button.default(Text("common_ok".localized)) {
                 self.updateSelection(tokenItem)
@@ -263,7 +283,7 @@ private extension TokenListViewModel {
 
         let alreadyAdded = isAdded(tokenItem)
 
-        let network = cardModel.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
+        let network = maintainer.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
         let token = TokenItem.blockchain(network.blockchain)
 
         if alreadyAdded {
@@ -351,12 +371,11 @@ private extension TokenListViewModel {
                       primaryButton: .destructive(Text("token_details_hide_alert_hide"), action: hideAction),
                       secondaryButton: .cancel(cancelAction))
             )
-        } else {
-            guard let cardModel = cardModel else { return }
+        } else if let maintainer = addCustomTokenMaintainer {
 
-            let network = cardModel.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
+            let network = maintainer.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
 
-            guard let walletModel = cardModel.walletModels.first(where: { $0.blockchainNetwork == network }) else {
+            guard let walletModel = maintainer.walletModels.first(where: { $0.blockchainNetwork == network }) else {
                 return
             }
 
@@ -378,11 +397,11 @@ private extension TokenListViewModel {
     }
 
     private func canRemove(tokenItem: TokenItem) -> Bool {
-        guard let cardModel = cardModel else { return false }
+        guard let maintainer = addCustomTokenMaintainer else { return false }
 
-        let network = cardModel.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
+        let network = maintainer.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
 
-        guard let walletModel = cardModel.walletModels.first(where: { $0.blockchainNetwork == network })  else {
+        guard let walletModel = maintainer.walletModels.first(where: { $0.blockchainNetwork == network })  else {
             return false
         }
 
@@ -401,8 +420,8 @@ private extension TokenListViewModel {
     private func isTokenAvailable(_ tokenItem: TokenItem) -> Bool {
         if case let .token(_, blockchain) = tokenItem,
            case .solana = blockchain,
-           let cardModel = cardModel,
-           !cardModel.longHashesSupported
+           let config = config,
+           !config.hasFeature(.longHashes)
         {
             return false
         }
@@ -418,7 +437,7 @@ private extension TokenListViewModel {
 
 extension TokenListViewModel {
     enum Mode {
-        case add(cardModel: CardViewModel)
+        case add(input: TokenListInput)
         case show
 
         var id: String {
@@ -430,10 +449,10 @@ extension TokenListViewModel {
             }
         }
 
-        var cardModel: CardViewModel? {
+        var input: TokenListInput? {
             switch self {
-            case .add(let cardModel):
-                return cardModel
+            case .add(let input):
+                return input
             case .show:
                 return nil
             }

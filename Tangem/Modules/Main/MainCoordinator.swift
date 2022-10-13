@@ -167,14 +167,14 @@ extension MainCoordinator: MainRoutable {
         currencySelectViewModel?.dismissAfterSelection = autoDismiss
     }
 
-    func openTokensList(with cardModel: CardViewModel) {
+    func openTokensList(with input: TokenListInput) {
         Analytics.log(.manageTokensScreenOpened)
         let dismissAction: Action = { [weak self] in
             self?.tokenListCoordinator = nil
         }
 
         let coordinator = TokenListCoordinator(dismissAction: dismissAction)
-        coordinator.start(with: .add(cardModel: cardModel))
+        coordinator.start(with: .add(input: input))
         self.tokenListCoordinator = coordinator
     }
 

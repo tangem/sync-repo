@@ -15,7 +15,7 @@ protocol MainRoutable: TokenDetailsRoutable {
     func openTokenDetails(input: TokenDetailsInput)
     func openOnboardingModal(with input: OnboardingInput)
     func openCurrencySelection(autoDismiss: Bool)
-    func openTokensList(with cardModel: CardViewModel)
+    func openTokensList(with input: TokenListInput)
     func openMail(with dataCollector: EmailDataCollector, emailType: EmailType, recipient: String)
     func openQR(shareAddress: String, address: String, qrNotice: String)
 }

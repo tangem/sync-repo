@@ -16,8 +16,6 @@ class AddCustomTokenViewModel: ObservableObject {
     @Injected(\.cardsRepository) private var cardsRepository: CardsRepository
     @Injected(\.tangemApiService) var tangemApiService: TangemApiService
 
-    weak var cardModel: CardViewModel!
-
     @Published var name = ""
     @Published var symbol = ""
     @Published var contractAddress = ""
@@ -52,12 +50,19 @@ class AddCustomTokenViewModel: ObservableObject {
     private var blockchainByName: [String: Blockchain] = [:]
     private var derivationPathByBlockchainName: [String: DerivationPath] = [:]
     private var foundStandardToken: CoinModel?
+    private let config: UserWalletConfig
+    private let addCustomTokenMaintainer: AddCustomTokenMaintainer
     private unowned let coordinator: AddCustomTokenRoutable
 
-    init(cardModel: CardViewModel, coordinator: AddCustomTokenRoutable) {
+    init(input: AddCustomTokenInput, coordinator: AddCustomTokenRoutable) {
+        self.config = input.config
+        self.addCustomTokenMaintainer = input.addCustomTokenMaintainer
         self.coordinator = coordinator
-        self.cardModel = cardModel
-
+        
+        bind()
+    }
+    
+    func bind() {
         $contractAddress.removeDuplicates()
             .dropFirst()
             .debounce(for: 0.5, scheduler: RunLoop.main)
@@ -101,7 +106,7 @@ class AddCustomTokenViewModel: ObservableObject {
 
             if case let .token(_, blockchain) = tokenItem,
                case .solana = blockchain,
-               !cardModel.longHashesSupported
+               !config.hasFeature(.longHashes)
             {
                 throw TokenCreationErrors.tokensNotSupported
             }
@@ -110,10 +115,10 @@ class AddCustomTokenViewModel: ObservableObject {
             return
         }
 
-        let blockchainNetwork = cardModel.getBlockchainNetwork(for: blockchain, derivationPath: derivationPath)
+        let blockchainNetwork = addCustomTokenMaintainer.getBlockchainNetwork(for: blockchain, derivationPath: derivationPath)
         let entry = StorageEntry(blockchainNetwork: blockchainNetwork, token: tokenItem.token)
 
-        cardModel.add(entries: [entry]) { [weak self] result in
+        addCustomTokenMaintainer.add(entries: [entry]) { [weak self] result in
             guard let self = self else { return }
 
             switch result {
@@ -173,7 +178,7 @@ class AddCustomTokenViewModel: ObservableObject {
     }
 
     private func getBlockchains(withTokenSupport: Bool) -> Set<Blockchain> {
-        let blockchains = cardModel.supportedBlockchains
+        let blockchains = config.supportedBlockchains
 
         if withTokenSupport {
             let blockchainsWithTokens = blockchains.filter { $0.canHandleTokens }
@@ -190,12 +195,12 @@ class AddCustomTokenViewModel: ObservableObject {
 
         let evmBlockchains = getBlockchains(withTokenSupport: false).filter { $0.isEvm }
         let evmDerivationPaths: [(String, String)]
-        if !cardModel.hdWalletsSupported {
+        if !config.hasFeature(.hdWallets) {
             evmDerivationPaths = []
         } else {
             evmDerivationPaths = evmBlockchains
                 .compactMap {
-                    guard let derivationPath = cardModel.getBlockchainNetwork(for: $0, derivationPath: nil).derivationPath else {
+                    guard let derivationPath = addCustomTokenMaintainer.getBlockchainNetwork(for: $0, derivationPath: nil).derivationPath else {
                         return nil
                     }
 
@@ -302,12 +307,12 @@ class AddCustomTokenViewModel: ObservableObject {
             return
         }
 
-        let cardTokenItems = cardModel.userWalletModel?.userTokenListManager.getEntriesFromRepository() ?? []
+        let cardTokenItems = addCustomTokenMaintainer.getEntriesFromRepository()
 
         let checkingContractAddress = !contractAddress.isEmpty
         let derivationPath = try? enteredDerivationPath()
 
-        let blockchainNetwork = cardModel.getBlockchainNetwork(for: blockchain, derivationPath: derivationPath)
+        let blockchainNetwork = addCustomTokenMaintainer.getBlockchainNetwork(for: blockchain, derivationPath: derivationPath)
 
         if let networkItem = cardTokenItems.first(where: { $0.blockchainNetwork == blockchainNetwork }) {
             if !checkingContractAddress {

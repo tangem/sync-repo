@@ -631,9 +631,21 @@ extension CardViewModel {
 
         userWalletModel.remove(item: item, completion: completion)
     }
+    
+    func getEntriesFromRepository() -> [StorageEntry] {
+        guard let userWalletModel = userWalletModel else {
+            assertionFailure("UserWalletModel not created")
+            return []
+        }
+        
+        return userWalletModel.getSavedEntries()
+    }
 }
 
+// Temporary for separate on wallet models
 extension CardViewModel: DetailsInputMaintainer {}
+extension CardViewModel: TokenListMaintainer {}
+extension CardViewModel: AddCustomTokenMaintainer {}
 
 extension CardViewModel {
     enum WalletsBalanceState {

@@ -10,5 +10,5 @@ import Foundation
 
 protocol TokenListRoutable: AnyObject {
     func closeModule()
-    func openAddCustom(for cardModel: CardViewModel)
+    func openAddCustomToken(with input: AddCustomTokenInput)
 }

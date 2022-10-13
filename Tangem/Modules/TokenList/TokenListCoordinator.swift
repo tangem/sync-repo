@@ -35,8 +35,8 @@ extension TokenListCoordinator: AddCustomTokenRoutable {
 }
 
 extension TokenListCoordinator: TokenListRoutable {
-    func openAddCustom(for cardModel: CardViewModel) {
+    func openAddCustomToken(with input: AddCustomTokenInput) {
         Analytics.log(.customTokenScreenOpened)
-        addCustomTokenViewModel = .init(cardModel: cardModel, coordinator: self)
+        addCustomTokenViewModel = .init(input: input, coordinator: self)
     }
 }

@@ -545,7 +545,12 @@ extension MainViewModel: SingleWalletContentViewModelOutput {
 
 extension MainViewModel: MultiWalletContentViewModelOutput {
     func openTokensList() {
-        coordinator.openTokensList(with: cardModel)
+        let input = TokenListInput(
+            config: userWalletModel.config,
+            tokenListMaintainer: cardModel
+        )
+        
+        coordinator.openTokensList(with: input)
     }
 
     func openTokenDetails(_ tokenItem: TokenItemViewModel) {
