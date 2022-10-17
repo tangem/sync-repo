@@ -579,6 +579,7 @@
 		EF3B581628F6F15E00C93810 /* WalletConnectInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581528F6F15E00C93810 /* WalletConnectInput.swift */; };
 		EF3B581A28F7E66300C93810 /* TokenListInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581928F7E66300C93810 /* TokenListInput.swift */; };
 		EF3B581E28F7EB8A00C93810 /* AddCustomTokenInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3B581D28F7EB8A00C93810 /* AddCustomTokenInput.swift */; };
+		EF3B581F28F81B0300C93810 /* SaltPayConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE3379828F2A4580029A6F5 /* SaltPayConfiguration.swift */; };
 		EF3EC523289AB2DE0071BA7F /* TangemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3EC522289AB2DE0071BA7F /* TangemProvider.swift */; };
 		EF48288F28D1C99D002809C6 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = EF48288D28D1C99D002809C6 /* Localizable.stringsdict */; };
 		EF48289528D1CD1F002809C6 /* Collection+.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF48289428D1CD1F002809C6 /* Collection+.swift */; };
@@ -3996,6 +3997,7 @@
 				DA1D8083288534FC00722E56 /* ShopifyShop.swift in Sources */,
 				DA1D8088288535C800722E56 /* InjectedValues.swift in Sources */,
 				B0462F9B26B0067700FB44B7 /* UIApplication+.swift in Sources */,
+				EF3B581F28F81B0300C93810 /* SaltPayConfiguration.swift in Sources */,
 				DA1D80862885355200722E56 /* KeysManager.swift in Sources */,
 				B0462F9926B0065700FB44B7 /* Error+.swift in Sources */,
 				DA1D80802885300300722E56 /* UIViewController+.swift in Sources */,
