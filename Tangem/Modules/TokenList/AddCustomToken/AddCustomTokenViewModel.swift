@@ -58,10 +58,10 @@ class AddCustomTokenViewModel: ObservableObject {
         self.config = input.config
         self.addCustomTokenMaintainer = input.addCustomTokenMaintainer
         self.coordinator = coordinator
-        
+
         bind()
     }
-    
+
     func bind() {
         $contractAddress.removeDuplicates()
             .dropFirst()

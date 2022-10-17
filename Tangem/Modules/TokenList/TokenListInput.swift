@@ -12,7 +12,7 @@ import struct TangemSdk.DerivationPath
 
 protocol TokenListMaintainer {
     var walletModels: [WalletModel] { get }
-    
+
     func getEntriesFromRepository() -> [StorageEntry]
     func getBlockchainNetwork(for blockchain: Blockchain, derivationPath: DerivationPath?) -> BlockchainNetwork
     func update(entries: [StorageEntry], completion: @escaping (Result<Void, Error>) -> Void)

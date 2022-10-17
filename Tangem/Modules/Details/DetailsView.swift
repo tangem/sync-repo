@@ -158,14 +158,14 @@ struct DetailsView: View {
     }
 }
 /*
-struct SettingsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            DetailsView(viewModel: DetailsViewModel(cardModel: PreviewCard.cardanoNote.cardModel,
-                                                    coordinator: DetailsCoordinator()))
-        }
-        .navigationViewStyle(StackNavigationViewStyle())
-    }
-}
- */
+ struct SettingsView_Previews: PreviewProvider {
+     static var previews: some View {
+         NavigationView {
+             DetailsView(viewModel: DetailsViewModel(cardModel: PreviewCard.cardanoNote.cardModel,
+                                                     coordinator: DetailsCoordinator()))
+         }
+         .navigationViewStyle(StackNavigationViewStyle())
+     }
+ }
+  */
 

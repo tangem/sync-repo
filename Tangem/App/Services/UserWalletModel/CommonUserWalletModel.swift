@@ -41,7 +41,7 @@ extension CommonUserWalletModel: UserWalletModel {
         print("🔄 Updating UserWalletModel with new userWalletId")
         userTokenListManager.update(userWalletId: userWalletId)
     }
-    
+
     func updateUserWalletModel(with card: Card) {
         print("🔄 Updating UserWalletModel with new card")
         self.card = card

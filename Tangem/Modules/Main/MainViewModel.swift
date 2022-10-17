@@ -348,7 +348,7 @@ class MainViewModel: ObservableObject {
             didFinishCountingHashes()
             return
         }
-        
+
         guard !cardModel.isMultiWallet else {
             showAlertAnimated(.multiWalletSignedHashes)
             didFinishCountingHashes()
@@ -423,7 +423,7 @@ extension MainViewModel {
             cardId: cardModel.cardId,
             detailsInputMaintainer: cardModel
         )
-        
+
         coordinator.openSettings(input: input)
     }
 
@@ -553,7 +553,7 @@ extension MainViewModel: MultiWalletContentViewModelOutput {
             config: userWalletModel.config,
             tokenListMaintainer: cardModel
         )
-        
+
         coordinator.openTokensList(with: input)
     }
 

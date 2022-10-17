@@ -116,10 +116,10 @@ struct TokenListView: View {
     }
 }
 /*
-struct AddNewTokensView_Previews: PreviewProvider {
-    static var previews: some View {
-        TokenListView(viewModel: .init(mode: .add(cardModel: PreviewCard.ethereum.cardModel),
-                                       coordinator: TokenListCoordinator()))
-    }
-}
-*/
+ struct AddNewTokensView_Previews: PreviewProvider {
+     static var previews: some View {
+         TokenListView(viewModel: .init(mode: .add(cardModel: PreviewCard.ethereum.cardModel),
+                                        coordinator: TokenListCoordinator()))
+     }
+ }
+ */

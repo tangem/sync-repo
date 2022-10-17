@@ -60,7 +60,7 @@ class DetailsViewModel: ObservableObject {
     private let config: UserWalletConfig
     private let detailsInputMaintainer: DetailsInputMaintainer
     private unowned let coordinator: DetailsRoutable
-    
+
     private var bag = Set<AnyCancellable>()
 
     init(input: DetailsInput, coordinator: DetailsRoutable) {
@@ -69,7 +69,7 @@ class DetailsViewModel: ObservableObject {
         self.detailsInputMaintainer = input.detailsInputMaintainer
         self.coordinator = coordinator
     }
-    
+
     deinit {
         print("DetailsViewModel deinit")
     }

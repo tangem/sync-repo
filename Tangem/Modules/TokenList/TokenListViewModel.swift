@@ -55,19 +55,19 @@ class TokenListViewModel: ObservableObject {
     var input: TokenListInput? {
         mode.input
     }
-    
+
     var config: UserWalletConfig? {
         input?.config
     }
-    
+
     var tokenListMaintainer: TokenListMaintainer? {
         input?.tokenListMaintainer
     }
-    
+
     var addCustomTokenMaintainer: AddCustomTokenMaintainer? {
         tokenListMaintainer as? AddCustomTokenMaintainer
     }
-    
+
     var hasNextPage: Bool {
         loader.canFetchMore
     }
@@ -103,7 +103,7 @@ class TokenListViewModel: ObservableObject {
             self.isSaving = true
         }
 
-        tokenListMaintainer.update(entries: alreadySaved) { [weak self] result in
+        tokenListMaintainer.update(entries: entries) { [weak self] result in
             DispatchQueue.main.async {
                 self?.isSaving = false
 
@@ -151,7 +151,7 @@ extension TokenListViewModel {
     func openAddCustom() {
         guard let config = config,
               let addCustomTokenMaintainer = addCustomTokenMaintainer else { return }
-        
+
         Analytics.log(.buttonCustomToken)
         let input = AddCustomTokenInput(
             config: config,
@@ -203,7 +203,7 @@ private extension TokenListViewModel {
         guard let maintainer = addCustomTokenMaintainer else {
             return false
         }
-        
+
         let walletModels = maintainer.walletModels
         let network = maintainer.getBlockchainNetwork(for: tokenItem.blockchain, derivationPath: nil)
         if let walletManager = walletModels.first(where: { $0.blockchainNetwork == network })?.walletManager {

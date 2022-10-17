@@ -139,9 +139,9 @@ fileprivate struct PickerStyleModifier: ViewModifier {
     }
 }
 /*
-struct AddCustomTokenView_Previews: PreviewProvider {
-    static var previews: some View {
-        AddCustomTokenView(viewModel: .init(cardModel: PreviewCard.tangemWalletEmpty.cardModel, coordinator: TokenListCoordinator()))
-    }
-}
-*/
+ struct AddCustomTokenView_Previews: PreviewProvider {
+     static var previews: some View {
+         AddCustomTokenView(viewModel: .init(cardModel: PreviewCard.tangemWalletEmpty.cardModel, coordinator: TokenListCoordinator()))
+     }
+ }
+ */
