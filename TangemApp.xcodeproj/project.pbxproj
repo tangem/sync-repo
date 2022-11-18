@@ -413,6 +413,7 @@
 		DC3B49F42893E50700C207EA /* UserWallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3B49F32893E50700C207EA /* UserWallet.swift */; };
 		DC3B49F62893E51B00C207EA /* UserWalletConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3B49F52893E51B00C207EA /* UserWalletConfig.swift */; };
 		DC3B49FA2893EEA600C207EA /* UserWalletConfigFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3B49F92893EEA600C207EA /* UserWalletConfigFeatures.swift */; };
+		DC3C8A19291A6261000962E5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C8A18291A6261000962E5 /* Core.swift */; };
 		DC3F54A928EB1D4500BC9A6D /* EnterPinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3F54A828EB1D4500BC9A6D /* EnterPinView.swift */; };
 		DC3F54AB28EB1D6700BC9A6D /* CustomContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3F54AA28EB1D6700BC9A6D /* CustomContentView.swift */; };
 		DC3F54B128EB3D5D00BC9A6D /* KYCView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3F54B028EB3D5D00BC9A6D /* KYCView.swift */; };
@@ -1068,6 +1069,7 @@
 		DC3B49F32893E50700C207EA /* UserWallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserWallet.swift; sourceTree = "<group>"; };
 		DC3B49F52893E51B00C207EA /* UserWalletConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserWalletConfig.swift; sourceTree = "<group>"; };
 		DC3B49F92893EEA600C207EA /* UserWalletConfigFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserWalletConfigFeatures.swift; sourceTree = "<group>"; };
+		DC3C8A18291A6261000962E5 /* Core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		DC3F54A828EB1D4500BC9A6D /* EnterPinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPinView.swift; sourceTree = "<group>"; };
 		DC3F54AA28EB1D6700BC9A6D /* CustomContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomContentView.swift; sourceTree = "<group>"; };
 		DC3F54B028EB3D5D00BC9A6D /* KYCView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KYCView.swift; sourceTree = "<group>"; };
@@ -1570,6 +1572,7 @@
 				B068A7E525678A6E00D28CD2 /* Utilities */,
 				5DDE22E92608DC94008657C6 /* UrlHandler.swift */,
 				DC0A5855282E3E220031BECC /* ServicesManager.swift */,
+				DC3C8A18291A6261000962E5 /* Core.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -3650,6 +3653,7 @@
 				5D6C128725E144DF0010A0C5 /* AddTokensView.swift in Sources */,
 				5D49035227BE9D550072C642 /* Data+.swift in Sources */,
 				DAC53CFE27BE63830027147D /* MeetTangemStoryPage.swift in Sources */,
+				DC3C8A19291A6261000962E5 /* Core.swift in Sources */,
 				B0BA7BC726C4F9A300D7066F /* OnboardingCircleButton.swift in Sources */,
 				B04BA23126F07ECE0036784C /* OnboardingTextButtonView.swift in Sources */,
 				DC74BC2F28EF060600B49850 /* UserWalletId.swift in Sources */,
