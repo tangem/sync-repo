@@ -31,8 +31,7 @@ class UserWalletFactory {
             card: cardInfo.card,
             associatedCardIds: [cardInfo.card.cardId],
             walletData: walletData,
-            artwork: nil,
-            isHDWalletAllowed: cardInfo.card.settings.isHDWalletAllowed
+            artwork: nil
         )
     }
 
@@ -58,8 +57,7 @@ class UserWalletFactory {
             card: cardViewModel.card,
             associatedCardIds: [cardViewModel.card.cardId],
             walletData: walletData,
-            artwork: cardViewModel.artworkInfo,
-            isHDWalletAllowed: cardViewModel.card.settings.isHDWalletAllowed
+            artwork: cardViewModel.artworkInfo
         )
     }
 }
