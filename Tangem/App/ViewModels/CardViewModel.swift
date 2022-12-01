@@ -120,8 +120,6 @@ class CardViewModel: Identifiable, ObservableObject {
         cardInfo.card.wallets.first(where: { $0.curve == .secp256k1 })?.publicKey
     }
 
-    private(set) var userWalletId: Data?
-
     // Separate UserWalletModel and CardViewModel
     var userWalletModel: UserWalletModel?
 
@@ -246,6 +244,10 @@ class CardViewModel: Identifiable, ObservableObject {
         userWalletModel?.userWallet
     }
 
+    var userWalletId: Data? {
+        userWallet?.userWalletId
+    }
+
     private var isActive: Bool {
         if let selectedUserWalletId = userWalletRepository.selectedUserWalletId {
             return selectedUserWalletId == userWalletId
@@ -282,9 +284,11 @@ class CardViewModel: Identifiable, ObservableObject {
         self.cardInfo = cardInfo
         self.config = config
         self._signer = config.tangemSigner
-        createUserWalletModelIfNeeded(with: userWallet)
+
         updateCurrentSecurityOption()
         appendPersistentBlockchains()
+        createUserWalletModelIfNeeded(with: userWallet)
+
         bind()
     }
 
@@ -436,6 +440,7 @@ class CardViewModel: Identifiable, ObservableObject {
     func onWalletCreated(_ card: Card) {
         cardInfo.card.wallets = card.wallets
         onUpdate()
+        _signer = config.tangemSigner
     }
 
     func onSecurityOptionChanged(isAccessCodeSet: Bool, isPasscodeSet: Bool) {
@@ -472,19 +477,34 @@ class CardViewModel: Identifiable, ObservableObject {
         cardInfo.card.isAccessCodeSet = card.isAccessCodeSet
         cardInfo.card.backupStatus = card.backupStatus
         onUpdate()
+        _signer = config.tangemSigner
     }
 
     func onTwinWalletCreated(_ walletData: DefaultWalletData) { // TODO: refactor
         self.cardInfo.walletData = walletData
         onUpdate()
+        _signer = config.tangemSigner
     }
 
     private func onUpdate() {
-        print("🔄 Updating CardViewModel with new Card")
+        print("🔄 Updating config")
         config = UserWalletConfigFactory(cardInfo).makeConfig()
-        _signer = config.tangemSigner
-        updateModel()
-        updateUserWallet()
+        userWalletModel?.updateUserWalletModel(with: config)
+
+        print("🔄 Updating security option")
+        updateCurrentSecurityOption()
+
+        print("🔄 Updating warnings")
+        setupWarnings()
+
+        createUserWalletModelIfNeeded(with: nil)
+
+        if let userWallet {
+            if userWalletRepository.contains(userWallet) {
+                print("🔄 Updating user wallets repo")
+                userWalletRepository.save(userWallet)
+            }
+        }
     }
 
     func clearTwinPairKey() { // TODO: refactor and remove
@@ -526,19 +546,6 @@ class CardViewModel: Identifiable, ObservableObject {
         }
 
         return .default
-    }
-
-    private func updateModel() {
-        print("🔄 Updating Card view model")
-        updateCurrentSecurityOption()
-
-        setupWarnings()
-        createUserWalletModelIfNeeded()
-        userWalletModel?.updateUserWalletModel(with: config)
-
-        if let userWallet = userWallet {
-            userWalletModel?.updateUserWallet(userWallet)
-        }
     }
 
     private func searchBlockchains() {
@@ -654,31 +661,15 @@ class CardViewModel: Identifiable, ObservableObject {
             .store(in: &bag)
     }
 
-    private func updateUserWallet() {
-        guard let userWallet = UserWalletFactory().userWallet(from: self) else { return }
+    private func createUserWalletModelIfNeeded(with userWallet: UserWallet?) {
+        let newUserWallet = userWallet ?? UserWalletFactory().userWallet(from: cardInfo, config: config)
 
-        userWalletModel?.updateUserWallet(userWallet)
-
-        if userWalletRepository.contains(userWallet) {
-            userWalletRepository.save(userWallet)
+        if let newUserWallet {
+            if userWalletModel == nil, cardInfo.card.hasWallets {
+                print("🔄 Creating CommonUserWalletModel")
+                userWalletModel = CommonUserWalletModel(config: config, userWallet: newUserWallet)
+            }
         }
-    }
-
-    private func createUserWalletModelIfNeeded(with savedUserWallet: UserWallet? = nil) {
-        let userWallet: UserWallet
-
-        if let savedUserWallet = savedUserWallet {
-            userWallet = savedUserWallet
-        } else if userWalletModel == nil,
-                  cardInfo.card.hasWallets,
-                  let newUserWallet = UserWalletFactory().userWallet(from: cardInfo, config: config) {
-            userWallet = newUserWallet
-        } else {
-            return
-        }
-
-        self.userWalletId = userWallet.userWalletId
-        userWalletModel = CommonUserWalletModel(config: config, userWallet: userWallet)
     }
 }
 

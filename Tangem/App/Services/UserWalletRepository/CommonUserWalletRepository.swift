@@ -25,7 +25,7 @@ class CommonUserWalletRepository: UserWalletRepository {
 
     var selectedModel: CardViewModel? {
         return models.first {
-            $0.userWallet?.userWalletId == selectedUserWalletId
+            $0.userWalletId == selectedUserWalletId
         }
     }
 
