@@ -287,7 +287,9 @@ class TwinsOnboardingViewModel: OnboardingTopupViewModel<TwinsOnboardingStep, On
 
     override func saveUserWalletIfNeeded() throws {
         try super.saveUserWalletIfNeeded()
+    }
 
+    private func removeUserWalletIfNeeded() {
         if let originalUserWallet,
            let currentUserWalletId = input.cardInput.cardModel?.userWalletId,
            originalUserWallet.userWalletId != currentUserWalletId,
@@ -314,7 +316,10 @@ class TwinsOnboardingViewModel: OnboardingTopupViewModel<TwinsOnboardingStep, On
             .combineLatest(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification))
             .sink(receiveValue: { [unowned self] (newStep, _) in
                 switch (self.currentStep, newStep) {
-                case (.first, .second), (.second, .third), (.third, .done):
+                case (.first, .second):
+                    self.removeUserWalletIfNeeded()
+                    fallthrough
+                case (.second, .third), (.third, .done):
                     if newStep == .done {
                         if input.isStandalone {
                             self.fireConfetti()
