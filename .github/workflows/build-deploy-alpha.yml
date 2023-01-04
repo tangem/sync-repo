@@ -14,7 +14,7 @@ jobs:
    steps:
    
    - name: TEST
-     run: echo "${{ github.head_ref }}"
+     run: echo "${{ github.ref_name }}"
      
    - name: Checkout
      uses: actions/checkout@v3
