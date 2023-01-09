@@ -21,26 +21,35 @@ class UserWalletEncryptionKeyStorage {
             let userWalletIds = try userWalletIds()
 
             let reason = Localization.biometryTouchIdReason
+
+            AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage fetch - start")
+
             BiometricsUtil.requestAccess(localizedReason: reason) { [weak self] result in
                 guard let self else { return }
 
                 switch result {
                 case .failure(let error):
+                    AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage fetch - failed \(error)")
                     completion(.failure(error))
                 case .success(let context):
                     do {
+                        AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage fetch - got context")
                         var keys: [Data: SymmetricKey] = [:]
 
                         for userWalletId in userWalletIds {
                             let storageKey = self.encryptionKeyStorageKey(for: userWalletId)
                             let encryptionKeyData = try self.biometricsStorage.get(storageKey, context: context)
                             if let encryptionKeyData = encryptionKeyData {
+                                AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage fetch - fetched encryption key \(encryptionKeyData.sha256().hex) for userWalletId key \(self.encryptionKeyStorageKey(for: userWalletId))  userWalletId \(userWalletId.hex)")
                                 keys[userWalletId] = SymmetricKey(data: encryptionKeyData)
+                            } else {
+                                AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage fetch - cannot create key for userWalletId key \(self.encryptionKeyStorageKey(for: userWalletId)) userWalletId \(userWalletId.hex)")
                             }
                         }
 
                         completion(.success(keys))
                     } catch {
+                        AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage fetch - cannot fetch \(error)")
                         AppLog.shared.error(error)
                         completion(.failure(error))
                     }
@@ -52,6 +61,7 @@ class UserWalletEncryptionKeyStorage {
     }
 
     func add(_ userWallet: UserWallet) {
+        AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage add userWalletId \(encryptionKeyStorageKey(for: userWallet.userWalletId)) userWalletId \(userWallet.userWalletId.hex) - starting")
         let cardInfo = userWallet.cardInfo()
 
         guard let encryptionKey = UserWalletEncryptionKeyFactory().encryptionKey(from: cardInfo) else {
@@ -62,14 +72,18 @@ class UserWalletEncryptionKeyStorage {
         do {
             let userWalletIds = try userWalletIds()
             if userWalletIds.contains(userWallet.userWalletId) {
+                AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage add userWalletId \(encryptionKeyStorageKey(for: userWallet.userWalletId)) userWalletId \(userWallet.userWalletId.hex) - already saved")
                 return
             }
 
             try addUserWalletId(userWallet)
+            AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage did add user wallet id to set")
 
             let encryptionKeyData = encryptionKey.symmetricKey.dataRepresentationWithHexConversion
             try biometricsStorage.store(encryptionKeyData, forKey: encryptionKeyStorageKey(for: userWallet))
+            AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage add userWalletId \(encryptionKeyStorageKey(for: userWallet.userWalletId)) userWalletId \(userWallet.userWalletId.hex) - saved successfully")
         } catch {
+            AppLog.shared.debug("BIO UserWalletEncryptionKeyStorage add userWalletId \(encryptionKeyStorageKey(for: userWallet.userWalletId)) userWalletId \(userWallet.userWalletId.hex) - failed to save \(error)")
             AppLog.shared.debug("Failed to add UserWallet ID to the list")
             AppLog.shared.error(error)
             return
