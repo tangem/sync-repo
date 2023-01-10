@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   
 env:
-  APP_PATH: /tmp/app.ipa
+  APP_PATH: ./fastlane/builds/app.ipa
   ARTIFACT_NAME: Tangem App
   APP_SCHEME: Tangem Alpha
   
@@ -41,7 +41,7 @@ jobs:
        branch-name: ${{ github.ref_name }}
    
    - name: Build
-     run: bundle exec fastlane build scheme:$APP_SCHEME version:${{ steps.issue_number.outputs.key }}
+     run: bundle exec fastlane alpha build:${{ github.run_number }} version:${{ steps.issue_number.outputs.key }}
      
    - name: Upload binary artifact
      uses: actions/upload-artifact@v3
