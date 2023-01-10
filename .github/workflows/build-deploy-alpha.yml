@@ -25,18 +25,25 @@ jobs:
    - name: Pods install
      run: bundle exec pod install
      
-#   - name: Get Jira Issue Number from Branch Name
-#     id: issue_number
-#     uses: tangem/jira-action@master
-#     with:
-#       action: getBranchId
-#       branch-name: ${{ github.ref_name }}
+   - name: Jira Login
+     uses: atlassian/gajira-login@master
+     env:
+       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
+       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
+       JIRA_API_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        
+   - name: Get Jira Issue Number from Branch Name
+     id: issue_number
+     uses: tangem/jira-action@master
+     with:
+       action: getBranchSummary
+       branch-name: ${{ github.ref_name }}
        
-#   - name: TEST
-#     run: echo ${{ steps.issue_number.outputs.result }}
+   - name: TEST
+     run: echo ${{ steps.issue_number.outputs.key }}
    
    - name: Build
-     run: bundle exec fastlane build scheme:"Tangem Alpha" version:"IOS-2808"
+     run: bundle exec fastlane build scheme:"Tangem Alpha" version:${{ steps.issue_number.outputs.key }}
      
    - name: Upload binary artifact
      uses: actions/upload-artifact@v3
