@@ -6,6 +6,7 @@ on:
 env:
   APP_PATH: /tmp/app.ipa
   ARTIFACT_NAME: Tangem App
+  APP_SCHEME: Tangem Alpha
   
 jobs:
  build:
@@ -38,12 +39,9 @@ jobs:
      with:
        action: getBranchSummary
        branch-name: ${{ github.ref_name }}
-       
-   - name: TEST
-     run: echo ${{ steps.issue_number.outputs.key }}
    
    - name: Build
-     run: bundle exec fastlane build scheme:"Tangem Alpha" version:${{ steps.issue_number.outputs.key }}
+     run: bundle exec fastlane build scheme:$APP_SCHEME version:${{ steps.issue_number.outputs.key }}
      
    - name: Upload binary artifact
      uses: actions/upload-artifact@v3
