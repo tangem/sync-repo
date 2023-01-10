@@ -37,7 +37,9 @@ Options:
 """
 lane :alpha do |options|
   clean_artifacts
-  cocoapods()
+  cocoapods(
+    try_repo_update_on_error:true
+  )
   increment_version_number(version_number: options[:version])
   increment_firebase_build_number(app_id: ENV["APP_ID_ALPHA"], build: options[:build])
   build(scheme: ALPHA_SCHEME, export_method: "ad-hoc")
