@@ -189,6 +189,10 @@
 		B02275D72701D9FB004C752B /* PreparePrimaryCardTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02275D62701D9FB004C752B /* PreparePrimaryCardTask.swift */; };
 		B022DB3D26C24D13006F18B4 /* ConfettiGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B022DB3C26C24D13006F18B4 /* ConfettiGenerator.swift */; };
 		B026178D26FCAB7900B5107F /* FanStackCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B026178C26FCAB7900B5107F /* FanStackCalculator.swift */; };
+		B027C960296D80D30038A072 /* AmplitudeSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B027C95F296D80D30038A072 /* AmplitudeSetupView.swift */; };
+		B027C963296D8FCF0038A072 /* AmplitudeSetupViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B027C962296D8FCF0038A072 /* AmplitudeSetupViewModel.swift */; };
+		B027C966296D90150038A072 /* AmplitudeSetupViewModelMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = B027C965296D90150038A072 /* AmplitudeSetupViewModelMock.swift */; };
+		B027C969296D90EF0038A072 /* AmplitudeSetupUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = B027C968296D90EF0038A072 /* AmplitudeSetupUtility.swift */; };
 		B029C1DC270229530017C848 /* OnboardingAccessCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B029C1DB270229530017C848 /* OnboardingAccessCodeView.swift */; };
 		B031AAB126C1443E00015003 /* Confetti.swift in Sources */ = {isa = PBXBuildFile; fileRef = B031AAB026C1443D00015003 /* Confetti.swift */; };
 		B031AAB326C169E900015003 /* ConfettiType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B031AAB226C169E900015003 /* ConfettiType.swift */; };
@@ -1049,6 +1053,10 @@
 		B022D30F253746C900D934D7 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B022DB3C26C24D13006F18B4 /* ConfettiGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiGenerator.swift; sourceTree = "<group>"; };
 		B026178C26FCAB7900B5107F /* FanStackCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FanStackCalculator.swift; sourceTree = "<group>"; };
+		B027C95F296D80D30038A072 /* AmplitudeSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSetupView.swift; sourceTree = "<group>"; };
+		B027C962296D8FCF0038A072 /* AmplitudeSetupViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSetupViewModel.swift; sourceTree = "<group>"; };
+		B027C965296D90150038A072 /* AmplitudeSetupViewModelMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSetupViewModelMock.swift; sourceTree = "<group>"; };
+		B027C968296D90EF0038A072 /* AmplitudeSetupUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmplitudeSetupUtility.swift; sourceTree = "<group>"; };
 		B029C1DB270229530017C848 /* OnboardingAccessCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccessCodeView.swift; sourceTree = "<group>"; };
 		B031AAB026C1443D00015003 /* Confetti.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Confetti.swift; sourceTree = "<group>"; };
 		B031AAB226C169E900015003 /* ConfettiType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiType.swift; sourceTree = "<group>"; };
@@ -2260,6 +2268,31 @@
 			path = BaseModels;
 			sourceTree = "<group>";
 		};
+		B027C961296D8FBB0038A072 /* Amplitude */ = {
+			isa = PBXGroup;
+			children = (
+				B027C95F296D80D30038A072 /* AmplitudeSetupView.swift */,
+				B027C962296D8FCF0038A072 /* AmplitudeSetupViewModel.swift */,
+			);
+			path = Amplitude;
+			sourceTree = "<group>";
+		};
+		B027C964296D90020038A072 /* EnvironmentSetup */ = {
+			isa = PBXGroup;
+			children = (
+				B027C965296D90150038A072 /* AmplitudeSetupViewModelMock.swift */,
+			);
+			path = EnvironmentSetup;
+			sourceTree = "<group>";
+		};
+		B027C967296D90D70038A072 /* Amplitude */ = {
+			isa = PBXGroup;
+			children = (
+				B027C968296D90EF0038A072 /* AmplitudeSetupUtility.swift */,
+			);
+			path = Amplitude;
+			sourceTree = "<group>";
+		};
 		B0296A83258BFBB400FC936E /* Tasks */ = {
 			isa = PBXGroup;
 			children = (
@@ -2919,6 +2952,7 @@
 		DC0A57DA2822A4DC0031BECC /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B027C967296D90D70038A072 /* Amplitude */,
 				EF808441293F6B43000D91EA /* TokenIconURLBuilder */,
 				EF4661BE2923B35800346B6C /* Exchange */,
 				EF5903A02909283A00C527C9 /* EnvironmentProvider */,
@@ -3698,6 +3732,7 @@
 		EF59039229091CCE00C527C9 /* EnvironmentSetup */ = {
 			isa = PBXGroup;
 			children = (
+				B027C961296D8FBB0038A072 /* Amplitude */,
 				EF59039529091CFB00C527C9 /* EnvironmentSetupView.swift */,
 				EF6CB17D292E1190001335EA /* EnvironmentSetupViewModel.swift */,
 			);
@@ -3802,6 +3837,7 @@
 		EF80843B293F6967000D91EA /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				B027C964296D90020038A072 /* EnvironmentSetup */,
 				EFA6B04A2955A3930090A92F /* Common */,
 				EF80843C293F6976000D91EA /* Exchange */,
 				B0332D2F292519D000553AD9 /* Referral */,
@@ -4749,6 +4785,7 @@
 				65B4DED828835BE4001524CF /* BottomSheetViewController.swift in Sources */,
 				B018F304259204A200D8F89A /* WarningEvent.swift in Sources */,
 				B04CD33E29122C64001EA84A /* ReferralViewModel.swift in Sources */,
+				B027C969296D90EF0038A072 /* AmplitudeSetupUtility.swift in Sources */,
 				DC6244F428A0CA6300AD3EA8 /* SaltPayConfig.swift in Sources */,
 				65B4DED6288357DC001524CF /* BottomSheetBaseController.swift in Sources */,
 				EF46621F2924DEEE00346B6C /* DefaultWarningRow.swift in Sources */,
@@ -4785,6 +4822,7 @@
 				DCF8972D28ACF8CA002A85F6 /* TangemSdkConfigFactory.swift in Sources */,
 				B020FFB425DE7F9300EF422C /* DataCollectors.swift in Sources */,
 				DA23787C27B24222009795A8 /* ShopifyService.swift in Sources */,
+				B027C960296D80D30038A072 /* AmplitudeSetupView.swift in Sources */,
 				EF661E3528C0ADC6005769E5 /* CommonError.swift in Sources */,
 				B0431B412919538700F84DEF /* IconWithBackground.swift in Sources */,
 				EF48289528D1CD1F002809C6 /* Collection+.swift in Sources */,
@@ -4963,6 +5001,7 @@
 				B0A9E93F25921D21007B6D36 /* WarningView.swift in Sources */,
 				EF661E2F28BF41D6005769E5 /* Intents.intentdefinition in Sources */,
 				EF80843A293F6708000D91EA /* SwappingDestinationService.swift in Sources */,
+				B027C963296D8FCF0038A072 /* AmplitudeSetupViewModel.swift in Sources */,
 				DC295B402861C27D006CB7B6 /* TokenDetailsCoordinator.swift in Sources */,
 				5D78D118261DFEBA00F98B18 /* PurgeWalletsAndReadResponse.swift in Sources */,
 				EF0F99E128917003008B01DF /* SocialNetwork.swift in Sources */,
@@ -5113,6 +5152,7 @@
 				DC261CB4292CF6B700875E64 /* UncompletedBackupCoordinatorView.swift in Sources */,
 				B035645D2950689700397787 /* WalletConnectServiceError.swift in Sources */,
 				EF4B41BD28644982003911F6 /* SkeletonView.swift in Sources */,
+				B027C966296D90150038A072 /* AmplitudeSetupViewModelMock.swift in Sources */,
 				EF7B9CEF286C6BD7004C33A9 /* CardSettingsView.swift in Sources */,
 				DC7127B12897ECDF00F60F71 /* LegacyConfig.swift in Sources */,
 				DAA5E31628D213A4003C0E80 /* CardDTO.swift in Sources */,

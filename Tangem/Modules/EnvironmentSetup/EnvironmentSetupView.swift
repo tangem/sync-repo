@@ -31,6 +31,12 @@ struct EnvironmentSetupView: View {
                 } header: {
                     DefaultHeaderView("Feature toggles")
                 }
+
+                GroupedSection(viewModel.amplitudeViewModels) { viewModel in
+                    AmplitudeSetupView(viewModel: viewModel)
+                } header: {
+                    DefaultHeaderView("Amplitude debug")
+                }
             }
         }
         .navigationBarTitle(Text("Environment setup"))

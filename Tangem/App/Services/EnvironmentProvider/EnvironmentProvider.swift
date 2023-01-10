@@ -22,6 +22,12 @@ class EnvironmentProvider {
 
     @AppStorageCompat(EnvironmentProviderKeys.useDevApi)
     var useDevApi = false
+
+    @AppStorageCompat(EnvironmentProviderKeys.debugAmplitude)
+    var debugAmplitude = false
+
+    @AppStorageCompat(EnvironmentProviderKeys.debugAmplitudeName)
+    var debugAmplitudeName = AmplitudeSetupUtility.defaultUserName
 }
 
 // MARK: - Keys
@@ -30,4 +36,6 @@ enum EnvironmentProviderKeys: String {
     case testnet = "testnet"
     case availableFeatures = "integrated_features"
     case useDevApi = "use_dev_api"
+    case debugAmplitude = "debug-amplitude"
+    case debugAmplitudeName = "debug-amplitude-name"
 }

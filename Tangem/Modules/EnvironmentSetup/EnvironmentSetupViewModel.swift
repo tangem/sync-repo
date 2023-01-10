@@ -14,6 +14,7 @@ final class EnvironmentSetupViewModel: ObservableObject {
 
     @Published var appSettingsTogglesViewModels: [DefaultToggleRowViewModel]
     @Published var togglesViewModels: [DefaultToggleRowViewModel]
+    @Published var amplitudeViewModels: AmplitudeSetupViewModel = .init()
 
     @Published var alert: AlertBinder?
 

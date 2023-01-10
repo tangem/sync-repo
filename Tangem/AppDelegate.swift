@@ -60,8 +60,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if !AppEnvironment.current.isDebug {
             configureFirebase()
             configureAppsFlyer()
-            configureAmplitude()
         }
+        AmplitudeSetupUtility().setup()
 
         AppSettings.shared.numberOfLaunches += 1
         migrateTOS()
@@ -130,12 +130,5 @@ private extension AppDelegate {
 
         AppsFlyerLib.shared().appsFlyerDevKey = try! CommonKeysManager().appsFlyerDevKey
         AppsFlyerLib.shared().appleAppID = "1354868448"
-    }
-
-    func configureAmplitude() {
-        guard AppEnvironment.current.isProduction else { return }
-
-        Amplitude.instance().trackingSessionEvents = true
-        Amplitude.instance().initializeApiKey(try! CommonKeysManager().amplitudeApiKey)
     }
 }
