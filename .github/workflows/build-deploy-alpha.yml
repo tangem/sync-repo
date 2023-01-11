@@ -6,7 +6,6 @@ on:
 env:
   APP_PATH: ./fastlane/builds/app.ipa
   ARTIFACT_NAME: Tangem App
-  APP_SCHEME: Tangem Alpha
   
 jobs:
  build:
