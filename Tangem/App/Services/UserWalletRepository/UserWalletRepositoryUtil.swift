@@ -32,10 +32,10 @@ class UserWalletRepositoryUtil {
 
     func savedUserWallets(encryptionKeyByUserWalletId: [Data: SymmetricKey]) -> [UserWallet] {
         do {
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil saving user wallets, keys count \(encryptionKeyByUserWalletId.count)")
+            AppLog.shared.debug("UserWalletRepositoryUtil saving user wallets, keys count \(encryptionKeyByUserWalletId.count)")
 
             guard fileManager.fileExists(atPath: userWalletListPath().path) else {
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil saving user wallets. File doesn't exist")
+                AppLog.shared.debug("UserWalletRepositoryUtil saving user wallets. File doesn't exist")
                 return []
             }
 
@@ -45,25 +45,25 @@ class UserWalletRepositoryUtil {
             let userWalletsPublicData = try decrypt(userWalletsPublicDataEncrypted, with: publicDataEncryptionKey())
             var userWallets = try decoder.decode([UserWallet].self, from: userWalletsPublicData)
 
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil iterating \(userWallets.count) user wallets")
+            AppLog.shared.debug("UserWalletRepositoryUtil iterating \(userWallets.count) user wallets")
 
             for i in 0 ..< userWallets.count {
                 let userWallet = userWallets[i]
 
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil starting \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex)")
+                AppLog.shared.debug("UserWalletRepositoryUtil starting \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex)")
 
                 guard let userWalletEncryptionKey = encryptionKeyByUserWalletId[userWallet.userWalletId] else {
-                    AppLog.shared.debug("BIO UserWalletRepositoryUtil get data for \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) encryption key missing")
+                    AppLog.shared.debug("UserWalletRepositoryUtil get data for \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) encryption key missing")
                     continue
                 }
 
                 let sensitiveInformationEncryptedData = try Data(contentsOf: userWalletPath(for: userWallet))
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil get data for \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) data \(sensitiveInformationEncryptedData.sha256().hex)")
+                AppLog.shared.debug("UserWalletRepositoryUtil get data for \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) data \(sensitiveInformationEncryptedData.sha256().hex)")
 
                 let sensitiveInformationData = try decrypt(sensitiveInformationEncryptedData, with: userWalletEncryptionKey)
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil did decrypt")
+                AppLog.shared.debug("UserWalletRepositoryUtil did decrypt")
                 let sensitiveInformation = try decoder.decode(UserWallet.SensitiveInformation.self, from: sensitiveInformationData)
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil did decode")
+                AppLog.shared.debug("UserWalletRepositoryUtil did decode")
 
                 var card = userWallet.card
                 card.wallets = sensitiveInformation.wallets
@@ -72,7 +72,7 @@ class UserWalletRepositoryUtil {
 
             return userWallets
         } catch {
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil get data failed with error \(error)")
+            AppLog.shared.debug("UserWalletRepositoryUtil get data failed with error \(error)")
             AppLog.shared.error(error)
             return []
         }
@@ -100,16 +100,16 @@ class UserWalletRepositoryUtil {
                 return userWalletWithoutKeys
             }
 
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil save starting")
+            AppLog.shared.debug("UserWalletRepositoryUtil save starting")
 
             let publicData = try encoder.encode(userWalletsWithoutSensitiveInformation)
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil did encode public")
+            AppLog.shared.debug("UserWalletRepositoryUtil did encode public")
             let publicDataEncoded = try encrypt(publicData, with: publicDataEncryptionKey())
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil did encrypt public")
+            AppLog.shared.debug("UserWalletRepositoryUtil did encrypt public")
             try publicDataEncoded.write(to: userWalletListPath(), options: .atomic)
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil did write public")
+            AppLog.shared.debug("UserWalletRepositoryUtil did write public")
             try excludeFromBackup(url: userWalletListPath())
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil did exclude public")
+            AppLog.shared.debug("UserWalletRepositoryUtil did exclude public")
 
             for userWallet in userWallets {
                 let cardInfo = userWallet.cardInfo()
@@ -117,23 +117,23 @@ class UserWalletRepositoryUtil {
 
                 guard let encryptionKey = userWalletEncryptionKey else {
                     AppLog.shared.debug("User wallet \(userWallet.card.cardId) failed to generate encryption key")
-                    AppLog.shared.debug("BIO UserWalletRepositoryUtil save - \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) failed to generate")
+                    AppLog.shared.debug("UserWalletRepositoryUtil save - \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) failed to generate")
                     continue
                 }
 
                 let sensitiveInformation = UserWallet.SensitiveInformation(wallets: userWallet.card.wallets)
                 let sensitiveDataEncoded = try encrypt(encoder.encode(sensitiveInformation), with: encryptionKey.symmetricKey)
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil did encrypt sensitive")
+                AppLog.shared.debug("UserWalletRepositoryUtil did encrypt sensitive")
                 let sensitiveDataPath = userWalletPath(for: userWallet)
                 try sensitiveDataEncoded.write(to: sensitiveDataPath, options: .atomic)
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil did write sensitive")
+                AppLog.shared.debug("UserWalletRepositoryUtil did write sensitive")
                 try excludeFromBackup(url: sensitiveDataPath)
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil did exclude sensitive")
+                AppLog.shared.debug("UserWalletRepositoryUtil did exclude sensitive")
 
-                AppLog.shared.debug("BIO UserWalletRepositoryUtil save - \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) sensitiveData \(sensitiveDataEncoded.sha256().hex)")
+                AppLog.shared.debug("UserWalletRepositoryUtil save - \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) sensitiveData \(sensitiveDataEncoded.sha256().hex)")
             }
         } catch {
-            AppLog.shared.debug("BIO UserWalletRepositoryUtil save - failed to save user wallets \(error)")
+            AppLog.shared.debug("UserWalletRepositoryUtil save - failed to save user wallets \(error)")
             AppLog.shared.debug("Failed to save user wallets")
             AppLog.shared.error(error)
         }
