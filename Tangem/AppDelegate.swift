@@ -13,7 +13,7 @@ import Amplitude
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    var loadingView: UIView? = nil
+    var loadingView: UIView?
 
     func addLoadingView() {
         if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
