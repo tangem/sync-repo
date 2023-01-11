@@ -58,7 +58,7 @@ class UserWalletRepositoryUtil {
                 }
 
                 let sensitiveInformationEncryptedData = try Data(contentsOf: userWalletPath(for: userWallet))
-                AppLog.shared.debug("UserWalletRepositoryUtil get data for \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) data \(sensitiveInformationEncryptedData.sha256().hex)")
+                AppLog.shared.debug("UserWalletRepositoryUtil get data for \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex)")
 
                 let sensitiveInformationData = try decrypt(sensitiveInformationEncryptedData, with: userWalletEncryptionKey)
                 AppLog.shared.debug("UserWalletRepositoryUtil did decrypt")
@@ -130,7 +130,7 @@ class UserWalletRepositoryUtil {
                 try excludeFromBackup(url: sensitiveDataPath)
                 AppLog.shared.debug("UserWalletRepositoryUtil did exclude sensitive")
 
-                AppLog.shared.debug("UserWalletRepositoryUtil save - \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex) sensitiveData \(sensitiveDataEncoded.sha256().hex)")
+                AppLog.shared.debug("UserWalletRepositoryUtil save - \"\(userWallet.name)\" userWalletId \(userWallet.userWalletId.hex)")
             }
         } catch {
             AppLog.shared.debug("UserWalletRepositoryUtil save - failed to save user wallets \(error)")

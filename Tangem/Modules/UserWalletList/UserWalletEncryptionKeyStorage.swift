@@ -40,7 +40,7 @@ class UserWalletEncryptionKeyStorage {
                             let storageKey = self.encryptionKeyStorageKey(for: userWalletId)
                             let encryptionKeyData = try self.biometricsStorage.get(storageKey, context: context)
                             if let encryptionKeyData = encryptionKeyData {
-                                AppLog.shared.debug("UserWalletEncryptionKeyStorage fetch - fetched encryption key \(encryptionKeyData.sha256().hex) for userWalletId key \(self.encryptionKeyStorageKey(for: userWalletId))  userWalletId \(userWalletId.hex)")
+                                AppLog.shared.debug("UserWalletEncryptionKeyStorage fetch - fetched encryption key for userWalletId key \(self.encryptionKeyStorageKey(for: userWalletId))  userWalletId \(userWalletId.hex)")
                                 keys[userWalletId] = SymmetricKey(data: encryptionKeyData)
                             } else {
                                 AppLog.shared.debug("UserWalletEncryptionKeyStorage fetch - cannot create key for userWalletId key \(self.encryptionKeyStorageKey(for: userWalletId)) userWalletId \(userWalletId.hex)")
