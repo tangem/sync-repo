@@ -13,6 +13,10 @@ jobs:
    name: Build
    runs-on: self-hosted
    steps:
+   - name: TEST
+     run: echo $APP_PATH
+   - name: TEST 2
+     run: echo "$APP_PATH"
    - name: Checkout
      uses: actions/checkout@v3
      with:
