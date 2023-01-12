@@ -6,13 +6,13 @@ on:
 env:
   APP_PATH: ./fastlane/builds/app.ipa
   ARTIFACT_NAME: Tangem App
+  SLACK_CHANNEL: "#deployments-ios"
   
 jobs:
  build:
    name: Build
    runs-on: self-hosted
    steps:
- 
    - name: Checkout
      uses: actions/checkout@v3
      with:
