@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   
 env:
-  APP_PATH: ./fastlane/builds/app.ipa
+  APP_PATH: "fastlane/builds/app.ipa"
   ARTIFACT_NAME: Tangem App
   SLACK_CHANNEL: "#deployments-ios"
   
@@ -44,6 +44,7 @@ jobs:
      with:
        name: $ARTIFACT_NAME
        path: $APP_PATH
+       if-no-files-found: error
      
 # deploy:
 #   name: Deploy
