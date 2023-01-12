@@ -4,19 +4,15 @@ on:
   workflow_dispatch:
   
 env:
-  APP_PATH: "fastlane/builds/app.ipa"
-  ARTIFACT_NAME: Tangem App
-  SLACK_CHANNEL: "#deployments-ios"
+  app_path: "fastlane/builds/app.ipa"
+  artifact_name: Tangem App
+  slack_channel: "#deployments-ios"
   
 jobs:
  build:
    name: Build
    runs-on: self-hosted
    steps:
-   - name: TEST
-     run: echo $APP_PATH
-   - name: TEST 2
-     run: echo "$APP_PATH"
    - name: Checkout
      uses: actions/checkout@v3
      with:
@@ -46,8 +42,8 @@ jobs:
    - name: Upload binary artifact
      uses: actions/upload-artifact@v3
      with:
-       name: $ARTIFACT_NAME
-       path: fastlane/builds/app.ipa
+       name: ${{ env.artifact_name }}
+       path: ${{ env.app_path }}
        if-no-files-found: error
      
 # deploy:
