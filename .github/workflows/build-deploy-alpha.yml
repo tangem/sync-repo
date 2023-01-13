@@ -95,6 +95,7 @@ jobs:
     
  build:
    name: Build
+   needs: start_notification
    runs-on: self-hosted
    steps:
    - name: Clean
