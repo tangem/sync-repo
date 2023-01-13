@@ -48,9 +48,6 @@ jobs:
        name: ${{ env.artifact_name }}
        path: ${{ env.app_path }}
        if-no-files-found: error
-       
-   - name: Clean up
-     run: rm -rf ${{ env.app_path }}
      
  deploy:
    name: Deploy
