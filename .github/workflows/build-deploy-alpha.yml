@@ -46,12 +46,36 @@ jobs:
        path: ${{ env.app_path }}
        if-no-files-found: error
      
-# deploy:
-#   name: Deploy
-#   needs: build
-#   runs-on: self-hosted
-#   steps:
-#   - name: Download a single artifact
-#     uses: actions/download-artifact@v3
-#     with:
-#       name: $ARTIFACT_NAME
+ deploy:
+   name: Deploy
+   needs: build
+   runs-on: self-hosted
+   steps:
+   
+#    TODO:REMOVE
+   - name: Jira Login
+     uses: atlassian/gajira-login@master
+     env:
+       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
+       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
+       JIRA_API_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        
+   - name: Get Jira Issue Number from Branch Name
+     id: issue_number
+     uses: tangem/jira-action@master
+     with:
+       action: getBranchSummary
+       branch-name: ${{ github.ref_name }}
+   
+   - name: Download the artifact
+     uses: actions/download-artifact@v3
+     with:
+       name: ${{ env.artifact_name }}
+       path: ${{ env.app_path }}
+       
+   - name: Deploy to Firebase
+     run: |
+       bundle exec fastlane deploy_to_firebase app_id:${{ secrets.FIREBASE_IOS_ALPHA_ID }} \ 
+                                               path:${{ env.app_path }} \
+                                               firebase_token:${{ secrets.FIREBASE_CLI_TOKEN }} \
+                                               changelog:${{ steps.issue_number.outputs.summary }}
