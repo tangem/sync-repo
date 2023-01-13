@@ -54,7 +54,7 @@ jobs:
      
  deploy:
    name: Deploy
-   environment: development
+   environment: alpha
    needs: build
    runs-on: self-hosted
    steps:
