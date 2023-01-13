@@ -6,14 +6,6 @@ BETA_SCHEME = "Tangem Beta"
 ALPHA_SCHEME = "Tangem Alpha"
 FIREBASE_TESTERS_GROUP = "testers"
 
-before_all do |lane, options|
-  xcode_select("/Applications/Xcode.app")
-
-  Dir.chdir("..") do
-    sh("./bootstrap.sh") 
-  end
-end
-
 desc """
   This lane builds and run unit-tests for the \"RC\" scheme.
 """
@@ -158,6 +150,10 @@ lane :refresh_dsyms do |options|
 end
 
 private_lane :build do |options|
+  xcode_select("/Applications/Xcode.app")
+  Dir.chdir("..") do
+    sh("./bootstrap.sh") 
+  end
   app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
   build_app(
     xcargs: "-allowProvisioningUpdates",
