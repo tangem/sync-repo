@@ -163,6 +163,7 @@ private_lane :build do |options|
     clean: true,
     silent: false,
     export_method: options[:export_method],
+    destination: "generic/platform=iOS",
     export_options: {
       distributionBundleIdentifier: app_identifier,
       iCloudContainerEnvironment: "Production"
