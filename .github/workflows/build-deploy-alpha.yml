@@ -37,7 +37,7 @@ jobs:
        branch-name: ${{ github.ref_name }}
    
    - name: Build
-     run: bundle exec fastlane alpha build:${{ github.run_number }} version:${{ steps.issue_number.outputs.key }}
+     run: bundle exec fastlane alpha build:"${{ github.run_number }}" version:"${{ steps.issue_number.outputs.key }}"
      
    - name: Upload binary artifact
      uses: actions/upload-artifact@v3
@@ -77,4 +77,4 @@ jobs:
        path: ${{ env.app_path }}
        
    - name: Deploy to Firebase
-     run: bundle exec fastlane deploy_to_firebase app_id:${{ secrets.FIREBASE_IOS_ALPHA_ID }} path:${{ env.app_path }} firebase_token:${{ secrets.FIREBASE_CLI_TOKEN }} changelog:${{ steps.issue_number.outputs.summary }}
+     run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"${{ env.app_path }}" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{ steps.issue_number.outputs.summary }}"
