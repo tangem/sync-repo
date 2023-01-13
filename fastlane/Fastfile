@@ -102,11 +102,13 @@ end
 desc """
 This lane deploy binary to Google Distribution
 Options:
+- app_id: Appstore Connect App ID
 - path: Path to binary
+- firebase_token: Firebase CLI Token
 - changelog: [optional] Changelog will be added to Google Distribution release notes along with the last commit hash.
 """
 
-lane :upload_firebase do |options|
+lane :deploy_to_firebase do |options|
   path = options[:path]
   release_notes = "#{options[:changelog]}\nGitHash: #{last_git_commit[:commit_hash]}"
 
@@ -114,7 +116,7 @@ lane :upload_firebase do |options|
     app: options[:app_id],
     ipa_path: path,
     groups: FIREBASE_TESTERS_GROUP,
-    firebase_cli_token: ENV["FIREBASE_CREDITIONAL_KEY"],
+    firebase_cli_token: options[:firebase_token],
     release_notes: release_notes
   )
 end
