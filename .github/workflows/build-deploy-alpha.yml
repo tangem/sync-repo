@@ -9,6 +9,90 @@ env:
   slack_channel: "#deployments-ios"
   
 jobs:
+ start_notification:
+   name: Notification
+   runs-on: self-hosted
+   steps:
+   - id: slack
+     uses: slackapi/slack-github-action@v1.23.0
+     with:
+      channel-id: ${{ env.slack_channel }}
+      payload: |
+        {
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Alpha build to Google Distribution",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "context",
+                    "elements": [
+                        {
+                            "type": "image",
+                            "image_url": "https://i.ibb.co/TRFqW5Y/rocket.gif",
+                            "alt_text": ""
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Building...*"
+                        }
+                    ]
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Version:*\n{VERSION}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Build number:*\n{BUILD}"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Branch:*\n${{ github.ref_name }}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Started by:*\n<example.com|Fred Enriquez>"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "<https://example.com|View this action on GitHub>"
+                    }
+                },
+                {
+                    "type": "divider"
+                },
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": "*Changelog:*\nThis is a section block with an accessory image."
+                    }
+                }
+            ]
+        }
+   env:
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT}}
+    
  build:
    name: Build
    runs-on: self-hosted
