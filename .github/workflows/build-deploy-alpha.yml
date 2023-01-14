@@ -19,15 +19,8 @@ jobs:
       channel-id: ${{ env.slack_channel }}
       payload: |
         {
+            "text": "Alpha build to Google Distribution"
             "blocks": [
-                {
-                    "type": "header",
-                    "text": {
-                        "type": "plain_text",
-                        "text": "Alpha build to Google Distribution",
-                        "emoji": true
-                    }
-                },
                 {
                     "type": "context",
                     "elements": [
@@ -91,7 +84,7 @@ jobs:
             ]
         }
    env:
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT}}
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
     
  build:
    name: Build
