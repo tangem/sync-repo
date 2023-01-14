@@ -19,6 +19,7 @@ jobs:
       channel-id: ${{ env.slack_channel }}
       payload: |
         {
+            "text": "{TEXT}",
             "blocks": [
                 {
                     "type": "context",
@@ -66,7 +67,7 @@ jobs:
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "<https://example.com|View this action on GitHub>"
+                        "text": "<${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}"}|View this action on GitHub>"
                     }
                 }
             ]
