@@ -19,7 +19,7 @@ jobs:
       channel-id: ${{ env.slack_channel }}
       payload: |
         {
-            "text": "Alpha build to Google Distribution"
+            "text": "Alpha build to Google Distribution",
             "blocks": [
                 {
                     "type": "context",
