@@ -19,19 +19,13 @@ jobs:
       channel-id: ${{ env.slack_channel }}
       payload: |
         {
-            "text": "Alpha build to Google Distribution",
             "blocks": [
                 {
                     "type": "context",
                     "elements": [
                         {
-                            "type": "image",
-                            "image_url": "https://i.ibb.co/TRFqW5Y/rocket.gif",
-                            "alt_text": ""
-                        },
-                        {
                             "type": "mrkdwn",
-                            "text": "*Building...*"
+                            "text": "{STATUS}"
                         }
                     ]
                 },
@@ -57,7 +51,7 @@ jobs:
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "*Started by:*\n<example.com|Fred Enriquez>"
+                            "text": "*Started by:*\n${{ github.actor }}"
                         }
                     ]
                 },
@@ -65,17 +59,14 @@ jobs:
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "<https://example.com|View this action on GitHub>"
+                        "text": "*Changelog:*\n{CHANGELOG}"
                     }
-                },
-                {
-                    "type": "divider"
                 },
                 {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": "*Changelog:*\nThis is a section block with an accessory image."
+                        "text": "<https://example.com|View this action on GitHub>"
                     }
                 }
             ]
