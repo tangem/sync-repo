@@ -22,6 +22,14 @@ jobs:
             "text": "{TEXT}",
             "blocks": [
                 {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "Alpha version → Google Disribution",
+                        "emoji": true
+                    }
+                },
+                {
                     "type": "context",
                     "elements": [
                         {
