@@ -51,6 +51,8 @@ jobs:
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
+   secrets:
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
     
  build:
    name: Build
@@ -92,6 +94,8 @@ jobs:
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
+   secrets:
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
      
  deploy:
    name: Deploy
@@ -121,3 +125,5 @@ jobs:
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
+   secrets:
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
