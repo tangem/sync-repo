@@ -45,10 +45,10 @@ jobs:
    needs: prepare
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: $SLACK_CHANNEL
+    channel: ${{var.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "building"
-    app_name: $APP_NAME
-    deploy_to: $DEPLOY_TO
+    app_name: ${{var.APP_ALPHA}}
+    deploy_to: ${{var.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
@@ -85,10 +85,10 @@ jobs:
    needs: [prepare,build]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: $SLACK_CHANNEL
+    channel: ${{var.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "deploying"
-    app_name: $APP_NAME
-    deploy_to: $DEPLOY_TO
+    app_name: ${{var.APP_ALPHA}}
+    deploy_to: ${{var.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
@@ -113,10 +113,10 @@ jobs:
    needs: [prepare,deploy]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: $SLACK_CHANNEL
+    channel: ${{var.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "success"
-    app_name: $APP_NAME
-    deploy_to: $DEPLOY_TO
+    app_name: ${{var.APP_ALPHA}}
+    deploy_to: ${{var.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
