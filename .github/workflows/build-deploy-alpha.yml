@@ -53,7 +53,7 @@ jobs:
     changelog: ${{needs.prepare.outputs.changelog}}
    secrets:
     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
-    
+     
  build:
    name: Build
    needs: prepare
@@ -79,7 +79,7 @@ jobs:
      with:
        name: ${{ env.artifact_name }}
        path: ${{ env.app_path }}
-       if-no-files-found: error
+       if-no-files-found: error  
        
  build_notification:
    name: Build Notification
@@ -96,7 +96,7 @@ jobs:
     changelog: ${{needs.prepare.outputs.changelog}}
    secrets:
     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
-     
+       
  deploy:
    name: Deploy
    environment: Alpha
@@ -110,7 +110,7 @@ jobs:
        path: artifacts/
        
    - name: Deploy to Firebase
-     run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"artifacts/app.ipa" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{needs.prepare.outputs.changelog}}"
+     run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"artifacts/app.ipa" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{needs.prepare.outputs.changelog}}" 
    
  deploy_notification:
    name: Deploy Notification
