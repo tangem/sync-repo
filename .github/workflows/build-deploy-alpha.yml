@@ -41,7 +41,7 @@ jobs:
      
 
  start_notification:
-   name: Notification
+   name: Initial Notification
    needs: prepare
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
@@ -79,6 +79,19 @@ jobs:
        name: ${{ env.artifact_name }}
        path: ${{ env.app_path }}
        if-no-files-found: error
+       
+ build_notification:
+   name: Build Notification
+   needs: [prepare,build]
+   uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
+   with:
+    channel: ${{ env.slack_channel }}
+    status: "deploying"
+    app_name: ${{ env.app_name }}
+    deploy_to: ${{ env.deploy_to }}
+    version: ${{needs.prepare.outputs.version}}
+    build_number: ${{needs.prepare.outputs.build_number}}
+    changelog: ${{needs.prepare.outputs.changelog}}
      
  deploy:
    name: Deploy
@@ -94,3 +107,16 @@ jobs:
        
    - name: Deploy to Firebase
      run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"artifacts/app.ipa" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{needs.prepare.outputs.changelog}}"
+   
+ deploy_notification:
+   name: Deploy Notification
+   needs: [prepare,deploy]
+   uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
+   with:
+    channel: ${{ env.slack_channel }}
+    status: "success"
+    app_name: ${{ env.app_name }}
+    deploy_to: ${{ env.deploy_to }}
+    version: ${{needs.prepare.outputs.version}}
+    build_number: ${{needs.prepare.outputs.build_number}}
+    changelog: ${{needs.prepare.outputs.changelog}}
