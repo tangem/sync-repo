@@ -16,8 +16,8 @@ jobs:
    - name: Prepare statuses
      id: statuses
      run: |
-       echo "status=\"🕑 *Building…*\"" >> $GITHUB_OUTPUT
-       echo "color=\"#000000\"" >> $GITHUB_OUTPUT
+       echo "status=🕑 *Building…*" >> $GITHUB_OUTPUT
+       echo "color=#000000" >> $GITHUB_OUTPUT
    - id: slack
      uses: slackapi/slack-github-action@v1.23.0
      with:
@@ -39,7 +39,7 @@ jobs:
                     "elements": [
                         {
                             "type": "mrkdwn",
-                            "text": "${{ steps.statuses.status }}"
+                            "text": "Status: ${{ steps.statuses.status }}"
                         }
                     ]
                 },
