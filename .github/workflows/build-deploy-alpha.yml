@@ -16,31 +16,8 @@ jobs:
    - name: Prepare statuses
      id: statuses
      run: |
-        read -r -d '' JSON << EOF
-        {
-            "building": {
-                "status": "🕑 *Building…*",
-                "color": null
-            },
-            "deploying": {
-                "status": "🕞 *Deploying…*",
-                "color": null
-            },
-            "success": {
-                "status": "🟢 *Built and deployed*",
-                "color": "green"
-            },
-            "build_error": {
-                "status": "🔴 *Building error*",
-                "color": "red"
-            },
-            "deploy_error": {
-                "status": "🔴 *Deploying error*",
-                "color": "red"
-            }
-        }
-        EOF
-        echo "JSON=$(echo $JSON)" >> $GITHUB_OUTPUT 
+       echo "status=\"🕑 *Building…*\"" >> $GITHUB_OUTPUT
+       echo "color=\"#000000\"" >> $GITHUB_OUTPUT
    - id: slack
      uses: slackapi/slack-github-action@v1.23.0
      with:
@@ -62,7 +39,7 @@ jobs:
                     "elements": [
                         {
                             "type": "mrkdwn",
-                            "text": "${{ fromJSON(steps.statuses.outputs.JSON).building.status }}"
+                            "text": "${{ steps.statuses.status }}"
                         }
                     ]
                 },
