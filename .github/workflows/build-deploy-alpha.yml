@@ -39,7 +39,7 @@ jobs:
                     "elements": [
                         {
                             "type": "mrkdwn",
-                            "text": "Status: ${{ steps.statuses.status }}"
+                            "text": "${{ steps.statuses.outputs.status }}"
                         }
                     ]
                 },
@@ -65,7 +65,7 @@ jobs:
                         },
                         {
                             "type": "mrkdwn",
-                            "text": "*Started by:*\n${{ github.actor }}"
+                            "text": "*Initiated by:*\n${{ github.actor }}"
                         }
                     ]
                 },
