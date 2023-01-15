@@ -39,7 +39,6 @@ jobs:
      id: build_number
      run: build_number=$(echo ${{ github.run_number }}) >> $GITHUB_OUTPUT
      
-
  start_notification:
    name: Initial Notification
    needs: prepare
@@ -82,10 +81,11 @@ jobs:
        
  build_notification:
    name: Build Notification
-   needs: [prepare,build]
+   needs: [prepare,build,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
+    message_ts: ${{needs.start_notification.outputs.ts}}
     status: "deploying"
     app_name: ${{vars.APP_ALPHA}}
     deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
@@ -110,10 +110,11 @@ jobs:
    
  deploy_notification:
    name: Deploy Notification
-   needs: [prepare,deploy]
+   needs: [prepare,deploy, start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
-   with:
+   with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
+    message_ts: ${{needs.start_notification.outputs.ts}}
     status: "success"
     app_name: ${{vars.APP_ALPHA}}
     deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
