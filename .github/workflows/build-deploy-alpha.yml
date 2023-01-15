@@ -85,10 +85,10 @@ jobs:
    needs: [prepare,build]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: ${{ env.slack_channel }}
+    channel: $SLACK_CHANNEL
     status: "deploying"
-    app_name: ${{ env.app_name }}
-    deploy_to: ${{ env.deploy_to }}
+    app_name: $APP_NAME
+    deploy_to: $DEPLOY_TO
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
@@ -113,10 +113,10 @@ jobs:
    needs: [prepare,deploy]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: ${{ env.slack_channel }}
+    channel: $SLACK_CHANNEL
     status: "success"
-    app_name: ${{ env.app_name }}
-    deploy_to: ${{ env.deploy_to }}
+    app_name: $APP_NAME
+    deploy_to: $DEPLOY_TO
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
