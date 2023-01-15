@@ -83,6 +83,7 @@ jobs:
        
  build_notification:
    name: Build Notification
+   if: always()
    needs: [prepare,build,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
@@ -114,6 +115,7 @@ jobs:
    
  deploy_notification:
    name: Deploy Notification
+   if: always()
    needs: [prepare,deploy, start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with: 
