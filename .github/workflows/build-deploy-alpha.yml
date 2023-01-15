@@ -18,7 +18,7 @@ jobs:
    runs-on: self-hosted
    outputs:
      version: ${{ steps.jira.outputs.key }}
-     build_number: ${{ steps.build_number.outputs.build_number }}
+     build_number: ${{ github.ref_name }}
      changelog: ${{ steps.jira.outputs.summary }}
    steps:
    - name: Jira Login
