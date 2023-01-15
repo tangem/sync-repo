@@ -115,13 +115,29 @@ jobs:
    
  deploy_notification:
    name: Deploy Notification
-   if: always()
-   needs: [prepare,deploy, start_notification]
+   needs: [prepare,deploy]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     message_ts: ${{needs.start_notification.outputs.ts}}
     status: "success"
+    app_name: ${{vars.APP_ALPHA}}
+    deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
+    version: ${{needs.prepare.outputs.version}}
+    build_number: ${{needs.prepare.outputs.build_number}}
+    changelog: ${{needs.prepare.outputs.changelog}}
+   secrets:
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
+    
+ error_notification:
+   name: Error Notification
+   if: Falure()
+   needs: [prepare,deploy, start_notification]
+   uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
+   with: 
+    channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
+    message_ts: ${{needs.start_notification.outputs.ts}}
+    status: "error"
     app_name: ${{vars.APP_ALPHA}}
     deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
     version: ${{needs.prepare.outputs.version}}
