@@ -8,9 +8,9 @@ env:
   artifact_name: Tangem App
   
   # Slack notification params
-  slack_channel: "#deployments-ios"
-  app_name: "Tangem Alpha"
-  deploy_to: "Google Distribution"
+  SLACK_CHANNEL: "#deployments-ios"
+  APP_NAME: "Tangem Alpha"
+  DEPLOY_TO: "Google Distribution"
   
 jobs:
  prepare:
@@ -45,10 +45,10 @@ jobs:
    needs: prepare
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: ${{ env.slack_channel }}
+    channel: $SLACK_CHANNEL
     status: "building"
-    app_name: ${{ env.app_name }}
-    deploy_to: ${{ env.deploy_to }}
+    app_name: $APP_NAME
+    deploy_to: $DEPLOY_TO
     version: ${{needs.prepare.outputs.version}}
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: ${{needs.prepare.outputs.changelog}}
