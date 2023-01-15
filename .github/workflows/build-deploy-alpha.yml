@@ -6,16 +6,56 @@ on:
 env:
   app_path: "fastlane/builds/app.ipa"
   artifact_name: Tangem App
+  
+  # Slack notification params
   slack_channel: "#deployments-ios"
+  app_name: "Tangem Alpha"
+  deploy_to: "Google Distribution"
   
 jobs:
+ prepare:
+   name: Prepare information
+   runs-on: self-hosted
+   outputs:
+     version: ${{ steps.jira.outputs.key }}
+     build_number: ${{ steps.build_number.outputs.number }}
+     changelog: ${{ steps.jira.outputs.summary }}
+   steps:
+   - name: Jira Login
+     uses: atlassian/gajira-login@master
+     env:
+       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
+       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
+       JIRA_API_TOKEN: ${{ secrets.JIRA_TOKEN }}
+        
+   - name: Get Jira Issue Number from Branch Name
+     id: jira
+     uses: tangem/jira-action@master
+     with:
+       action: getBranchSummary
+       branch-name: ${{ github.ref_name }}
+       
+   - name: Build number
+     id: build_number
+     run: number=$(echo ${{ github.run_number }}) >> $GITHUB_OUTPUT
+     
+
  start_notification:
    name: Notification
+   needs: prepare
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
+   with:
+    channel: ${{ env.slack_channel }}
+    status: "building"
+    app_name: ${{ env.app_name }}
+    deploy_to: ${{ env.deploy_to }}
+    version: ${{needs.prepare.outputs.version}}
+    build_number: ${{needs.prepare.outputs.build_number}}
+    changelog: ${{needs.prepare.outputs.changelog}}
     
  build:
    name: Build
-   needs: start_notification
+   needs: prepare
    runs-on: self-hosted
    steps:
    - name: Clean
@@ -29,23 +69,9 @@ jobs:
        
    - name: Bundle install
      run: bundle install --jobs 4 --retry 3
-     
-   - name: Jira Login
-     uses: atlassian/gajira-login@master
-     env:
-       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
-       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
-       JIRA_API_TOKEN: ${{ secrets.JIRA_TOKEN }}
-        
-   - name: Get Jira Issue Number from Branch Name
-     id: issue_number
-     uses: tangem/jira-action@master
-     with:
-       action: getBranchSummary
-       branch-name: ${{ github.ref_name }}
    
    - name: Build
-     run: bundle exec fastlane alpha build:"${{ github.run_number }}" version:"${{ steps.issue_number.outputs.key }}"
+     run: bundle exec fastlane alpha build:"${{needs.prepare.outputs.build_number}}" version:"${{needs.prepare.outputs.version}}"
      
    - name: Upload binary artifact
      uses: actions/upload-artifact@v3
@@ -57,25 +83,9 @@ jobs:
  deploy:
    name: Deploy
    environment: Alpha
-   needs: build
+   needs: [prepare,build]
    runs-on: self-hosted
    steps:
-   
-#    TODO:REMOVE
-   - name: Jira Login
-     uses: atlassian/gajira-login@master
-     env:
-       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
-       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
-       JIRA_API_TOKEN: ${{ secrets.JIRA_TOKEN }}
-        
-   - name: Get Jira Issue Number from Branch Name
-     id: issue_number
-     uses: tangem/jira-action@master
-     with:
-       action: getBranchSummary
-       branch-name: ${{ github.ref_name }}
-   
    - name: Download the artifact
      uses: actions/download-artifact@v3
      with:
@@ -83,4 +93,4 @@ jobs:
        path: artifacts/
        
    - name: Deploy to Firebase
-     run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"artifacts/app.ipa" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{ steps.issue_number.outputs.summary }}"
+     run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"artifacts/app.ipa" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{needs.prepare.outputs.changelog}}"
