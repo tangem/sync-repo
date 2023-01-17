@@ -80,7 +80,7 @@ jobs:
  build_notification:
    name: Build Notification
    if: always()
-   needs: [build,start_notification]
+   needs: [prepare,build,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
@@ -128,7 +128,7 @@ jobs:
  error_notification:
    name: Error Notification
    if: failure()
-   needs: [deploy]
+   needs: [prepare,deploy,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
