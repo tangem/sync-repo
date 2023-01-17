@@ -83,7 +83,7 @@ jobs:
    needs: [prepare,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
+    channel: "${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}"
     message_ts: "${{needs.start_notification.outputs.ts}}"
     status: "deploying"
     app_name: ${{vars.APP_ALPHA}}
