@@ -58,6 +58,9 @@ jobs:
    - name: Clean
      run: rm -rf *
      
+   - name: Test
+     run: echo ${{needs.start_notification.outputs.ts}}
+     
    - name: Checkout
      uses: actions/checkout@v3
      with:
