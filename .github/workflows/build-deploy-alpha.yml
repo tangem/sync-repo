@@ -111,7 +111,7 @@ jobs:
    
  deploy_notification:
    name: Deploy Notification
-   needs: [deploy]
+   needs: [prepare,deploy,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
