@@ -80,12 +80,12 @@ jobs:
  build_notification:
    name: Build Notification
    if: always()
-   needs: [prepare,start_notification]
+   needs: [prepare,build,start_notification]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with:
-    channel: "${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}"
-    message_ts: "${{needs.start_notification.outputs.ts}}"
-    status: "deploying"
+    channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
+    message_ts: ${{needs.start_notification.outputs.ts}}
+    status: "building"
     app_name: ${{vars.APP_ALPHA}}
     deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
     version: ${{needs.prepare.outputs.version}}
