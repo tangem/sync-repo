@@ -43,7 +43,7 @@ jobs:
     GH_MOBILE_PAT: ${{ secrets.GH_MOBILE_PAT}}
      
  deploy:
-   name: Deploy
+   name: Google Distribution
    needs: [prepare,build]
    uses: tangem/actions/.github/workflows/deploy.yml@main
    with:
