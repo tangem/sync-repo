@@ -302,6 +302,8 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
                     switch singleCardStep {
                     case .createWallet:
                         Analytics.log(.createWalletScreenOpened)
+                    case .topup:
+                        Analytics.log(.activationScreenOpened)
                     default:
                         break
                     }
@@ -309,6 +311,8 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
                     switch twinStep {
                     case .first:
                         Analytics.log(.createWalletScreenOpened)
+                    case .topup:
+                        Analytics.log(.activationScreenOpened)
                     default:
                         break
                     }
