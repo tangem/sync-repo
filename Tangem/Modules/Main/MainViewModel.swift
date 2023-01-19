@@ -326,6 +326,8 @@ class MainViewModel: ObservableObject {
     }
 
     func tradeCryptoAction() {
+        Analytics.log(.buttonExchange)
+
         showTradeSheet.toggle()
     }
 
@@ -444,6 +446,8 @@ extension MainViewModel {
     }
 
     func openSellCrypto() {
+        Analytics.log(.buttonSell)
+
         if let disabledLocalizedReason = cardModel.getDisabledLocalizedReason(for: .exchange) {
             error = AlertBuilder.makeDemoAlert(disabledLocalizedReason)
             return
@@ -482,6 +486,7 @@ extension MainViewModel {
 
     func openBuyCryptoIfPossible() {
         Analytics.log(.buttonBuy)
+
         if tangemApiService.geoIpRegionCode == LanguageCode.ru {
             coordinator.openBankWarning {
                 self.openBuyCrypto()
