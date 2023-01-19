@@ -3,10 +3,6 @@ name: Alpha - Build and Deploy
 on:
   workflow_dispatch:
   
-env:
-  app_path: "fastlane/builds"
-  app_name: "tangem.ipa"
-  
 jobs:
  prepare:
    name: Prepare information
@@ -41,7 +37,7 @@ jobs:
     version: "${{needs.prepare.outputs.version}}"
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: "${{needs.prepare.outputs.changelog}}"
-    app_name: "${{ env.app_name}}"
+    app_name: "Tangem.ipa"
    secrets:
     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
     GH_MOBILE_PAT: ${{ secrets.GH_MOBILE_PAT}}
@@ -58,7 +54,7 @@ jobs:
     version: "${{needs.prepare.outputs.version}}"
     build_number: ${{needs.prepare.outputs.build_number}}
     changelog: "${{needs.prepare.outputs.changelog}}"
-    app_name: "${{ env.app_name}}"
+    app_name: "Tangem.ipa"
    secrets:
     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
     FIREBASE_APP_ID: ${{ secrets.FIREBASE_IOS_ALPHA_ID}}
