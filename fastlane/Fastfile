@@ -158,7 +158,7 @@ private_lane :build do |options|
   build_app(
     xcargs: "-allowProvisioningUpdates",
     output_directory: BUILD_PATH,
-    output_name: "app.ipa",
+    output_name: "Tangem.ipa",
     scheme: options[:scheme],
     clean: true,
     silent: false,
