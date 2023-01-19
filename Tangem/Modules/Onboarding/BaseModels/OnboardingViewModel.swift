@@ -332,6 +332,8 @@ extension OnboardingViewModel {
     func openSupportChat() {
         guard let cardModel = input.cardInput.cardModel else { return }
 
+        Analytics.log(.onboardingButtonChat)
+
         let dataCollector = DetailsFeedbackDataCollector(
             cardModel: cardModel,
             userWalletEmailData: cardModel.emailData
