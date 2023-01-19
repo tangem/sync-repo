@@ -97,6 +97,10 @@ final class UserWalletListViewModel: ObservableObject, Identifiable {
                 return
             }
 
+            if result.hasScannedCard {
+                Analytics.log(.myWalletsCardWasScanned)
+            }
+
             switch result {
             case .troubleshooting:
                 self.showTroubleshootingView = true
