@@ -9,8 +9,8 @@
 import SwiftUI
 
 fileprivate struct AccessCodeFeature {
-    let title: LocalizedStringKey
-    let description: LocalizedStringKey
+    let title: String
+    let description: String
     let icon: String
 }
 
@@ -62,17 +62,19 @@ struct OnboardingAccessCodeView: View {
 
     @ViewBuilder
     var inputContent: some View {
-        Text("onboarding_access_code_hint")
+        Text(Localization.onboardingAccessCodeHint)
             .font(.system(size: 16, weight: .regular))
             .foregroundColor(.tangemGrayDark6)
             .padding(.bottom, 32)
             .padding(.top, 13)
             .multilineTextAlignment(.center)
-        CustomPasswordTextField(placeholder: "details_manage_security_access_code",
-                                color: .tangemGrayDark6,
-                                password: state == .inputCode ? $firstEnteredCode : $secondEnteredCode,
-                                onCommit: {})
-            .frame(height: 44)
+        CustomPasswordTextField(
+            placeholder: Localization.detailsManageSecurityAccessCode,
+            color: .tangemGrayDark6,
+            password: state == .inputCode ? $firstEnteredCode : $secondEnteredCode,
+            onCommit: {}
+        )
+        .frame(height: 44)
     }
 
     var body: some View {
@@ -103,7 +105,7 @@ struct OnboardingAccessCodeView: View {
                 .opacity(error.errorOpacity)
                 .foregroundColor(.tangemCritical)
             Spacer()
-            TangemButton(title: state.buttonTitle) {
+            MainButton(title: state.buttonTitle) {
                 let nextState: ViewState
                 switch state {
                 case .intro:
@@ -128,7 +130,6 @@ struct OnboardingAccessCodeView: View {
 
                 state = nextState
             }
-            .buttonStyle(TangemButtonStyle(colorStyle: .black, layout: .wide))
             .padding(.bottom, 16)
         }
         .padding(.horizontal, 40)
@@ -155,19 +156,17 @@ struct OnboardingAccessCodeView: View {
         }
         return error == .none
     }
-
 }
 
 struct CustomPasswordTextField: View {
-
-    let placeholder: LocalizedStringKey
+    let placeholder: String
     let color: Color
     var backgroundColor: Color = .tangemBgGray2
 
     var password: Binding<String>
 
     var onEditingChanged: (Bool) -> Void = { _ in }
-    var onCommit: () -> Void = { }
+    var onCommit: () -> Void = {}
     /// iOS15+
     var shouldBecomeFirstResponder: Bool = true
 
@@ -176,12 +175,14 @@ struct CustomPasswordTextField: View {
     @ViewBuilder
     var input: some View {
         if #available(iOS 15.0, *) {
-            FocusableTextField(isSecured: isSecured,
-                               shouldBecomeFirstResponder: shouldBecomeFirstResponder,
-                               placeholder: placeholder,
-                               text: password,
-                               onEditingChanged: onEditingChanged,
-                               onCommit: onCommit)
+            FocusableTextField(
+                isSecured: isSecured,
+                shouldBecomeFirstResponder: shouldBecomeFirstResponder,
+                placeholder: placeholder,
+                text: password,
+                onEditingChanged: onEditingChanged,
+                onCommit: onCommit
+            )
         } else {
             legacyInput
         }
@@ -190,14 +191,18 @@ struct CustomPasswordTextField: View {
     @ViewBuilder
     private var legacyInput: some View {
         if isSecured {
-            SecureField(placeholder,
-                        text: password,
-                        onCommit: onCommit)
+            SecureField(
+                placeholder,
+                text: password,
+                onCommit: onCommit
+            )
         } else {
-            TextField(placeholder,
-                      text: password,
-                      onEditingChanged: onEditingChanged,
-                      onCommit: onCommit)
+            TextField(
+                placeholder,
+                text: password,
+                onEditingChanged: onEditingChanged,
+                onCommit: onCommit
+            )
         }
     }
 
@@ -237,7 +242,7 @@ private extension CustomPasswordTextField {
     struct FocusableTextField: View {
         let isSecured: Bool
         let shouldBecomeFirstResponder: Bool
-        let placeholder: LocalizedStringKey
+        let placeholder: String
         let text: Binding<String>
         var onEditingChanged: (Bool) -> Void = { _ in }
         var onCommit: () -> Void = {}
@@ -247,16 +252,20 @@ private extension CustomPasswordTextField {
         var body: some View {
             ZStack {
                 if isSecured {
-                    SecureField(placeholder,
-                                text: text,
-                                onCommit: onCommit)
-                        .focused($focusedField, equals: .secure)
+                    SecureField(
+                        placeholder,
+                        text: text,
+                        onCommit: onCommit
+                    )
+                    .focused($focusedField, equals: .secure)
                 } else {
-                    TextField(placeholder,
-                              text: text,
-                              onEditingChanged: onEditingChanged,
-                              onCommit: onCommit)
-                        .focused($focusedField, equals: .plain)
+                    TextField(
+                        placeholder,
+                        text: text,
+                        onEditingChanged: onEditingChanged,
+                        onCommit: onCommit
+                    )
+                    .focused($focusedField, equals: .plain)
                 }
             }
             .keyboardType(.default)
@@ -287,32 +296,38 @@ extension OnboardingAccessCodeView {
         case inputCode
         case repeatCode
 
-        var title: LocalizedStringKey {
+        var title: String {
             switch self {
-            case .intro, .inputCode: return "onboarding_access_code_intro_title"
-            case .repeatCode: return "onboarding_access_code_repeat_code_title"
+            case .intro, .inputCode: return Localization.onboardingAccessCodeIntroTitle
+            case .repeatCode: return Localization.onboardingAccessCodeRepeatCodeTitle
             }
         }
 
-        var buttonTitle: LocalizedStringKey {
+        var buttonTitle: String {
             switch self {
-            case .intro: return "common_continue"
-            case .inputCode: return "common_continue"
-            case .repeatCode: return "common_submit"
+            case .intro: return Localization.commonContinue
+            case .inputCode: return Localization.commonContinue
+            case .repeatCode: return Localization.commonSubmit
             }
         }
 
         fileprivate static var featuresDescription: [AccessCodeFeature] {
             [
-                .init(title: "onboarding_access_code_feature_1_title",
-                      description: "onboarding_access_code_feature_1_description",
-                      icon: "access_code_feature_1"),
-                .init(title: "onboarding_access_code_feature_2_title",
-                      description: "onboarding_access_code_feature_2_description",
-                      icon: "access_code_feature_2"),
-                .init(title: "onboarding_access_code_feature_3_title",
-                      description: "onboarding_access_code_feature_3_description",
-                      icon: "access_code_feature_3"),
+                .init(
+                    title: Localization.onboardingAccessCodeFeature1Title,
+                    description: Localization.onboardingAccessCodeFeature1Description,
+                    icon: "access_code_feature_1"
+                ),
+                .init(
+                    title: Localization.onboardingAccessCodeFeature2Title,
+                    description: Localization.onboardingAccessCodeFeature2Description,
+                    icon: "access_code_feature_2"
+                ),
+                .init(
+                    title: Localization.onboardingAccessCodeFeature3Title,
+                    description: Localization.onboardingAccessCodeFeature3Description,
+                    icon: "access_code_feature_3"
+                ),
             ]
         }
     }
@@ -322,11 +337,11 @@ extension OnboardingAccessCodeView {
         case tooShort
         case dontMatch
 
-        var description: LocalizedStringKey {
+        var description: String {
             switch self {
             case .none: return ""
-            case .tooShort: return "onboarding_access_code_too_short"
-            case .dontMatch: return "onboarding_access_codes_doesnt_match"
+            case .tooShort: return Localization.onboardingAccessCodeTooShort
+            case .dontMatch: return Localization.onboardingAccessCodesDoesntMatch
             }
         }
 

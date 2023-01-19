@@ -10,25 +10,29 @@ import Foundation
 
 struct SendCurrencyViewModel: Identifiable {
     var id: Int { hashValue }
-    let tokenIcon: TokenIconViewModel
+
+    // ViewState
+    private(set) var maximumFractionDigits: Int
+
+    let tokenIcon: SwappingTokenIconViewModel
 
     var balanceString: String {
-        "common_balance".localized(balance.groupedFormatted())
+        Localization.commonBalance(balance.groupedFormatted(maximumFractionDigits: maximumFractionDigits))
     }
 
     var fiatValueString: String {
         fiatValue.currencyFormatted(code: AppSettings.shared.selectedCurrencyCode)
     }
 
+    // Private
     private let balance: Decimal
-    private(set) var maximumFractionDigits: Int
     private var fiatValue: Decimal
 
     init(
         balance: Decimal,
         maximumFractionDigits: Int,
         fiatValue: Decimal,
-        tokenIcon: TokenIconViewModel
+        tokenIcon: SwappingTokenIconViewModel
     ) {
         self.balance = balance
         self.maximumFractionDigits = maximumFractionDigits
@@ -50,5 +54,6 @@ extension SendCurrencyViewModel: Hashable {
         hasher.combine(balance)
         hasher.combine(fiatValue)
         hasher.combine(tokenIcon)
+        hasher.combine(maximumFractionDigits)
     }
 }

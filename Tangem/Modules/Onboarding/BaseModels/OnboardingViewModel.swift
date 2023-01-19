@@ -45,11 +45,11 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
         CGFloat(currentStepIndex + 1) / CGFloat(input.steps.stepsCount)
     }
 
-    var navbarTitle: LocalizedStringKey {
-        "onboarding_getting_started"
+    var navbarTitle: String {
+        Localization.onboardingGettingStarted
     }
 
-    var title: LocalizedStringKey? {
+    var title: String? {
         if !isInitialAnimPlayed, let welcomeStep = input.welcomeStep {
             return welcomeStep.title
         }
@@ -57,7 +57,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
         return currentStep.title
     }
 
-    var subtitle: LocalizedStringKey? {
+    var subtitle: String? {
         if !isInitialAnimPlayed, let welcomteStep = input.welcomeStep {
             return welcomteStep.subtitle
         }
@@ -65,23 +65,20 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
         return currentStep.subtitle
     }
 
-    var mainButtonSettings: TangemButtonSettings? {
-        .init(
+    var mainButtonSettings: MainButton.Settings? {
+        MainButton.Settings(
             title: mainButtonTitle,
-            size: .wide,
-            action: mainButtonAction,
-            isBusy: isMainButtonBusy,
-            isEnabled: true,
-            isVisible: true,
-            color: .black
+            style: .primary,
+            isLoading: isMainButtonBusy,
+            action: mainButtonAction
         )
     }
 
     var isOnboardingFinished: Bool {
-        currentStep.isOnboardingFinished
+        currentStep == steps.last
     }
 
-    var mainButtonTitle: LocalizedStringKey {
+    var mainButtonTitle: String {
         if !isInitialAnimPlayed, let welcomeStep = input.welcomeStep {
             return welcomeStep.mainButtonTitle
         }
@@ -101,7 +98,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
         )
     }
 
-    var supplementButtonTitle: LocalizedStringKey {
+    var supplementButtonTitle: String {
         if !isInitialAnimPlayed, let welcomteStep = input.welcomeStep {
             return welcomteStep.supplementButtonTitle
         }
@@ -127,7 +124,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
 
     var isSupplementButtonVisible: Bool { currentStep.isSupplementButtonVisible }
 
-    lazy var userWalletStorageAgreementViewModel = UserWalletStorageAgreementViewModel(isStandalone: false, coordinator: self)
+    lazy var userWalletStorageAgreementViewModel = UserWalletStorageAgreementViewModel(coordinator: self)
 
     let input: OnboardingInput
 
@@ -212,7 +209,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
             do {
                 try handleUserWalletOnFinish()
             } catch {
-                print("Failed to complete onboarding", error)
+                AppLog.shared.error(error)
                 return
             }
 
@@ -220,7 +217,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
                 self.onboardingDidFinish()
             }
 
-            self.onOnboardingFinished(for: self.input.cardInput.cardId)
+            onOnboardingFinished(for: input.cardInput.cardId)
 
             return
         }
@@ -235,7 +232,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
 
     func goToStep(_ step: Step) {
         guard let newIndex = steps.firstIndex(of: step) else {
-            print("Failed to find step", step)
+            AppLog.shared.debug("Failed to find step \(step)")
             return
         }
 
@@ -281,7 +278,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
             .combineLatest($steps)
             .receiveValue { index, steps in
                 guard index < steps.count else { return }
-                
+
                 let currentStep = steps[index]
 
                 if let walletStep = currentStep as? WalletOnboardingStep {
@@ -322,6 +319,7 @@ class OnboardingViewModel<Step: OnboardingStep, Coordinator: OnboardingRoutable>
 }
 
 // MARK: - Navigation
+
 extension OnboardingViewModel {
     func onboardingDidFinish() {
         coordinator.onboardingDidFinish()
@@ -334,11 +332,15 @@ extension OnboardingViewModel {
     func openSupportChat() {
         guard let cardModel = input.cardInput.cardModel else { return }
 
-        let dataCollector = DetailsFeedbackDataCollector(cardModel: cardModel,
-                                                         userWalletEmailData: cardModel.emailData)
+        let dataCollector = DetailsFeedbackDataCollector(
+            cardModel: cardModel,
+            userWalletEmailData: cardModel.emailData
+        )
 
-        coordinator.openSupportChat(cardId: cardModel.cardId,
-                                    dataCollector: dataCollector)
+        coordinator.openSupportChat(
+            cardId: cardModel.cardId,
+            dataCollector: dataCollector
+        )
     }
 }
 
@@ -348,11 +350,10 @@ extension OnboardingViewModel: UserWalletStorageAgreementRoutable {
             switch result {
             case .error(let error):
                 if let tangemSdkError = error as? TangemSdkError,
-                   case .userCancelled = tangemSdkError
-                {
+                   case .userCancelled = tangemSdkError {
                     return
                 }
-                print("Failed to get access to biometry", error)
+                AppLog.shared.error(error)
 
                 self?.didAskToSaveUserWallets(agreed: false)
             default:

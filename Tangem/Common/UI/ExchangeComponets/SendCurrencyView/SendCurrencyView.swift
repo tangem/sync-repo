@@ -12,6 +12,9 @@ struct SendCurrencyView: View {
     private var viewModel: SendCurrencyViewModel
     @Binding private var decimalValue: Decimal?
 
+    private let tokenIconSize = CGSize(width: 36, height: 36)
+    private var didTapMaxAmountAction: (() -> Void)?
+
     init(viewModel: SendCurrencyViewModel, decimalValue: Binding<Decimal?>) {
         self.viewModel = viewModel
         _decimalValue = decimalValue
@@ -31,7 +34,7 @@ struct SendCurrencyView: View {
 
     private var headerLabels: some View {
         HStack(spacing: 0) {
-            Text("exchange_send_view_header".localized)
+            Text(Localization.exchangeSendViewHeader)
                 .style(Fonts.Bold.footnote, color: Colors.Text.tertiary)
 
             Spacer()
@@ -43,8 +46,9 @@ struct SendCurrencyView: View {
 
     private var currencyContent: some View {
         VStack(alignment: .leading, spacing: 8) {
-            GroupedNumberTextField(decimalValue: $decimalValue)
+            SendGroupedNumberTextField(decimalValue: $decimalValue)
                 .maximumFractionDigits(viewModel.maximumFractionDigits)
+                .didTapMaxAmount { didTapMaxAmountAction?() }
 
             Text(viewModel.fiatValueString)
                 .style(Fonts.Regular.footnote, color: Colors.Text.tertiary)
@@ -52,14 +56,21 @@ struct SendCurrencyView: View {
     }
 
     private var mainContent: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
             currencyContent
 
             Spacer()
 
-            TokenIconView(viewModel: viewModel.tokenIcon)
-                .padding(.trailing, 16)
+            SwappingTokenIconView(viewModel: viewModel.tokenIcon)
         }
+    }
+}
+
+// MARK: - Setupable
+
+extension SendCurrencyView: Setupable {
+    func didTapMaxAmount(_ action: @escaping () -> Void) -> Self {
+        map { $0.didTapMaxAmountAction = action }
     }
 }
 
@@ -70,15 +81,36 @@ struct SendCurrencyView_Preview: PreviewProvider {
         balance: 3043.75,
         maximumFractionDigits: 8,
         fiatValue: 1000.71,
-        tokenIcon: TokenIconViewModel(tokenItem: .blockchain(.bitcoin(testnet: false)))
+        tokenIcon: SwappingTokenIconViewModel(
+            state: .loaded(
+                imageURL: TokenIconURLBuilderMock().iconURL(id: "bitcoin", size: .large),
+                symbol: "BTC"
+            )
+        )
+    )
+
+    static let viewModelLocked = SendCurrencyViewModel(
+        balance: 0.02,
+        maximumFractionDigits: 8,
+        fiatValue: 0.02,
+        tokenIcon: SwappingTokenIconViewModel(
+            state: .loaded(
+                imageURL: TokenIconURLBuilderMock().iconURL(id: "bitcoin", size: .large),
+                symbol: "BTC"
+            )
+        )
     )
 
     static var previews: some View {
         ZStack {
             Colors.Background.secondary
 
-            SendCurrencyView(viewModel: viewModel, decimalValue: $decimalValue)
-                .padding(.horizontal, 16)
+            VStack {
+                SendCurrencyView(viewModel: viewModel, decimalValue: $decimalValue)
+
+                SendCurrencyView(viewModel: viewModelLocked, decimalValue: $decimalValue)
+            }
+            .padding(.horizontal, 16)
         }
     }
 }

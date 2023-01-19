@@ -10,6 +10,8 @@ import SwiftUI
 
 struct ReceiveCurrencyView: View {
     private let viewModel: ReceiveCurrencyViewModel
+    private let tokenIconSize = CGSize(width: 36, height: 36)
+    private var didTapTokenView: () -> Void = {}
 
     init(viewModel: ReceiveCurrencyViewModel) {
         self.viewModel = viewModel
@@ -17,7 +19,7 @@ struct ReceiveCurrencyView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            headerLabel
+            headerLabels
 
             mainContent
         }
@@ -27,9 +29,18 @@ struct ReceiveCurrencyView: View {
         .cornerRadius(14)
     }
 
-    private var headerLabel: some View {
-        Text("exchange_receive_view_header".localized)
-            .style(Fonts.Bold.footnote, color: Colors.Text.tertiary)
+    private var headerLabels: some View {
+        HStack(spacing: 0) {
+            Text(Localization.exchangeReceiveViewHeader)
+                .style(Fonts.Bold.footnote, color: Colors.Text.tertiary)
+
+            Spacer()
+
+            if let balanceString = viewModel.balanceString {
+                Text(balanceString)
+                    .style(Fonts.Regular.footnote, color: Colors.Text.tertiary)
+            }
+        }
     }
 
     @ViewBuilder
@@ -44,7 +55,8 @@ struct ReceiveCurrencyView: View {
 
             Spacer()
 
-            tokenView
+            SwappingTokenIconView(viewModel: viewModel.tokenIcon)
+                .onTap(didTapTokenView)
         }
     }
 
@@ -74,30 +86,38 @@ struct ReceiveCurrencyView: View {
                 .lineLimit(1)
         }
     }
+}
 
-    private var tokenView: some View {
-        Button(action: viewModel.didTapTokenView) {
-            HStack(spacing: 8) {
-                TokenIconView(viewModel: viewModel.tokenIcon)
+// MARK: - Setupable
 
-                Assets.chevronDownMini
-                    .resizable()
-                    .frame(width: 9, height: 9)
-            }
-        }
+extension ReceiveCurrencyView: Setupable {
+    func didTapTokenView(_ block: @escaping () -> Void) -> Self {
+        map { $0.didTapTokenView = block }
     }
 }
 
 struct ReceiveCurrencyView_Preview: PreviewProvider {
     static let viewModel = ReceiveCurrencyViewModel(
-        state: .loaded(11412413131.46, fiatValue: 1000.71),
-        tokenIcon: .init(tokenItem: .blockchain(.bitcoin(testnet: false)))
-    ) {}
+        balance: 0.124124,
+        state: .loaded(1100.46, fiatValue: 1000.71),
+        tokenIcon: SwappingTokenIconViewModel(
+            state: .loaded(
+                imageURL: TokenIconURLBuilderMock().iconURL(id: "polygon", size: .large),
+                symbol: "MATIC"
+            )
+        )
+    )
 
     static let loadingViewModel = ReceiveCurrencyViewModel(
+        balance: 0.124124,
         state: .loading,
-        tokenIcon: .init(tokenItem: .blockchain(.bitcoin(testnet: false)))
-    ) {}
+        tokenIcon: SwappingTokenIconViewModel(
+            state: .loaded(
+                imageURL: TokenIconURLBuilderMock().iconURL(id: "polygon", size: .large),
+                symbol: "MATIC"
+            )
+        )
+    )
 
     static var previews: some View {
         ZStack {

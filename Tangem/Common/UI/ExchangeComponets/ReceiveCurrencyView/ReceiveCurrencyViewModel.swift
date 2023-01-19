@@ -12,29 +12,31 @@ struct ReceiveCurrencyViewModel: Identifiable {
     var id: Int { hashValue }
 
     private(set) var state: State
-    let tokenIcon: TokenIconViewModel
-    let didTapTokenView: () -> Void
+
+    let tokenIcon: SwappingTokenIconViewModel
+
+    var balanceString: String? {
+        Localization.commonBalance((balance ?? 0).groupedFormatted())
+    }
 
     var value: String {
-        guard let value = state.value as? NSDecimalNumber else {
-            return "0"
-        }
-
-        return NumberFormatter.grouped.string(from: value) ?? "0"
+        state.value?.groupedFormatted() ?? "0"
     }
 
     var fiatValue: String {
         state.fiatValue?.currencyFormatted(code: AppSettings.shared.selectedCurrencyCode) ?? "0"
     }
 
+    private let balance: Decimal?
+
     init(
+        balance: Decimal?,
         state: State,
-        tokenIcon: TokenIconViewModel,
-        didTapTokenView: @escaping () -> Void
+        tokenIcon: SwappingTokenIconViewModel
     ) {
+        self.balance = balance
         self.state = state
         self.tokenIcon = tokenIcon
-        self.didTapTokenView = didTapTokenView
     }
 
     mutating func updateState(_ state: State) {
@@ -67,7 +69,6 @@ extension ReceiveCurrencyViewModel {
     }
 }
 
-
 extension ReceiveCurrencyViewModel: Hashable {
     static func == (lhs: ReceiveCurrencyViewModel, rhs: ReceiveCurrencyViewModel) -> Bool {
         lhs.hashValue == rhs.hashValue
@@ -78,4 +79,3 @@ extension ReceiveCurrencyViewModel: Hashable {
         hasher.combine(tokenIcon)
     }
 }
-

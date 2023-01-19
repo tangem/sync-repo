@@ -12,31 +12,20 @@ enum WelcomeStep {
     case welcome
     case letsStart
 
-    var title: LocalizedStringKey {
-        switch self {
-        case .welcome: return "onboarding_read_title"
-        case .letsStart: return "onboarding_read_title"
-        }
+    #warning("TODO: remove the welcome step")
+    var title: String {
+        String("")
     }
 
-    var subtitle: LocalizedStringKey {
-        switch self {
-        case .welcome: return "onboarding_read_subtitle"
-        case .letsStart: return "onboarding_read_subtitle"
-        }
+    var subtitle: String {
+        String("")
     }
 
-    var mainButtonTitle: LocalizedStringKey {
-        switch self {
-        case .welcome: return "home_button_scan"
-        case .letsStart: return "home_button_scan"
-        }
+    var mainButtonTitle: String {
+        String("")
     }
 
-    var supplementButtonTitle: LocalizedStringKey {
-        switch self {
-        case .welcome: return "onboarding_button_shop"
-        case .letsStart: return "onboarding_button_shop"
-        }
+    var supplementButtonTitle: String {
+        String("")
     }
 }

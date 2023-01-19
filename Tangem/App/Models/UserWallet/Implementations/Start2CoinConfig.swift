@@ -14,17 +14,24 @@ struct Start2CoinConfig {
     private let card: CardDTO
     private let walletData: WalletData
 
+    private let baseTouUrl = "https://app.tangem.com/tou/"
+
     private var defaultBlockchain: Blockchain {
         Blockchain.from(blockchainName: walletData.blockchain, curve: card.supportedCurves[0])!
     }
 
     private func makeTouURL() -> URL? {
-        let baseurl = "https://app.tangem.com/tou/"
-        let regionCode = self.regionCode(for: card.cardId) ?? "fr"
+        let regionCode = regionCode(for: card.cardId) ?? "fr"
         let languageCode = Locale.current.languageCode ?? "fr"
-        let filename = self.filename(languageCode: languageCode, regionCode: regionCode)
-        let url = URL(string: baseurl + filename)
+        let filename = filename(languageCode: languageCode, regionCode: regionCode)
+        let url = URL(string: baseTouUrl + filename)
         return url
+    }
+
+    private func makeTouID() -> String {
+        let regionCode = regionCode(for: card.cardId) ?? "fr"
+        let filename = filename(languageCode: "", regionCode: regionCode)
+        return baseTouUrl + filename
     }
 
     private func filename(languageCode: String, regionCode: String) -> String {
@@ -74,12 +81,21 @@ struct Start2CoinConfig {
 
 extension Start2CoinConfig: UserWalletConfig {
     var emailConfig: EmailConfig? {
-        .init(recipient: "cardsupport@start2coin.com",
-              subject: "feedback_subject_support".localized)
+        .init(
+            recipient: "cardsupport@start2coin.com",
+            subject: Localization.feedbackSubjectSupport
+        )
     }
 
-    var touURL: URL {
-        makeTouURL() ?? DummyConfig().touURL
+    var tou: TOU {
+        let id = makeTouID()
+        let url = makeTouURL()
+
+        guard let url else {
+            return DummyConfig().tou
+        }
+
+        return TOU(id: id, url: url)
     }
 
     var cardsCount: Int {
@@ -103,7 +119,7 @@ extension Start2CoinConfig: UserWalletConfig {
             return .singleWallet([.createWallet] + userWalletSavingSteps + [.success])
         }
 
-        return .singleWallet([])
+        return .singleWallet(userWalletSavingSteps)
     }
 
     var backupSteps: OnboardingSteps? {
@@ -193,6 +209,10 @@ extension Start2CoinConfig: UserWalletConfig {
             return .available
         case .tokenSynchronization:
             return .hidden
+        case .referralProgram:
+            return .hidden
+        case .swapping:
+            return .hidden
         }
     }
 
@@ -202,9 +222,11 @@ extension Start2CoinConfig: UserWalletConfig {
         }
 
         let factory = WalletModelFactory()
-        return try factory.makeSingleWallet(walletPublicKey: walletPublicKey,
-                                            blockchain: defaultBlockchain,
-                                            token: nil,
-                                            derivationStyle: card.derivationStyle)
+        return try factory.makeSingleWallet(
+            walletPublicKey: walletPublicKey,
+            blockchain: defaultBlockchain,
+            token: nil,
+            derivationStyle: card.derivationStyle
+        )
     }
 }

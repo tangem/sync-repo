@@ -22,7 +22,7 @@ class WelcomeViewModel: ObservableObject {
     // This screen seats on the navigation stack permanently. We should preserve the navigationBar state to fix the random hide/disappear events of navigationBar on iOS13 on other screens down the navigation hierarchy.
     @Published var navigationBarHidden: Bool = false
 
-    private var storiesModelSubscription: AnyCancellable? = nil
+    private var storiesModelSubscription: AnyCancellable?
     private var shouldScanOnAppear: Bool = false
 
     private unowned let coordinator: WelcomeRoutable
@@ -31,7 +31,7 @@ class WelcomeViewModel: ObservableObject {
         self.shouldScanOnAppear = shouldScanOnAppear
         self.coordinator = coordinator
         userWalletRepository.delegate = self
-        self.storiesModelSubscription = storiesModel.objectWillChange
+        storiesModelSubscription = storiesModel.objectWillChange
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] in
                 self?.objectWillChange.send()
@@ -78,10 +78,10 @@ class WelcomeViewModel: ObservableObject {
     func onDisappear() {
         navigationBarHidden = false
     }
-    
+
     private func scanCard() {
         isScanningCard = true
-        
+
         userWalletRepository.unlock(with: .card(userWallet: nil)) { [weak self] result in
             self?.isScanningCard = false
 
@@ -97,11 +97,7 @@ class WelcomeViewModel: ObservableObject {
             case .onboarding(let input):
                 self.openOnboarding(with: input)
             case .error(let error):
-                if let saltPayError = error as? SaltPayRegistratorError {
-                    self.error = saltPayError.alertBinder
-                } else {
-                    self.error = error.alertBinder
-                }
+                self.error = error.alertBinder
             case .success(let cardModel):
                 self.openMain(with: cardModel)
             }
@@ -110,6 +106,7 @@ class WelcomeViewModel: ObservableObject {
 }
 
 // MARK: - Navigation
+
 extension WelcomeViewModel {
     func openMail() {
         coordinator.openMail(with: failedCardScanTracker, recipient: EmailConfig.default.recipient)

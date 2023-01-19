@@ -15,7 +15,7 @@ struct TotalBalanceCardSupportInfo {
 
     init(cardBatchId: String, cardNumber: String, embeddedBlockchainCurrencySymbol: String?) {
         self.cardBatchId = cardBatchId
-        self.cardNumberHash = cardNumber.sha256Hash.hexString
+        cardNumberHash = cardNumber.sha256Hash.hexString
         self.embeddedBlockchainCurrencySymbol = embeddedBlockchainCurrencySymbol
     }
 }
@@ -27,7 +27,7 @@ class TotalBalanceAnalyticsService {
     private var cardBalanceInfoWasSaved: Bool {
         userDefaults.data(forKey: totalBalanceCardSupportInfo.cardNumberHash) != nil
     }
-    
+
     private var basicCurrency: String {
         return totalBalanceCardSupportInfo.embeddedBlockchainCurrencySymbol ?? Analytics.ParameterValue.multicurrency.rawValue
     }
@@ -42,7 +42,7 @@ class TotalBalanceAnalyticsService {
             .basicCurrency: basicCurrency,
             .batchId: totalBalanceCardSupportInfo.cardBatchId,
         ]
-            
+
         Analytics.log(.signedIn, params: params)
     }
 
@@ -57,8 +57,7 @@ class TotalBalanceAnalyticsService {
 
         if let data = userDefaults.data(forKey: totalBalanceCardSupportInfo.cardNumberHash),
            let previousBalance = try? JSONDecoder().decode(Decimal.self, from: data),
-           previousBalance == 0
-        {
+           previousBalance == 0 {
             Analytics.log(.toppedUp, params: [.basicCurrency: basicCurrency])
             let encodeToData = try? JSONEncoder().encode(balance)
             userDefaults.set(encodeToData, forKey: totalBalanceCardSupportInfo.cardNumberHash)
