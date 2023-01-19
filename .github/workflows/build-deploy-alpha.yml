@@ -48,7 +48,7 @@ jobs:
    uses: tangem/actions/.github/workflows/deploy.yml@main
    with:
     channel: "${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}"
-    ts: "${{needs.build.outputs.ts}}"
+    message_ts: "${{needs.build.outputs.ts}}"
     title: "${{vars.APP_ALPHA}} → ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}"
     stage: "Alpha"
     version: "${{needs.prepare.outputs.version}}"
