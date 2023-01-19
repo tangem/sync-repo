@@ -4,13 +4,8 @@ on:
   workflow_dispatch:
   
 env:
-  app_path: "fastlane/builds/app.ipa"
-  artifact_name: Tangem App
-  
-  # Slack notification params
-  SLACK_CHANNEL: "#deployments-ios"
-  APP_NAME: "Tangem Alpha"
-  DEPLOY_TO: "Google Distribution"
+  app_path: "fastlane/builds"
+  app_name: "tangem.ipa"
   
 jobs:
  prepare:
@@ -34,84 +29,44 @@ jobs:
      with:
        action: getBranchSummary
        branch-name: ${{ github.ref_name }}
-     
- start_notification:
-   name: Initial Notification
-   needs: prepare
-   uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
-   with:
-    channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
-    status: "building"
-    app_name: ${{vars.APP_ALPHA}}
-    deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
-    version: ${{needs.prepare.outputs.version}}
-    build_number: ${{needs.prepare.outputs.build_number}}
-    changelog: ${{needs.prepare.outputs.changelog}}
-   secrets:
-    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
-     
+
  build:
-   name: Build
+   name: Tangem Alpha
    needs: prepare
-   runs-on: self-hosted
-   steps:
-   - name: Clean
-     run: rm -rf *
-     
-   - name: Checkout
-     uses: actions/checkout@v3
-     with:
-       submodules: true
-       token: ${{ secrets.GH_MOBILE_PAT }}
-       
-   - name: Bundle install
-     run: bundle install --jobs 4 --retry 3
-   
-   - name: Build
-     run: bundle exec fastlane alpha build:"${{needs.prepare.outputs.build_number}}" version:"${{needs.prepare.outputs.version}}"
-     
-   - name: Upload binary artifact
-     uses: actions/upload-artifact@v3
-     with:
-       name: ${{ env.artifact_name }}
-       path: ${{ env.app_path }}
-       if-no-files-found: error  
-       
- build_notification:
-   name: Build Notification
-   if: always()
-   needs: [prepare,start_notification,build]
-   uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
+   uses: tangem/actions/.github/workflows/build.yml@main
    with:
-    channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
-    message_ts: ${{needs.start_notification.outputs.ts}}
-    status: "deploying"
-    app_name: ${{vars.APP_ALPHA}}
-    deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
-    version: ${{needs.prepare.outputs.version}}
+    channel: "${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}"
+    title: "${{vars.APP_ALPHA}} → ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}"
+    stage: "Alpha"
+    version: "${{needs.prepare.outputs.version}}"
     build_number: ${{needs.prepare.outputs.build_number}}
-    changelog: ${{needs.prepare.outputs.changelog}}
+    changelog: "${{needs.prepare.outputs.changelog}}"
+    app_name: "${{ env.app_name}}"
    secrets:
     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
-       
+    GH_MOBILE_PAT: ${{ secrets.GH_MOBILE_PAT}}
+     
  deploy:
    name: Deploy
-   environment: Alpha
    needs: [prepare,build]
-   runs-on: self-hosted
-   steps:
-   - name: Download the artifact
-     uses: actions/download-artifact@v3
-     with:
-       name: ${{ env.artifact_name }}
-       path: artifacts/
-       
-   - name: Deploy to Firebase
-     run: bundle exec fastlane deploy_to_firebase app_id:"${{ secrets.FIREBASE_IOS_ALPHA_ID }}" path:"artifacts/app.ipa" firebase_token:"${{ secrets.FIREBASE_CLI_TOKEN }}" changelog:"${{needs.prepare.outputs.changelog}}" 
+   uses: tangem/actions/.github/workflows/deploy.yml@main
+   with:
+    channel: "${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}"
+    ts: "${{needs.build.outputs.ts}}"
+    title: "${{vars.APP_ALPHA}} → ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}"
+    stage: "Alpha"
+    version: "${{needs.prepare.outputs.version}}"
+    build_number: ${{needs.prepare.outputs.build_number}}
+    changelog: "${{needs.prepare.outputs.changelog}}"
+    app_name: "${{ env.app_name}}"
+   secrets:
+    SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN}}
+    FIREBASE_APP_ID: ${{ secrets.FIREBASE_IOS_ALPHA_ID}}
+    FIREBASE_CLI_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN}}
    
- deploy_notification:
+ notification:
    name: Deploy Notification
-   needs: [prepare,deploy,start_notification]
+   needs: [prepare,deploy]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
@@ -128,11 +83,11 @@ jobs:
  error_notification:
    name: Error Notification
    if: failure()
-   needs: [prepare,deploy,start_notification]
+   needs: [prepare,deploy]
    uses: tangem/actions/.github/workflows/slack_build_deploy.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
-    message_ts: ${{needs.start_notification.outputs.ts}}
+    message_ts: ${{needs.deploy.outputs.ts}}
     status: "error"
     app_name: ${{vars.APP_ALPHA}}
     deploy_to: ${{vars.DEPLOYMENT_GOOGLE_DISTRIBUTION}}
