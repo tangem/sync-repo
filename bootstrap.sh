@@ -29,4 +29,7 @@ mint run swiftformat@0.50.7 . --config .swiftformat
 echo "🚀 Running SwiftGen"
 mint run swiftgen@6.5.1 config run --config swiftgen.yml 
 
+echo "🚀 Sorting localisation strings"
+./sort-strings.sh
+
 echo "Bootstrap competed 🎉"
