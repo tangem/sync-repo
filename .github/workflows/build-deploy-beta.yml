@@ -34,7 +34,7 @@ jobs:
 
    # TEST
    - name: Output issues
-     run: echo "Issues: ${{ steps.github-issues.outputs.issues }}" 
+     run: echo ${{ steps.github-issues.outputs.issues }}
    ### 
    
    - name: Jira Check Version
