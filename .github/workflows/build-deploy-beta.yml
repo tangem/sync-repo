@@ -5,7 +5,7 @@ on:
     branches: 
       - develop
     types:
-      - open
+      - opened
       
   workflow_dispatch:
   
