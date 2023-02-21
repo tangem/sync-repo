@@ -1,12 +1,6 @@
 name: Beta - Build and Deploy 
 
 on:
-  pull_request:
-    branches: 
-      - develop
-    types:
-      - opened
-      
   workflow_dispatch:
   
 jobs:
