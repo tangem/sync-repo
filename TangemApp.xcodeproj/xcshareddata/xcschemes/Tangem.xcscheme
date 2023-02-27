@@ -59,6 +59,16 @@
                ReferencedContainer = "container:TangemApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2D87C98029ACA6F10012BCBE"
+               BuildableName = "TangemUISnapshotTests.xctest"
+               BlueprintName = "TangemUISnapshotTests"
+               ReferencedContainer = "container:TangemApp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

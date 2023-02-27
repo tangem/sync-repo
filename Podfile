@@ -63,6 +63,10 @@ target 'Tangem' do
   target 'TangemUITests' do
     # Pods for testing
   end
+  
+  target 'TangemUISnapshotTests' do
+    inherit! :search_paths
+  end
 end
 
 target 'TangemExchange' do 
