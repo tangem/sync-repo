@@ -9,6 +9,7 @@
 import Foundation
 
 public struct SwappingResultDataModel {
+    public let paymentAmount: Decimal
     public let amount: Decimal
     public let fee: Decimal
 
@@ -17,12 +18,14 @@ public struct SwappingResultDataModel {
     public let isPermissionRequired: Bool
 
     public init(
+        paymentAmount: Decimal,
         amount: Decimal,
         fee: Decimal,
         isEnoughAmountForExchange: Bool,
         isEnoughAmountForFee: Bool,
         isPermissionRequired: Bool
     ) {
+        self.paymentAmount = paymentAmount
         self.amount = amount
         self.fee = fee
         self.isEnoughAmountForExchange = isEnoughAmountForExchange

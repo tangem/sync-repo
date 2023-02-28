@@ -305,6 +305,7 @@ private extension DefaultExchangeManager {
         let isEnoughAmountForExchange = exchangeItems.sourceBalance >= paymentAmount
 
         return PreviewSwappingDataModel(
+            paymentAmount: paymentAmount,
             expectedAmount: expectedAmount,
             isPermissionRequired: !isEnoughAllowance(),
             hasPendingTransaction: hasPendingTransaction,
@@ -335,6 +336,7 @@ private extension DefaultExchangeManager {
         let isEnoughAmountForExchange = sourceBalance >= paymentAmount
 
         return SwappingResultDataModel(
+            paymentAmount: paymentAmount,
             amount: receivedAmount,
             fee: fee,
             isEnoughAmountForExchange: isEnoughAmountForExchange,

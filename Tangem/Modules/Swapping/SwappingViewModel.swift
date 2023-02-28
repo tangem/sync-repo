@@ -360,6 +360,7 @@ private extension SwappingViewModel {
 
             restartTimer()
             updateReceiveCurrencyValue(value: result.expectedAmount)
+            updateHighPriceImpact(paymentAmount: result.paymentAmount, amount: result.expectedAmount)
             updateRequiredPermission(isPermissionRequired: result.isPermissionRequired)
             updatePendingApprovingTransaction(hasPendingTransaction: result.hasPendingTransaction)
 
@@ -369,6 +370,7 @@ private extension SwappingViewModel {
 
             restartTimer()
             updateReceiveCurrencyValue(value: result.amount)
+            updateHighPriceImpact(paymentAmount: result.paymentAmount, amount: result.amount)
             updateRequiredPermission(isPermissionRequired: result.isPermissionRequired)
             updateEnoughAmountForFee(isEnoughAmountForFee: result.isEnoughAmountForFee)
 
@@ -386,15 +388,46 @@ private extension SwappingViewModel {
     func updateReceiveCurrencyValue(value: Decimal) {
         receiveCurrencyViewModel?.update(cryptoAmountState: .loaded(value))
 
-        guard let destination = exchangeManager.getExchangeItems().destination else { return }
-        receiveCurrencyViewModel?.update(fiatAmountState: .loading)
+        guard let destination = exchangeManager.getExchangeItems().destination else {
+            return
+        }
+
+        if !fiatRatesProvider.hasRates(for: destination) {
+            receiveCurrencyViewModel?.update(fiatAmountState: .loading)
+        }
 
         Task {
             let fiatValue = try await fiatRatesProvider.getFiat(for: destination, amount: value)
             await runOnMain {
                 receiveCurrencyViewModel?.update(fiatAmountState: .loaded(fiatValue))
             }
-            try await checkForHighPriceImpact(destinationFiatAmount: fiatValue)
+        }
+    }
+
+    func updateHighPriceImpact(paymentAmount: Decimal, amount: Decimal) {
+        let items = exchangeManager.getExchangeItems()
+        guard let destination = items.destination else {
+            return
+        }
+
+        Task {
+            let sourceFiatAmount = try await fiatRatesProvider.getFiat(for: items.source, amount: paymentAmount)
+            let destinationFiatAmount = try await fiatRatesProvider.getFiat(for: destination, amount: amount)
+
+            let lostInPercents = (sourceFiatAmount / destinationFiatAmount - 1) * 100
+            let isHighPriceImpact = lostInPercents >= Constants.highPriceImpactWarningLimit
+
+            await runOnMain {
+                if isHighPriceImpact {
+                    highPriceImpactWarningRowViewModel = DefaultWarningRowViewModel(
+                        title: Localization.swappingHighPriceImpact,
+                        subtitle: Localization.swappingHighPriceImpactDescription,
+                        leftView: .icon(Assets.warningIcon)
+                    )
+                } else {
+                    highPriceImpactWarningRowViewModel = nil
+                }
+            }
         }
     }
 
@@ -490,31 +523,6 @@ private extension SwappingViewModel {
                 mainButtonState = .givePermission
             } else {
                 mainButtonState = .swap
-            }
-        }
-    }
-
-    func checkForHighPriceImpact(destinationFiatAmount: Decimal) async throws {
-        guard let sendDecimalValue = sendDecimalValue?.value else {
-            return
-        }
-
-        let sourceFiatAmount = try await fiatRatesProvider.getFiat(
-            for: exchangeManager.getExchangeItems().source,
-            amount: sendDecimalValue
-        )
-
-        let lostInPercents = (sourceFiatAmount / destinationFiatAmount - 1) * 100
-
-        await runOnMain {
-            if lostInPercents >= Constants.highPriceImpactWarningLimit {
-                highPriceImpactWarningRowViewModel = DefaultWarningRowViewModel(
-                    title: Localization.swappingHighPriceImpact,
-                    subtitle: Localization.swappingHighPriceImpactDescription,
-                    leftView: .icon(Assets.warningIcon)
-                )
-            } else {
-                highPriceImpactWarningRowViewModel = nil
             }
         }
     }
