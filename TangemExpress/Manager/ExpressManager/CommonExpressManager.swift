@@ -8,6 +8,8 @@
 
 import Foundation
 import Combine
+import TangemLogger
+import TangemFoundation
 
 actor CommonExpressManager {
     // MARK: - Dependencies
@@ -15,7 +17,6 @@ actor CommonExpressManager {
     private let expressAPIProvider: ExpressAPIProvider
     private let expressProviderManagerFactory: ExpressProviderManagerFactory
     private let expressRepository: ExpressRepository
-    private let logger: Logger
     private let analyticsLogger: ExpressAnalyticsLogger
 
     // MARK: - State
@@ -36,13 +37,11 @@ actor CommonExpressManager {
         expressAPIProvider: ExpressAPIProvider,
         expressProviderManagerFactory: ExpressProviderManagerFactory,
         expressRepository: ExpressRepository,
-        logger: Logger,
         analyticsLogger: ExpressAnalyticsLogger
     ) {
         self.expressAPIProvider = expressAPIProvider
         self.expressProviderManagerFactory = expressProviderManagerFactory
         self.expressRepository = expressRepository
-        self.logger = logger
         self.analyticsLogger = analyticsLogger
     }
 }
@@ -320,6 +319,10 @@ private extension CommonExpressManager {
 
 extension CommonExpressManager {
     func log(_ args: Any) {
-        logger.debug("\(self) \(args)")
+        ExpressLogger.info(self, args)
     }
+}
+
+extension CommonExpressManager: @preconcurrency CustomStringConvertible {
+    var description: String { objectDescription(self) }
 }

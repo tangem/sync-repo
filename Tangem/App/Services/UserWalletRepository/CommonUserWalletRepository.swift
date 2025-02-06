@@ -65,7 +65,7 @@ class CommonUserWalletRepository: UserWalletRepository {
     init() {}
 
     deinit {
-        AppLog.shared.debug("UserWalletRepository deinit")
+        AppLog.debug(self)
     }
 
     private func scanPublisher(_ scanner: CardScanner) -> AnyPublisher<UserWalletRepositoryResult?, Never> {
@@ -119,7 +119,9 @@ class CommonUserWalletRepository: UserWalletRepository {
                     return Just(nil)
                 }
 
-                AppLog.shared.error(error)
+                AppLog.error(error: error)
+                Analytics.error(error: error)
+
                 sendEvent(.scan(isScanning: false))
 
                 switch error.toTangemSdkError() {
@@ -231,7 +233,7 @@ class CommonUserWalletRepository: UserWalletRepository {
             encryptionKeyStorage.add(userWalletModel.userWalletId, encryptionKey: UserWalletEncryptionKey(userWalletIdSeed: userWalletIdSeed))
             save()
         } else {
-            AppLog.shared.debug("Failed to get encryption key for UserWallet")
+            AppLog.error(error: "Failed to get encryption key for UserWallet")
         }
 
         sendEvent(.updated(userWalletId: userWalletModel.userWalletId))
@@ -302,7 +304,8 @@ class CommonUserWalletRepository: UserWalletRepository {
                 let accessCodeRepository = AccessCodeRepository()
                 try accessCodeRepository.deleteAccessCode(for: Array(userWallet.associatedCardIds))
             } catch {
-                AppLog.shared.error(error)
+                Analytics.error(error: error)
+                AppLog.error(error: error)
             }
         }
 
@@ -447,7 +450,8 @@ class CommonUserWalletRepository: UserWalletRepository {
                     completion(nil) // TODO: throw error?
                 }
             } catch {
-                AppLog.shared.error(error)
+                Analytics.error(error: error)
+                AppLog.error(error: error)
                 completion(.error(error))
             }
         }
@@ -596,12 +600,12 @@ extension CommonUserWalletRepository {
             selectedUserWalletId = UserWalletId(value: savedSelectedUserWalletId)
         }
 
-        AppLog.shared.debug("CommonUserWalletRepository initialized")
+        AppLog.info(self)
     }
 
     func initialClean() {
         // Removing UserWallet-related data from Keychain
-        AppLog.shared.debug("Clean CommonUserWalletRepository")
+        AppLog.info(self)
         clearUserWalletStorage()
     }
 }

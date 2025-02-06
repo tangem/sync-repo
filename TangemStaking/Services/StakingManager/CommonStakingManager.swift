@@ -10,12 +10,12 @@ import Foundation
 import Combine
 import TangemSdk
 import TangemFoundation
+import TangemLogger
 
 class CommonStakingManager {
     private let integrationId: String
     private let wallet: StakingWallet
     private let provider: StakingAPIProvider
-    private let logger: Logger
     private let analyticsLogger: StakingAnalyticsLogger
 
     private(set) var balances: [StakingBalance]?
@@ -34,13 +34,11 @@ class CommonStakingManager {
         integrationId: String,
         wallet: StakingWallet,
         provider: StakingAPIProvider,
-        logger: Logger,
         analyticsLogger: StakingAnalyticsLogger
     ) {
         self.integrationId = integrationId
         self.wallet = wallet
         self.provider = provider
-        self.logger = logger
         self.analyticsLogger = analyticsLogger
     }
 }
@@ -73,11 +71,8 @@ extension CommonStakingManager: StakingManager {
             async let actions = loadActions ? provider.actions(wallet: wallet) : []
             try await updateState(state(balances: balances, yield: yield, actions: actions))
         } catch {
-            analyticsLogger.logError(
-                error,
-                currencySymbol: wallet.item.symbol
-            )
-            logger.error(error)
+            analyticsLogger.logError(error, currencySymbol: wallet.item.symbol)
+            StakingLogger.error(self, error: error)
             updateState(.loadingError(error.localizedDescription))
         }
     }
@@ -251,7 +246,7 @@ private extension CommonStakingManager {
 
     private func isFullAmountUnstaking(for balances: [StakingBalance], action: PendingAction) -> Bool {
         guard let index = balanceIndexByType(balances: balances, action: action, type: .active) else {
-            logger.debug("Couldn't find corresponding staked balance for unstake action")
+            StakingLogger.info("Couldn't find corresponding staked balance for unstake action")
             return false
         }
         let balance = balances[index]
@@ -547,9 +542,13 @@ private extension CommonStakingManager {
 
 // MARK: - Log
 
-private extension CommonStakingManager {
-    func log(_ args: Any) {
-        logger.debug("[Staking] \(self) \(wallet.item) \(args)")
+extension CommonStakingManager: CustomStringConvertible {
+    var description: String {
+        objectDescription(self, userInfo: ["item": wallet.item])
+    }
+
+    private func log(_ args: Any) {
+        StakingLogger.info(self, args)
     }
 }
 
