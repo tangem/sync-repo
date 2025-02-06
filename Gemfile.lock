@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/tangem/lokalise-fastlane-actions.git
+  remote: git@github.com:tangem-developments/lokalise-fastlane-actions.git
   revision: 24f6cab684b1b1e95dcf58f4a08e54323775197d
   tag: 2.0.6-tangem3
   specs:
