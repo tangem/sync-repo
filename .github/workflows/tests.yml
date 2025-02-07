@@ -21,6 +21,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
 jobs:
   check_if_pr_has_always_run_tests_label:
     name: Check if the PR has always_run_tests label
@@ -51,14 +54,13 @@ jobs:
 
     - name: Authorize SSH session
       env:
-        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
       run: |
         mkdir -p ~/.ssh
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         echo "${SSH_KEY}" > ~/.ssh/ssh_key
         chmod 600 ~/.ssh/ssh_key
-        ssh-agent -a "${SSH_AUTH_SOCK}"" > /dev/null 
+        ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null 
         ssh-add ~/.ssh/ssh_key
 
     # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
@@ -86,6 +88,16 @@ jobs:
       with:
         submodules: true
         token: ${{ github.token }}
+
+    - name: Authorize SSH session
+      env:
+        SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "${SSH_KEY}" > ~/.ssh/ssh_key
+        chmod 600 ~/.ssh/ssh_key
+        ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null 
+        ssh-add ~/.ssh/ssh_key
 
     - name: Install required dependencies
       run: ./bootstrap.sh
