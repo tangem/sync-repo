@@ -1,9 +1,9 @@
 GIT
   remote: git@github.com:tangem-developments/lokalise-fastlane-actions.git
-  revision: 24f6cab684b1b1e95dcf58f4a08e54323775197d
-  tag: 2.0.6-tangem3
+  revision: f8fcbbff095b762ef3a4cadc1cc7f04113a7eb23
+  tag: 2.0.6-tangem4
   specs:
-    fastlane-plugin-lokalise (2.0.6.pre.tangem1)
+    fastlane-plugin-lokalise (2.0.6.pre.tangem4)
 
 GEM
   remote: https://rubygems.org/
