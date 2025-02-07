@@ -45,7 +45,7 @@ jobs:
 
       - name: Get Jira Issue Number from Branch Name
         id: jira
-        uses: tangem/jira-action@master
+        uses: tangem-developments/jira-action@master
         with:
           action: getBranchSummary
           branch-name: '${{ github.ref_name }}'
@@ -72,7 +72,7 @@ jobs:
   build:
     name: Tangem Alpha
     needs: prepare
-    uses: tangem/actions/.github/workflows/build.yml@main
+    uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
     with:
       stage: '${{ needs.prepare.outputs.stage }}'
       version: '${{ needs.prepare.outputs.version }}'
@@ -89,7 +89,7 @@ jobs:
 
   deploy:
     name: Google Distribution
-    uses: tangem/actions/.github/workflows/deploy-firebase.yml@main
+    uses: tangem-developments/actions/.github/workflows/deploy-firebase.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
     needs:
       - prepare
       - build
@@ -107,7 +107,7 @@ jobs:
 
   notification:
     name: Deploy Notification
-    uses: tangem/actions/.github/workflows/notification.yml@main
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
     needs:
       - prepare
       - build
@@ -128,7 +128,7 @@ jobs:
   error_notification:
     name: Error Notification
     if: failure()
-    uses: tangem/actions/.github/workflows/notification.yml@main
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
     needs:
       - prepare
       - build

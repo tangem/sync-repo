@@ -16,7 +16,7 @@ on:
 jobs:
  prepare:
    name: Prepare Release
-   uses: tangem/actions/.github/workflows/build.yml@main
+   uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
    with:
     versionName: ${{ github.event.inputs.versionName }}
     versionType: ${{ github.event.inputs.versionType }}
@@ -29,7 +29,7 @@ jobs:
  build:
    name: Tangem RC
    needs: prepare
-   uses: tangem/actions/.github/workflows/build.yml@main
+   uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
    with:
     stage: ${{needs.prepare.outputs.stage}}
     version: "${{ github.event.inputs.name }}"
@@ -42,7 +42,7 @@ jobs:
  deploy:
    name: TestFlight
    needs: [prepare,build]
-   uses: tangem/actions/.github/workflows/deploy-testflight.yml@main
+   uses: tangem-developments/actions/.github/workflows/deploy-testflight.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
    with:
     stage: ${{needs.prepare.outputs.stage}}
     version: "${{needs.prepare.outputs.version}}"
@@ -56,7 +56,7 @@ jobs:
  notification:
    name: Deploy Notification
    needs: [prepare,deploy]
-   uses: tangem/actions/.github/workflows/notification.yml@main
+   uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "success"
@@ -72,7 +72,7 @@ jobs:
    name: Error Notification
    if: failure()
    needs: [prepare,deploy]
-   uses: tangem/actions/.github/workflows/notification.yml@main
+   uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-9077_gh_enterprise_migration_ci_cd
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "error"
