@@ -56,7 +56,6 @@ jobs:
               uses: actions/checkout@v3
               with:
                   submodules: true
-                  token: ${{ secrets.GH_MOBILE_PAT }}
 
             # Add any setup steps before running the `github/codeql-action/init` action.
             # This includes steps like installing compilers or runtimes (`actions/setup-node`
