@@ -37,7 +37,7 @@ jobs:
     path: "fastlane/builds/"
     filename: "Tangem-${{needs.prepare.outputs.stage}}-${{needs.prepare.outputs.version}}(${{needs.prepare.outputs.build_number}}).ipa"
    secrets:
-    GH_MOBILE_PAT: ${{ secrets.GH_MOBILE_PAT}}
+    IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
      
  deploy:
    name: TestFlight
