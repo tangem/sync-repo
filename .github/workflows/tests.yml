@@ -37,7 +37,7 @@ jobs:
       uses: docker://agilepathway/pull-request-label-checker@sha256:da7c8677e87239522e0c6869ecc4c86d6b7db8b6859ad332b8b1c2129b76177b # v1.6.56 linux/amd64
       with:
         one_of: always_run_tests
-        repo_token: ${{ github.token }}
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
         allow_failure: true
 
   test:
@@ -52,21 +52,15 @@ jobs:
         submodules: true
         ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
 
-    # TODO: Extract into reusable action
-    - name: Authorize SSH session if needed
+    - name: Authorize SSH session
       env:
         SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
       run: |
-        if [[ -S "${SSH_AUTH_SOCK}" ]]; then
-          echo "The SSH agent is already configured"
-          exit 0
-        fi
-
         mkdir -p ~/.ssh
         ssh-keyscan github.com > ~/.ssh/known_hosts
         echo "${SSH_KEY}" > ~/.ssh/ios_dependencies_ssh_key
         chmod 600 ~/.ssh/ios_dependencies_ssh_key
-        ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null
+        ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
         ssh-add ~/.ssh/ios_dependencies_ssh_key
 
     # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
@@ -85,8 +79,7 @@ jobs:
 
   check_bsdk_example_buildable:
     name: Check BSDK example project
-    runs-on: builder2 # TODO: Test only, remove
-    #runs-on: [self-hosted, active]  # This target requires code signing, so we use self-hosted runners
+    runs-on: [self-hosted, active]  # This target requires code signing, so we use self-hosted runners
     needs: check_if_pr_has_always_run_tests_label
     if: github.event.pull_request.draft == false || needs.check_if_pr_has_always_run_tests_label.outputs.has_always_run_tests_label == 'true'
     steps:
@@ -96,23 +89,15 @@ jobs:
         submodules: true
         ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
 
-    # TODO: Extract into reusable action
-    - name: Authorize SSH session if needed
+    - name: Authorize SSH session
       env:
         SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
       run: |
-        rm -rf ~/Library/Caches/org.swift.swiftpm
-        rm -rf ~/Library/Developer/Xcode/DerivedData
-        if [[ -S "${SSH_AUTH_SOCK}" ]]; then
-          echo "The SSH agent is already configured"
-          exit 0
-        fi
-
         mkdir -p ~/.ssh
         ssh-keyscan github.com > ~/.ssh/known_hosts
         echo "${SSH_KEY}" > ~/.ssh/ios_dependencies_ssh_key
         chmod 600 ~/.ssh/ios_dependencies_ssh_key
-        ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null
+        ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
         ssh-add ~/.ssh/ios_dependencies_ssh_key
 
     - name: Install required dependencies
