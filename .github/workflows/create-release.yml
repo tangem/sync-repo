@@ -16,7 +16,7 @@ on:
 jobs:
  prepare:
    name: Prepare Release
-   uses: tangem/actions/.github/workflows/build.yml@main
+   uses: tangem-developments/actions/.github/workflows/build.yml@main
    with:
     versionName: ${{ github.event.inputs.versionName }}
     versionType: ${{ github.event.inputs.versionType }}
@@ -29,7 +29,7 @@ jobs:
  build:
    name: Tangem RC
    needs: prepare
-   uses: tangem/actions/.github/workflows/build.yml@main
+   uses: tangem-developments/actions/.github/workflows/build.yml@main
    with:
     stage: ${{needs.prepare.outputs.stage}}
     version: "${{ github.event.inputs.name }}"
@@ -37,12 +37,12 @@ jobs:
     path: "fastlane/builds/"
     filename: "Tangem-${{needs.prepare.outputs.stage}}-${{needs.prepare.outputs.version}}(${{needs.prepare.outputs.build_number}}).ipa"
    secrets:
-    GH_MOBILE_PAT: ${{ secrets.GH_MOBILE_PAT}}
+    IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
      
  deploy:
    name: TestFlight
    needs: [prepare,build]
-   uses: tangem/actions/.github/workflows/deploy-testflight.yml@main
+   uses: tangem-developments/actions/.github/workflows/deploy-testflight.yml@main
    with:
     stage: ${{needs.prepare.outputs.stage}}
     version: "${{needs.prepare.outputs.version}}"
@@ -56,7 +56,7 @@ jobs:
  notification:
    name: Deploy Notification
    needs: [prepare,deploy]
-   uses: tangem/actions/.github/workflows/notification.yml@main
+   uses: tangem-developments/actions/.github/workflows/notification.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "success"
@@ -72,7 +72,7 @@ jobs:
    name: Error Notification
    if: failure()
    needs: [prepare,deploy]
-   uses: tangem/actions/.github/workflows/notification.yml@main
+   uses: tangem-developments/actions/.github/workflows/notification.yml@main
    with: 
     channel: ${{vars.SLACK_CHANNEL_DEPLOYMENTS_IOS}}
     status: "error"
