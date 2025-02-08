@@ -119,7 +119,7 @@ jobs:
 
   build_notification:
     name: Build Notification
-    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs: prepare
     with:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
@@ -135,7 +135,7 @@ jobs:
   build:
     name: Tangem Release
     needs: prepare
-    uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-8785_ci_cd_create_release
     with:
       stage: '${{ needs.prepare.outputs.stage }}'
       version: '${{ needs.prepare.outputs.version }}'
@@ -157,7 +157,7 @@ jobs:
 
   deploy_notification:
     name: Deploy Notification
-    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build
@@ -176,7 +176,7 @@ jobs:
 
   deploy:
     name: Tangem Release TestFlight
-    uses: tangem-developments/actions/.github/workflows/deploy-testflight.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/deploy-testflight.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build
@@ -195,7 +195,7 @@ jobs:
 
   success_notification:
     name: Success Notification
-    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build
@@ -216,7 +216,7 @@ jobs:
   error_notification:
     name: Error Notification
     if: failure()
-    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build
@@ -237,7 +237,7 @@ jobs:
   cancel_notification:
     name: Cancel Notification
     if: cancelled()
-    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build
