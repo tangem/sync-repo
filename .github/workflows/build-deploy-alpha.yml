@@ -57,7 +57,7 @@ jobs:
 
       - name: Get Jira Issue Number from Branch Name
         id: jira
-        uses: tangem/jira-action@master
+        uses: tangem-developments/jira-action@master
         with:
           action: getBranchSummary
           branch-name: '${{ github.ref_name }}'
@@ -100,7 +100,7 @@ jobs:
   build:
     name: Tangem Alpha
     needs: prepare
-    uses: tangem/actions/.github/workflows/build.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-8741_ci_cd_notifications
     with:
       stage: '${{ needs.prepare.outputs.stage }}'
       version: '${{ needs.prepare.outputs.version }}'
@@ -114,7 +114,7 @@ jobs:
       runner_name: ${{ inputs.runner_name }}
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
-      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
+      IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
 
   deploy_notification:
     name: Deploy Notification
@@ -138,7 +138,7 @@ jobs:
 
   deploy:
     name: Google Distribution
-    uses: tangem/actions/.github/workflows/deploy-firebase.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/deploy-firebase.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
@@ -153,11 +153,11 @@ jobs:
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
       FIREBASE_CLI_TOKEN: '${{ secrets.FIREBASE_CLI_TOKEN }}'
-      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
+      IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
 
   success_notification:
     name: Success Notification
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
@@ -180,7 +180,7 @@ jobs:
   error_notification:
     name: Error Notification
     if: failure()
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
