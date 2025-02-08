@@ -46,6 +46,9 @@ concurrency:
   group: '${{ github.workflow }} (${{ github.head_ref || github.ref_name }})'
   cancel-in-progress: true
 
+env:
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
 jobs:
   prepare:
     name: Prepare information
@@ -60,7 +63,18 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-          token: ${{ secrets.GH_MOBILE_PAT }}
+          ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+
+      - name: Authorize SSH session
+        env:
+          SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com > ~/.ssh/known_hosts
+          echo "${SSH_KEY}" > ~/.ssh/ios_dependencies_ssh_key
+          chmod 600 ~/.ssh/ios_dependencies_ssh_key
+          ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
+          ssh-add ~/.ssh/ios_dependencies_ssh_key
 
       # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
       - name: Install Ruby
@@ -105,7 +119,7 @@ jobs:
 
   build_notification:
     name: Build Notification
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs: prepare
     with:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
@@ -121,7 +135,7 @@ jobs:
   build:
     name: Tangem Release
     needs: prepare
-    uses: tangem/actions/.github/workflows/build.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-8741_ci_cd_notifications
     with:
       stage: '${{ needs.prepare.outputs.stage }}'
       version: '${{ needs.prepare.outputs.version }}'
@@ -139,11 +153,11 @@ jobs:
       runner_name: ${{ inputs.runner_name }}
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
-      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
+      IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
 
   deploy_notification:
     name: Deploy Notification
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
@@ -162,7 +176,7 @@ jobs:
 
   deploy:
     name: Tangem Release TestFlight
-    uses: tangem/actions/.github/workflows/deploy-testflight.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/deploy-testflight.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
@@ -177,11 +191,11 @@ jobs:
       ASC_KEY_ID: '${{ secrets.ASC_KEY_ID }}'
       ASC_PRIVATE_KEY: '${{ secrets.ASC_PRIVATE_KEY }}'
       ASC_ISSUER_ID: '${{ secrets.ASC_ISSUER_ID }}'
-      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
+      IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
 
   success_notification:
     name: Success Notification
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
@@ -202,7 +216,7 @@ jobs:
   error_notification:
     name: Error Notification
     if: failure()
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
@@ -223,7 +237,7 @@ jobs:
   cancel_notification:
     name: Cancel Notification
     if: cancelled()
-    uses: tangem/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
       - build
