@@ -12,7 +12,7 @@ jobs:
   prepare:
     name: Prepare Release
     if: ${{ github.event.pull_request.merged }}
-    uses: tangem/actions/.github/workflows/set-jira-task-version.yml@feature/IOS-8741_ci_cd_notifications
+    uses: tangem-developments/actions/.github/workflows/set-jira-task-version.yml@feature/IOS-8741_ci_cd_notifications
     with:
       next_version_name: 'Next Release'
     secrets:
