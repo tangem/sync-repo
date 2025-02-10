@@ -23,6 +23,7 @@ jobs:
     with:
       versionName: ${{ inputs.versionName }}
       releaseType: ${{ inputs.releaseType }}
+      projectName: 'IOS'
     secrets:
       GH_MOBILE_PAT: ${{ secrets.GH_MOBILE_PAT}}
       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
