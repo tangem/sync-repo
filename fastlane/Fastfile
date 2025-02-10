@@ -2,7 +2,9 @@ require 'base64'
 
 default_platform(:ios)
 
-BUILD_PATH = "./fastlane/builds/"
+BUILD_FOLDER = "builds"
+BUILD_PATH = File.join("./fastlane/", BUILD_FOLDER)
+XCODE_ARCHIVES_PATH = "~/Library/Developer/Xcode/Archives/"
 ANALYZE_ARCHIVE_UTIL_PATH = "./private-app-config/analyze_archive.sh"
 PRODUCTION_SCHEME = "Tangem"
 BETA_SCHEME = "Tangem Beta"
@@ -117,6 +119,8 @@ lane :release do |options|
     version: options[:version],
     changelog: options[:changelog]
   )
+
+  clean_artifacts
 
   slack_message(
     message: "Tangem Release successfully uploaded to TestFlight",
@@ -630,7 +634,13 @@ private_lane :slack_message do |options|
 end
 
 private_lane :clean_artifacts do |options|
-  sh("rm -rf builds || true")
-  sh("find ~/Library/Developer/Xcode/Archives/ -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +$((3+1)) | xargs rm -rf || true") 
+  # Keeps the three most recent collections of Xcode archives, deletes all others
+  # We can't use fastlane shared values like `Actions::SharedValues::IPA_OUTPUT_PATH` here because
+  # this lane runs before the actual build takes place
+  sh("find #{XCODE_ARCHIVES_PATH} -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +$((3+1)) | xargs rm -rf || true")
+
+  # All shell scripts are launched from the 'fastlane' folder
+  sh("rm -rf #{File.dirname(BUILD_FOLDER)}")
+
   clean_build_artifacts
 end
