@@ -17,6 +17,9 @@ on:
     schedule:
         - cron: "37 0 * * 0"
 
+env:
+    SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
 jobs:
     analyze:
         name: Analyze (${{ matrix.language }})
@@ -52,8 +55,22 @@ jobs:
                 # If you are analyzing a compiled language, you can modify the 'build-mode' for that language to customize how
                 # your codebase is analyzed, see https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/codeql-code-scanning-for-compiled-languages
         steps:
-            - name: Checkout
+            - name: Checkout,
               uses: actions/checkout@v3
+              with:
+                  submodules: true
+                  ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+
+            - name: Authorize SSH session
+              env:
+                  SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+              run: |
+                  mkdir -p ~/.ssh
+                  ssh-keyscan github.com > ~/.ssh/known_hosts
+                  echo "${SSH_KEY}" > ~/.ssh/ios_dependencies_ssh_key
+                  chmod 600 ~/.ssh/ios_dependencies_ssh_key
+                  ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
+                  ssh-add ~/.ssh/ios_dependencies_ssh_key
 
             # Add any setup steps before running the `github/codeql-action/init` action.
             # This includes steps like installing compilers or runtimes (`actions/setup-node`
