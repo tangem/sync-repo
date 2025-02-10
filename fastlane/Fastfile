@@ -77,7 +77,7 @@ lane :test_modules do |options|
     # A real & valid device name is not required, fastlane will use the first available device.
     device: "iPhone",
     # Still required in 2024 https://github.com/fastlane/fastlane/issues/20012#issuecomment-1263765513
-    output_directory: Dir.pwd + "/test_output",
+    output_directory: File.join(Dir.pwd, "test_output"),
     result_bundle: true,
     xcodebuild_formatter: "xcpretty",
     clean: true
@@ -468,8 +468,8 @@ private_lane :build_and_analyze do |options|
 
   code_sign_mode = options[:code_sign_mode]
 
-  xcarchive_path = File.expand_path("../" + options[:path] + options[:filename] + ".xcarchive")
-  analyze_archive_util_path = File.expand_path("../" + ANALYZE_ARCHIVE_UTIL_PATH)
+  xcarchive_path = File.expand_path(File.join("../", options[:path], options[:filename]) + ".xcarchive")
+  analyze_archive_util_path = File.expand_path(File.join("../", ANALYZE_ARCHIVE_UTIL_PATH))
 
   archive_app(
     path: options[:path],
@@ -558,7 +558,7 @@ end
 private_lane :upload_dsyms do |options|
   # Strip the suffix if needed
   filename = options[:filename].chomp(".ipa")
-  path = BUILD_PATH + filename + ".app.dSYM.zip"
+  path = File.join(BUILD_PATH, filename) + ".app.dSYM.zip"
 
   # Custom `binary_path` is required for SPM installations, see
   # https://firebase.blog/posts/2021/09/uploading-dsym-files-to-crashlytics-with-fastlane/ for details
@@ -573,7 +573,7 @@ private_lane :upload_testflight do |options|
   UI.deprecated("Deprecated, use `Create release` Github action instead")
 
   filename = options[:name] + ".ipa"
-  path = BUILD_PATH + filename
+  path = File.join(BUILD_PATH, filename)
   release_notes = "#{options[:changelog]}\nGitHash: #{last_git_commit[:commit_hash]}"
 
   upload_to_testflight(
@@ -620,7 +620,7 @@ private_lane :clean_artifacts do |options|
   sh("find #{XCODE_ARCHIVES_PATH} -mindepth 1 -maxdepth 1 -type d | sort -r | tail -n +$((3+1)) | xargs rm -rf || true")
 
   # All shell scripts are launched from the 'fastlane' folder
-  sh("rm -rf #{File.dirname(BUILD_FOLDER)}")
+  sh("rm -rf #{BUILD_FOLDER}")
 
   clean_build_artifacts
 end
