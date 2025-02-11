@@ -256,11 +256,12 @@ lane :get_alpha_beta_version_number do |options|
     build_version = AppVersion.new(version_string: jira_issue_key, version_source: "Jira issue")
   else
     begin
-      # `get_app_version` checks if `build_version_override` is a SemVer, therefore we don't use this parameter
-      build_version = get_app_version(
+      # `get_app_version` checks if `build_version_override` is a SemVer, so we don't use this parameter
+      get_app_version(
         build_version_override: nil,
         branch_name: options[:branch_name]
       )
+      build_version = Actions.lane_context[:_BUILD_VERSION]
     rescue => ex
       build_version = AppVersion.new(version_string: options[:build_version_fallback], version_source: "fallback value")
     end
@@ -277,10 +278,11 @@ Options:
 - branch_name: Source branch name
 """
 lane :get_release_version_number do |options|
-  build_version = get_app_version(
+  get_app_version(
     build_version_override: options[:build_version_override],
     branch_name: options[:branch_name]
   )
+  build_version = Actions.lane_context[:_BUILD_VERSION]
 
   UI.important("Using the build version '#{build_version.version_string}' derived from the #{build_version.version_source} for this build")
   sh("echo 'release_version_number=#{build_version.version_string}' >> $GITHUB_ENV")
@@ -564,7 +566,7 @@ private_lane :get_app_version do |options|
     (build_version.version_string =~ semver_regex_1) or (build_version.version_string =~ semver_regex_2)
   )
 
-  return build_version
+  Actions.lane_context[:_BUILD_VERSION] = build_version
 end
 
 private_lane :increment_firebase_build_number do |options|
