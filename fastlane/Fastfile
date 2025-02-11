@@ -13,6 +13,8 @@ BSDK_EXAMPLE_SCHEME = "BlockchainSdkExample"
 PROJECT_NAME = "TangemApp.xcodeproj"
 FIREBASE_TESTERS_GROUP = "testers"
 
+AppVersion = Struct.new(:version_string, :version_source)
+
 before_all do |lane, options|
   lanes_to_skip_bootstrap = [
     :update_translations,
@@ -236,40 +238,53 @@ lane :build_RC do |options|
 end
 
 desc """
+A lane that creates the build version for the release using either branch name or a fallback value.
+Options:
+- build_version_override: Optional build version override (user input)
+- jira_issue_key: Jira issue key
+- branch_name: Source branch name
+- build_version_fallback: Fallback value for cases when the app version can't be derived from the branch name
+"""
+lane :get_alpha_beta_version_number do |options|
+  build_version_override = options[:build_version_override]
+  jira_issue_key = options[:jira_issue_key]
+  override = nil
+
+  if (not build_version_override.nil? and not build_version_override.empty?)
+    override = build_number_override
+  else
+    override = jira_issue_key
+  end
+
+  build_version = nil
+
+  begin
+    build_version = get_app_version(
+      build_version_override: override,
+      branch_name: options[:branch_name]
+    )
+  rescue => ex
+    build_version = AppVersion.new(version_string: options[:build_version_fallback], version_source: "fallback value")
+  end
+
+  UI.important("Using the build version '#{build_version.version_string}' derived from the #{build_version.version_source} for this build")
+  sh("echo 'release_version_number=#{build_version.version_string}' >> $GITHUB_ENV")
+end
+
+desc """
 A lane that creates the build version for the release using either user input or a branch name.
 Options:
 - build_version_override: Optional build version override (user input)
 - branch_name: Source branch name
 """
 lane :get_release_version_number do |options|
-  semver_regex_1 = /^\d+\.\d+\.\d+$/
-  semver_regex_2 = /^\d+\.\d+$/
-  build_version = ""
-  build_version_source = ""
-  build_version_override = options[:build_version_override]
-  branch_name = options[:branch_name]
-
-  if (not build_version_override.nil? and not build_version_override.empty?)
-    build_version = build_version_override
-    build_version_source = "user input"
-  elsif (not branch_name.nil? and not branch_name.empty?)
-    branch_name_components = branch_name.split("/")
-    UI.user_error!("Invalid branch name '#{branch_name}', can't process further with the build") unless branch_name_components.length > 1
-    build_version = branch_name_components[-1]
-    build_version_source = "branch name"
-  else
-    UI.user_error!(
-      "Unable to derive the build version from either 'build_version_override' or 'branch_name' " \
-      "lane arguments, can't process further with the build"
-    )
-  end
-
-  UI.user_error!("Invalid build version format '#{build_version}', can't process further with the build") unless !!(
-    (build_version =~ semver_regex_1) or (build_version =~ semver_regex_2)
+  build_version = get_app_version(
+    build_version_override: options[:build_version_override],
+    branch_name: options[:branch_name]
   )
 
-  UI.important("Using the build version '#{build_version}' derived from the #{build_version_source} for this build")
-  sh("echo 'release_version_number=#{build_version}' >> $GITHUB_ENV")
+  UI.important("Using the build version '#{build_version.version_string}' derived from the #{build_version.version_source} for this build")
+  sh("echo 'release_version_number=#{build_version.version_string}' >> $GITHUB_ENV")
 end
 
 desc """
@@ -524,6 +539,33 @@ private_lane :create_ipa do |options|
     skip_package_dependencies_resolution: false,
     archive_path: options[:xcarchive_path]
   )
+end
+
+private_lane :get_app_version do |options|
+  semver_regex_1 = /^\d+\.\d+\.\d+$/
+  semver_regex_2 = /^\d+\.\d+$/
+  build_version = nil
+  build_version_override = options[:build_version_override]
+  branch_name = options[:branch_name]
+
+  if (not build_version_override.nil? and not build_version_override.empty?)
+    build_version = AppVersion.new(version_string: build_version_override, version_source: "user input")
+  elsif (not branch_name.nil? and not branch_name.empty?)
+    branch_name_components = branch_name.split("/")
+    UI.user_error!("Invalid branch name '#{branch_name}', can't process further with the build") unless branch_name_components.length > 1
+    build_version = AppVersion.new(version_string: branch_name_components[-1], version_source: "branch name")
+  else
+    UI.user_error!(
+      "Unable to derive the build version from either 'build_version_override' or 'branch_name' " \
+      "lane arguments, can't process further with the build"
+    )
+  end
+
+  UI.user_error!("Invalid build version format '#{build_version.version_string}', can't process further with the build") unless !!(
+    (build_version.version_string =~ semver_regex_1) or (build_version.version_string =~ semver_regex_2)
+  )
+
+  return build_version
 end
 
 private_lane :increment_firebase_build_number do |options|
