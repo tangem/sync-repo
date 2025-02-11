@@ -38,16 +38,44 @@ concurrency:
   group: '${{ github.workflow }} (${{ github.head_ref || github.ref_name }})'
   cancel-in-progress: true
 
+env:
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
 jobs:
   prepare:
     name: Prepare information
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     outputs:
-      version: '${{ steps.version.outputs.build_version }}'
+      version: '${{ steps.version.outputs.release_version_number }}'
       stage: 'Alpha'
       build_number: '${{ github.run_number }}'
       jira_summary: '${{ steps.jira.outputs.summary }}'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+
+      - name: Authorize SSH session
+        env:
+          SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com > ~/.ssh/known_hosts
+          echo "${SSH_KEY}" > ~/.ssh/ios_dependencies_ssh_key
+          chmod 600 ~/.ssh/ios_dependencies_ssh_key
+          ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
+          ssh-add ~/.ssh/ios_dependencies_ssh_key
+
+      # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
+      - name: Install Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
+
+      # Skipping Ruby installation since it has been already installed by an action above
+      - name: Install required dependencies
+        run: ./bootstrap.sh --skip-ruby
+
       - name: Jira Login
         uses: atlassian/gajira-login@master
         env:
@@ -67,19 +95,18 @@ jobs:
         env:
           JIRA_ISSUE_KEY: '${{ steps.jira.outputs.key }}'
           BUILD_VERSION_OVERRIDE: '${{ inputs.build_version_override }}'
+          BRANCH_NAME: '${{ github.head_ref || github.ref_name }}'
+          BUILD_VERSION_FALLBACK: 'Alpha'
         run: |
-          if [[ -n "${BUILD_VERSION_OVERRIDE}" ]]; then
-            # Use the build version value from user input (if any)
-            BUILD_VERSION="${BUILD_VERSION_OVERRIDE}"
-          elif [[ -n "${JIRA_ISSUE_KEY}" ]]; then
-            # Use the build version value from Jira (if available)
-            BUILD_VERSION="${JIRA_ISSUE_KEY}"
-          else
-            # Fallback to default value
-            BUILD_VERSION="Alpha"
-          fi
+          # The initialization of rbenv is required before every `bundle` call since Gihub Actions spawns each 'run' step in a separate process
+          eval "$(rbenv init - bash)"
 
-          echo "build_version=${BUILD_VERSION}" >> "$GITHUB_OUTPUT"
+          bundle exec fastlane \
+          get_alpha_beta_version_number \
+          build_version_override:"${BUILD_VERSION_OVERRIDE}" \
+          jira_issue_key:"${JIRA_ISSUE_KEY}" \
+          branch_name:"${BRANCH_NAME}" \
+          build_version_fallback:"${BUILD_VERSION_FALLBACK}"
 
   build_notification:
     name: Build Notification
