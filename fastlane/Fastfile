@@ -255,16 +255,16 @@ lane :get_alpha_beta_version_number do |options|
   elsif (not jira_issue_key.nil? and not jira_issue_key.empty?)
     build_version = AppVersion.new(version_string: jira_issue_key, version_source: "Jira issue")
   else
-    # begin
-      # `get_app_version` checks if `build_version_override` is a SemVer, therefore we don't use this parameter
-    get_app_version(
-      build_version_override: nil,
-      branch_name: options[:branch_name]
-    )
-    build_version = Actions.lane_context[:_BUILD_VERSION]
-    # rescue => ex
-      # build_version = AppVersion.new(version_string: options[:build_version_fallback], version_source: "fallback value")
-    # end
+    begin
+      # `get_app_version` checks if `build_version_override` is a SemVer, so we don't use this parameter
+      get_app_version(
+        build_version_override: nil,
+        branch_name: options[:branch_name]
+      )
+      build_version = Actions.lane_context[:_BUILD_VERSION]
+    rescue => ex
+      build_version = AppVersion.new(version_string: options[:build_version_fallback], version_source: "fallback value")
+    end
   end
 
   UI.important("Using the build version '#{build_version.version_string}' derived from the #{build_version.version_source} for this build")
