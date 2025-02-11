@@ -74,14 +74,7 @@ jobs:
 
       # Skipping Ruby installation since it has been already installed by an action above
       - name: Install required dependencies
-        if: false # TODO: Test only
         run: ./bootstrap.sh --skip-ruby
-
-      # TODO: Test only
-      - name: Install required dependencies
-        run: |
-          gem install bundler
-          bundle install
 
       - name: Jira Login
         uses: atlassian/gajira-login@master
