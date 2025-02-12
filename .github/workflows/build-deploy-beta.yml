@@ -3,7 +3,8 @@ name: Beta - Build and Deploy
 on:
   push:
     branches:
-      - 'develop'
+      - 'develop' # TODO: Test only
+      - 'test/IOS-8741_ci_cd_notifications'
   workflow_dispatch:
     inputs:
       runner_name:
@@ -79,11 +80,16 @@ jobs:
 
       # Skipping Ruby installation since it has been already installed by an action above
       - name: Install required dependencies
+        if: false # TODO: Enable, requires IOS-8785
         run: ./bootstrap.sh --skip-ruby
+
+      - name: Test only
+        run: bundle install
 
       - name: Find latest release branch
         id: find-latest-release-branch
-        if: ${{ env.should_find_latest_release_branch == 'true' }}
+        if: false # TODO: Enable, requires IOS-8785
+        #if: ${{ env.should_find_latest_release_branch == 'true' }}
         run: |
           ./Utilites/find-latest-release-branch.sh '${{ github.ref_name }}'
           echo "result=$(< 'find-latest-release-branch.output')" >> $GITHUB_OUTPUT
@@ -93,7 +99,8 @@ jobs:
         uses: tangem-developments/github-action@main
         with:
           github-token: '${{ secrets.GH_MOBILE_PAT }}'
-          base: '${{ inputs.base_branch || steps.find-latest-release-branch.outputs.result }}'
+          base: 'releases/5.20'
+          #base: '${{ inputs.base_branch || steps.find-latest-release-branch.outputs.result }}'
           head: '${{ github.ref_name }}'
 
       - name: Jira Login
@@ -170,6 +177,7 @@ jobs:
 
   build:
     name: Tangem Beta
+    if: false # TODO: Test only
     needs: prepare
     uses: tangem-developments/actions/.github/workflows/build.yml@feature/IOS-8741_ci_cd_notifications
     with:
@@ -189,6 +197,7 @@ jobs:
 
   deploy_notification:
     name: Deploy Notification
+    if: false # TODO: Test only
     uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
@@ -209,6 +218,7 @@ jobs:
 
   deploy:
     name: Google Distribution
+    if: false # TODO: Test only
     uses: tangem-developments/actions/.github/workflows/deploy-firebase.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
@@ -228,6 +238,7 @@ jobs:
 
   success_notification:
     name: Success Notification
+    if: false # TODO: Test only
     uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
@@ -250,7 +261,8 @@ jobs:
 
   error_notification:
     name: Error Notification
-    if: failure()
+    if: false # TODO: Test only
+    #if: failure()
     uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
@@ -272,7 +284,8 @@ jobs:
 
   cancel_notification:
     name: Cancel Notification
-    if: cancelled()
+    if: false # TODO: Test only
+    #if: cancelled()
     uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8741_ci_cd_notifications
     needs:
       - prepare
