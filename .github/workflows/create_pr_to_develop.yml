@@ -3,7 +3,8 @@ name: Create Pull request from release branch to develop
 on:
   push:
     branches:
-      - 'releases/**'
+      #- 'releases/**'
+      - 'test/IOS-8785_ci_cd_create_release'  # TODO: Test only
 
 jobs:
   trigger-reusable-workflow:
