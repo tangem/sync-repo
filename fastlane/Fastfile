@@ -86,7 +86,6 @@ desc """
 A lane for building for CodeQL analysis
  """
 lane :build_simulator do |options|
-    # clear_derived_data  # Required otherwise raw xcodebuild doesn't work reliably
     build_app(
       project: PROJECT_NAME,
       xcargs: "-allowProvisioningUpdates -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile",
@@ -121,9 +120,9 @@ lane :release do |options|
   increment_testflight_build_number(version: options[:version], build: options[:build])
 
   build(
-    scheme: PRODUCTION_SCHEME,
-    version: options[:version],
-    filename: PRODUCTION_SCHEME,
+    scheme: PRODUCTION_SCHEME, 
+    version: options[:version], 
+    filename: PRODUCTION_SCHEME, 
     path: BUILD_PATH,
     analyze_archive: options[:analyze_archive],
     code_sign_identity: options[:code_sign_identity],
