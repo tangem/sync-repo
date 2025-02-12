@@ -1,6 +1,6 @@
 //
 //  StoryViewModel.swift
-//  TangemModules
+//  TangemApp
 //
 //  Created by Aleksei Lobankov on 30.01.2025.
 //  Copyright © 2025 Tangem AG. All rights reserved.
@@ -9,6 +9,7 @@
 import Combine
 import Foundation
 
+// TODO: @alobankov, move to TangemUI once resources generation moved to TangemUI
 @MainActor
 final class StoryViewModel: ObservableObject {
     private let pagesCount: Int
@@ -33,7 +34,7 @@ final class StoryViewModel: ObservableObject {
     @Published private(set) var visiblePageProgress: CGFloat
     @Published private(set) var visiblePageIndex: Int
 
-    init(pagesCount: Int, pageDuration: TimeInterval = 2.5) {
+    init(pagesCount: Int, pageDuration: TimeInterval = 6) {
         assert(pagesCount > 0, "Expected to have at least one page. Developer mistake")
 
         self.pagesCount = pagesCount
