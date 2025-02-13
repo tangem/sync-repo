@@ -20,7 +20,8 @@ final class TokenDetailsViewModel: SingleTokenBaseViewModel, ObservableObject {
 
     private(set) lazy var balanceWithButtonsModel = BalanceWithButtonsViewModel(
         buttonsPublisher: $actionButtons.eraseToAnyPublisher(),
-        balanceProvider: self
+        balanceProvider: self,
+        balanceTypeSelectorProvider: self
     )
 
     private(set) lazy var tokenDetailsHeaderModel: TokenDetailsHeaderViewModel = .init(tokenItem: walletModel.tokenItem)
@@ -349,5 +350,14 @@ extension TokenDetailsViewModel: BalanceWithButtonsViewModelBalanceProvider {
         walletModel
             .fiatAvailableBalanceProvider
             .formattedBalanceTypePublisher
+    }
+}
+
+extension TokenDetailsViewModel: BalanceTypeSelectorProvider {
+    var shouldShowBalanceSelector: Bool {
+        guard let activeStakingViewData,
+              case .balance = activeStakingViewData.balance else { return false }
+
+        return true
     }
 }

@@ -272,13 +272,23 @@ private extension StakingDetailsViewModel {
                     fiatFormatted: rewardsFiatFormatted,
                     cryptoFormatted: rewardsCryptoFormatted
                 ) { [weak self] in
+                    guard let self else { return }
+
+                    guard rewardsClaimable else {
+                        alert = AlertBuilder.makeAlert(
+                            title: Localization.stakingDetailsMinRewardsNotification(yield.item.name, "1 ADA"),
+                            message: "",
+                            primaryButton: .default(Text(Localization.warningButtonOk), action: {})
+                        )
+                        return
+                    }
                     if rewards.count == 1, let balance = rewards.first {
-                        self?.openFlow(balance: balance, validators: yield.validators)
+                        openFlow(balance: balance, validators: yield.validators)
 
                         let name = balance.validatorType.validator?.name
                         Analytics.log(event: .stakingButtonRewards, params: [.validator: name ?? ""])
                     } else {
-                        self?.coordinator?.openMultipleRewards()
+                        coordinator?.openMultipleRewards()
                     }
                 }
             )

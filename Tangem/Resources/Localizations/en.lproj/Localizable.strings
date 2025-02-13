@@ -744,6 +744,7 @@
 "staking_details_estimated_profit" = "%@ est. profit";
 "staking_details_market_rating" = "Market rating";
 "staking_details_metrics_block_header" = "Metrics";
+"staking_details_min_rewards_notification" = "According to %1$@ network rules, claims are possible from %2$@. Amounts below will be credited to your account upon unstaking.";
 "staking_details_minimum_requirement" = "Minimum Requirement";
 "staking_details_no_rewards_to_claim" = "No rewards available";
 "staking_details_reward_claiming" = "Reward claiming";
