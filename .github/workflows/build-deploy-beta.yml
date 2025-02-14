@@ -173,7 +173,7 @@ jobs:
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
     secrets:
-      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN_NEW }}'
 
   build:
     name: Tangem Beta
@@ -214,7 +214,7 @@ jobs:
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
     secrets:
-      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN_NEW }}'
 
   deploy:
     name: Google Distribution
@@ -257,7 +257,7 @@ jobs:
       build_description: '${{ inputs.build_description }}'
       encoded_release_url: '${{ needs.deploy.outputs.encoded_release_url }}'
     secrets:
-      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN_NEW }}'
 
   error_notification:
     name: Error Notification
@@ -280,7 +280,7 @@ jobs:
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
     secrets:
-      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN_NEW }}'
 
   cancel_notification:
     name: Cancel Notification
@@ -303,4 +303,4 @@ jobs:
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
     secrets:
-      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN_NEW }}'
