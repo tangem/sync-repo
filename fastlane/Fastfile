@@ -232,6 +232,15 @@ lane :build_RC do |options|
 end
 
 desc """
+TBD
+"""
+lane :cache_spm_dependencies do |options|
+  Dir.chdir("..") do
+    sh("xcodebuild -resolvePackageDependencies -clonedSourcePackagesDirPath #{options[:cache_path]}")
+  end
+end
+
+desc """
 A lane that creates the build version for the release using either user input or a branch name.
 Options:
 - build_version_override: Optional build version override (user input)

@@ -126,6 +126,16 @@ Options:
 - code_sign_identity: Xcode code signing identity (string) used to analyze the archive. Optional, required only if `analyze_archive` is true
 
 
+### cache_spm_dependencies
+
+```sh
+[bundle exec] fastlane cache_spm_dependencies
+```
+
+
+TBD
+
+
 ### get_release_version_number
 
 ```sh
