@@ -1,6 +1,9 @@
 name: Prepare and sync with public repo
 
 on:
+  push:
+    branches:
+      - 'feature/IOS-9142_sync_to_public_repo'  # TODO: Test only
   workflow_dispatch:
 
 env:
