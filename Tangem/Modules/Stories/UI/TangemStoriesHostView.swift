@@ -47,10 +47,13 @@ struct TangemStoriesHostView: View {
 
     private static func makePages(for story: TangemStory, using viewModel: StoriesHostViewModel) -> [any View] {
         switch story {
-        case .swap:
-            [
-                // TODO: @alobankov, add page views in IOS-9029
-            ]
+        case .swap(let swapStoryData):
+            swapStoryData
+                .pagesKeyPaths
+                .map { pageKeyPath in
+                    let page = swapStoryData[keyPath: pageKeyPath]
+                    return SwapStoryPageView(page: page)
+                }
         }
     }
 }
