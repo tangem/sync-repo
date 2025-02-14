@@ -17,9 +17,12 @@ before_all do |lane, options|
     :deploy_firebase,
     :deploy_testflight,
     :upload_dsyms,
-    :refresh_dsyms,
     :get_release_version_number,
     :get_release_build_number,
+    :increment_firebase_build_number,
+    :increment_testflight_build_number,
+    :slack_message,
+    :clean_artifacts,
   ]
 
   if lanes_to_skip_bootstrap.include?(lane)
@@ -103,7 +106,6 @@ lane :release do |options|
 
   build(
     scheme: PRODUCTION_SCHEME, 
-    version: options[:version], 
     filename: PRODUCTION_SCHEME, 
     path: BUILD_PATH,
     analyze_archive: options[:analyze_archive],
@@ -132,8 +134,10 @@ lane :check_bsdk_example_buildable do |options|
   xcodebuild(
     project: PROJECT_NAME,
     scheme: BSDK_EXAMPLE_SCHEME,
+    destination: "generic/platform=iOS Simulator",
     xcargs: "-allowProvisioningUpdates -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile",
-    analyze: true
+    analyze: true,
+    archive: false
   )
 end
 
@@ -156,8 +160,6 @@ lane :build_Alpha do |options|
   build(
     export_method: "ad-hoc",
     scheme: ALPHA_SCHEME,
-    version: options[:version],
-    build: options[:build],
     filename: options[:filename],
     path: options[:path],
     analyze_archive: options[:analyze_archive],
@@ -187,8 +189,6 @@ lane :build_Beta do |options|
   build(
     export_method: "ad-hoc",
     scheme: BETA_SCHEME,
-    version: options[:version],
-    build: options[:build],
     filename: options[:filename],
     path: options[:path],
     analyze_archive: options[:analyze_archive],
@@ -219,8 +219,6 @@ lane :build_RC do |options|
   build(
     export_method: "app-store",
     scheme: PRODUCTION_SCHEME,
-    version: options[:version],
-    build: options[:build],
     filename: options[:filename],
     path: options[:path],
     analyze_archive: options[:analyze_archive],
@@ -307,30 +305,6 @@ lane :get_release_build_number do |options|
 end
 
 desc """
-Load from testFlight dSyms and upload it to Firebase
-Options:
-- version: app version
-- build: build number
-"""
-lane :refresh_dsyms do |options|
-  app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-  app_store_connect_api_key(duration: 1200, is_key_content_base64: true)
-  download_dsyms(
-    app_identifier: app_identifier,
-    version: options[:version],
-    build_number: options[:build]
-  )
-
-  # Custom `binary_path` is required for SPM installations, see
-  # https://firebase.blog/posts/2021/09/uploading-dsym-files-to-crashlytics-with-fastlane/ for details
-  upload_symbols_to_crashlytics(
-    app_id: ENV["PRODUCTION_SCHEME"],
-    binary_path: "./Utilites/upload-symbols"
-  )
-  clean_build_artifacts
-end
-
-desc """
 Fetches and updates localization bundles using Localise fastlane action (https://github.com/lokalise/lokalise-fastlane-actions).
 Uses `LOKALISE_API_TOKEN` and `LOKALISE_PROJECT_ID` env vars.
 Options:
@@ -383,7 +357,7 @@ lane :deploy_firebase do |options|
 end
 
 desc """
-This lane deploy binary to TestFLight
+This lane deploy binary to TestFlight
 Options:
 - asc_key_id: App Store Connect API Key ID
 - asc_issuer_id: App Store Connect API Key Issuer ID
@@ -430,8 +404,6 @@ private_lane :build do |options|
     build_and_analyze(
       export_method: options[:export_method],
       scheme: options[:scheme],
-      version: options[:version],
-      build: options[:build],
       filename: options[:filename],
       path: options[:path],
       code_sign_identity: options[:code_sign_identity],
@@ -581,6 +553,8 @@ private_lane :upload_testflight do |options|
 end
 
 private_lane :slack_message do |options|
+  UI.deprecated("Deprecated, use `Create release` Github action instead")
+
   slack(
     message: options[:message] + " @qa",
     default_payloads: [:git_branch, :last_git_commit],
