@@ -55,6 +55,8 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          git config --global user.name "Tangem Service"
+          git config --global user.email "gitservice@tangem.com"
           git remote add public-repo "git@github.com:tangem-developments/tangem-app-ios-test-sync-repo.git" # TODO: Test only
           git checkout -b ${SOURCE_BRANCH}
           git add .
@@ -68,4 +70,4 @@ jobs:
           --base ${TARGET_BRANCH} \
           --head ${SOURCE_BRANCH} \
           --title "Sync@${GITHUB_SHA}" \
-          --body "Revision `${GITHUB_SHA}` → `${BASE_BRANCH}`"
+          --body "Revision `${GITHUB_SHA}` → `${TARGET_BRANCH}`"
