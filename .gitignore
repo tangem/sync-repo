@@ -75,6 +75,3 @@ BlockchainSdk/Resources/Generated/**.swift
 
 # Rubygems
 vendor/bundle
-
-# iOS vendor dependencies
-vendor/ios_dependencies
