@@ -6,8 +6,8 @@ on:
       - 'feature/IOS-9142_sync_to_public_repo'  # TODO: Test only
   workflow_dispatch:
 
-permissions:
-  pull-requests: write
+#permissions:
+#  pull-requests: write
 
 env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
