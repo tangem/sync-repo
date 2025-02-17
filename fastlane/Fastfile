@@ -15,12 +15,9 @@ before_all do |lane, options|
   lanes_to_skip_bootstrap = [
     :update_translations,
     :deploy_firebase,
-    :deploy_testflight,
     :upload_dsyms,
     :get_release_version_number,
-    :get_release_build_number,
     :increment_firebase_build_number,
-    :increment_testflight_build_number,
     :slack_message,
     :clean_artifacts,
   ]
