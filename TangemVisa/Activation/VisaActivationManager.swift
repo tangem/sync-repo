@@ -191,8 +191,6 @@ extension CommonVisaActivationManager: VisaActivationManager {
 
         let loadedStatus: VisaCardActivationStatus
         do {
-            // TODO: IOS-8777 Will be removed during BFF integration tests
-            try await Task.sleep(seconds: 3)
             loadedStatus = try await cardActivationStatusService.getCardActivationStatus(
                 authorizationTokens: authorizationTokens,
                 cardId: activationInput.cardId,
