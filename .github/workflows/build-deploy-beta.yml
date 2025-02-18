@@ -17,6 +17,8 @@ on:
           - builder2
           - builder3
           - builder4
+          - builder5
+          - builder6
         default: ''
       build_description:
         description: >
