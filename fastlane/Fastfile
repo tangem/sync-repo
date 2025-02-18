@@ -86,17 +86,11 @@ desc """
 A lane for building for CodeQL analysis
  """
 lane :build_simulator do |options|
-    build_app(
-      project: PROJECT_NAME,
-      xcargs: "-allowProvisioningUpdates -disableAutomaticPackageResolution -onlyUsePackageVersionsFromResolvedFile",
-      disable_package_automatic_updates: true,  # Probably redundant because of `disableAutomaticPackageResolution` xcarg, but won't harm
-      scheme: ALPHA_SCHEME,
-      clean: true,
-      silent: false,
-      export_method: "ad-hoc",
-      destination: "generic/platform=iOS Simulator",
-      skip_package_ipa: true,
-      skip_archive: true
+    archive_app(
+        scheme: ALPHA_SCHEME,
+        export_method: "ad-hoc",
+        destination: "generic/platform=iOS Simulator",
+        skip_archive: true
     )
 end
 
@@ -484,8 +478,10 @@ private_lane :archive_app do |options|
     clean: true,
     silent: false,
     export_method: options[:export_method],
+    destination: options[:destination],
     skip_codesigning: false,
     skip_package_ipa: true,
+    skip_archive: options[:skip_archive],
     archive_path: options[:xcarchive_path]
   )
 end
