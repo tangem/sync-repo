@@ -72,7 +72,7 @@ jobs:
   build:
     name: Tangem Alpha
     needs: prepare
-    uses: tangem-developments/actions/.github/workflows/build.yml@main
+    uses: tangem-developments/actions/.github/workflows/build.yml@features/IOS-9033_codeql
     with:
       stage: '${{ needs.prepare.outputs.stage }}'
       version: '${{ needs.prepare.outputs.version }}'
