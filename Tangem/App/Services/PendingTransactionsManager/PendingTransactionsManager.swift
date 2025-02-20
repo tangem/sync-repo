@@ -35,6 +35,10 @@ struct PendingTransaction {
     let refundedTokenItem: TokenItem?
 
     let statuses: [PendingExpressTransactionStatus]
+
+    /// Average duration of transaction processing in seconds based on historical data.
+    /// If nil, there is not enough data to calculate average duration.
+    let averageDuration: TimeInterval?
 }
 
 final class CompoundPendingTransactionsManager: PendingExpressTransactionsManager {

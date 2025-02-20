@@ -24,6 +24,11 @@ struct ExpressPendingTransactionRecord: Codable, Equatable {
     let externalTxId: String?
     let externalTxURL: String?
 
+    /// Average duration of transaction processing in seconds based on historical data.
+    /// If nil, there is not enough data to calculate average duration.
+    /// Will be updated when transaction status changes
+    var averageDuration: TimeInterval?
+
     // Flag for hide transaction from UI. But keep saving in the storage
     var isHidden: Bool
     var transactionStatus: PendingExpressTransactionStatus

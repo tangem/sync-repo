@@ -184,10 +184,16 @@ struct ExpressPendingTxStatusBottomSheetView_Preview: PreviewProvider {
             date: Date(),
             externalTxId: "a34883e049a416",
             externalTxURL: "https://changenow.io/exchange/txs/a34883e049a416",
+            averageDuration: nil,
             isHidden: false,
             transactionStatus: .awaitingDeposit
         )
-        let pendingTransaction = factory.buildPendingExpressTransaction(currentExpressStatus: .sending, refundedTokenItem: .blockchain(.init(.ethereum(testnet: false), derivationPath: nil)), for: record)
+        let pendingTransaction = factory.buildPendingExpressTransaction(
+            currentExpressStatus: .sending,
+            refundedTokenItem: .blockchain(.init(.ethereum(testnet: false), derivationPath: nil)),
+            for: record
+        )
+
         return .init(
             pendingTransaction: pendingTransaction.pendingTransaction,
             currentTokenItem: tokenItem,

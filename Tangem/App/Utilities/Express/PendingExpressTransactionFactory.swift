@@ -68,10 +68,7 @@ struct PendingExpressTransactionFactory {
         transactionRecord.transactionStatus = currentStatus
         transactionRecord.refundedTokenItem = refundedTokenItem
 
-        return .init(
-            transactionRecord: transactionRecord,
-            statuses: statusesList
-        )
+        return .init(transactionRecord: transactionRecord, statuses: statusesList)
     }
 
     func buildPendingExpressTransaction(for transactionRecord: ExpressPendingTransactionRecord) -> PendingExpressTransaction {
@@ -96,6 +93,9 @@ struct PendingExpressTransactionFactory {
             }
         }()
 
-        return .init(transactionRecord: transactionRecord, statuses: statusesList)
+        return .init(
+            transactionRecord: transactionRecord,
+            statuses: statusesList
+        )
     }
 }
