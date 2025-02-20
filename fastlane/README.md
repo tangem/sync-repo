@@ -154,19 +154,6 @@ Options:
 - asc_key: App Store Connect API Key (NOT in the base64 format)
 
 
-### refresh_dsyms
-
-```sh
-[bundle exec] fastlane refresh_dsyms
-```
-
-
-Load from testFlight dSyms and upload it to Firebase
-Options:
-- version: app version
-- build: build number
-
-
 ### update_translations
 
 ```sh
@@ -203,7 +190,7 @@ Options:
 ```
 
 
-This lane deploy binary to TestFLight
+This lane deploy binary to TestFlight
 Options:
 - asc_key_id: App Store Connect API Key ID
 - asc_issuer_id: App Store Connect API Key Issuer ID
