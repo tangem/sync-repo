@@ -9,8 +9,6 @@
 import Foundation
 import WalletCore
 import BigInt
-import TangemSdk
-import TangemFoundation
 
 // You can decode your CBOR transaction here: https://cbor.me
 class CardanoTransactionBuilder {
@@ -285,7 +283,7 @@ private extension CardanoTransactionBuilder {
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
         if input.plan.error != .ok {
-            Log.debug("CardanoSigningInput has a error: \(input.plan.error)")
+            BSDKLogger.error("CardanoSigningIntpu has a error", error: output.errorMessage)
             throw CardanoTransactionBuilderError.walletCoreError
         }
         return input
@@ -334,7 +332,7 @@ private extension CardanoTransactionBuilder {
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
         if input.plan.error != .ok {
-            Log.debug("CardanoSigningInput has a error: \(input.plan.error)")
+            BSDKLogger.error("CardanoSigningInput has a error", error: preSigningOutput.errorMessage)
             throw CardanoTransactionBuilderError.walletCoreError
         }
 
@@ -348,7 +346,7 @@ private extension CardanoTransactionBuilder {
         let preSigningOutput = try TxCompilerPreSigningOutput(serializedData: preImageHashes)
 
         if preSigningOutput.error != .ok {
-            Log.debug("CardanoPreSigningOutput has a error: \(preSigningOutput.errorMessage)")
+            BSDKLogger.error("CardanoPreSigningOutput has a error", error: preSigningOutput.errorMessage)
             throw WalletError.failedToBuildTx
         }
 

@@ -77,7 +77,6 @@ jobs:
     - name: Test host app
       run: bundle exec fastlane test
 
-  # TODO: This test is temporarily disabled due to a broken build, troubleshooting needed (IOS-9039)
   check_bsdk_example_buildable:
     name: Check BSDK example project
     runs-on: [self-hosted, active]  # This target requires code signing, so we use self-hosted runners
@@ -85,14 +84,12 @@ jobs:
     if: github.event.pull_request.draft == false || needs.check_if_pr_has_always_run_tests_label.outputs.has_always_run_tests_label == 'true'
     steps:
     - name: Checkout
-      if: false
       uses: actions/checkout@v3
       with:
         submodules: true
         ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
 
     - name: Authorize SSH session
-      if: false
       env:
         SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
       run: |
@@ -104,11 +101,9 @@ jobs:
         ssh-add ~/.ssh/ios_dependencies_ssh_key
 
     - name: Install required dependencies
-      if: false
       run: ./bootstrap.sh
 
     - name: Build BSDK example
-      if: false
       run: |
         # The initialization of rbenv is required before every `bundle` call since Gihub Actions spawns each 'run' step in a separate process
         eval "$(rbenv init - bash)"

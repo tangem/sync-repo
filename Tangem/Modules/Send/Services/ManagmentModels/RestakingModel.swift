@@ -117,7 +117,7 @@ private extension RestakingModel {
             } catch _ as CancellationError {
                 // Do nothing
             } catch {
-                AppLog.shared.error(error)
+                AppLogger.error(error: error)
                 model.update(state: .networkError(error))
             }
         }

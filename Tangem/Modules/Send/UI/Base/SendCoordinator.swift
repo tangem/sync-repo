@@ -157,7 +157,6 @@ extension SendCoordinator: SendRoutable {
                 balanceFormatter: .init(),
                 balanceConverter: .init()
             ),
-            logger: AppLog.shared,
             approveViewModelInput: approveViewModelInput,
             coordinator: self
         )
