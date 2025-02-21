@@ -83,6 +83,18 @@ lane :test_modules do |options|
 end
 
 desc """
+A lane for building for CodeQL analysis
+ """
+lane :build_simulator do |options|
+    archive_app(
+        scheme: ALPHA_SCHEME,
+        export_method: "ad-hoc",
+        destination: "generic/platform=iOS Simulator",
+        skip_archive: true
+    )
+end
+
+desc """
 A lane that builds a \"Tangem\" scheme and uploads the archive to TestFlight for release.
 Using enviroment: Production
 Options:
@@ -466,8 +478,10 @@ private_lane :archive_app do |options|
     clean: true,
     silent: false,
     export_method: options[:export_method],
+    destination: options[:destination],
     skip_codesigning: false,
     skip_package_ipa: true,
+    skip_archive: options[:skip_archive],
     archive_path: options[:xcarchive_path]
   )
 end
