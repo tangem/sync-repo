@@ -52,7 +52,6 @@ jobs:
       stage: 'Alpha'
       build_number: '${{ github.run_number }}'
       jira_summary: '${{ steps.jira.outputs.summary }}'
-      jira-issues-summary: '${{ steps.jira-issues-summary.outputs.result }}' # TODO: Test only
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -74,36 +73,6 @@ jobs:
       # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
       - name: Install Ruby
         uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
-
-      # TODO: Test only
-      - name: Install required dependencies
-        run: bundle install
-
-      # TODO: Test only
-      - name: Get unreleased tasks
-        id: git-diff
-        uses: tangem-developments/github-action@main
-        with:
-          github-token: '${{ secrets.GH_MOBILE_PAT }}'
-          base: 'releases/5.20'
-          head: 'releases/5.21'
-      
-      # TODO: Test only
-      - name: Jira Login
-        uses: atlassian/gajira-login@master
-        env:
-          JIRA_BASE_URL: '${{ secrets.JIRA_URL }}'
-          JIRA_USER_EMAIL: '${{ secrets.JIRA_USER }}'
-          JIRA_API_TOKEN: '${{ secrets.JIRA_TOKEN }}'
-
-      # TODO: Test only
-      - name: Jira Get Issues Summary
-        uses: tangem-developments/jira-action@bugfix/IOS-9206_fix_invalid_jira_ref_handling
-        id: jira-issues-summary
-        continue-on-error: true
-        with:
-          action: 'getIssuesSummary'
-          issues: '${{ steps.git-diff.outputs.issues }}'
 
       # Skipping Ruby installation since it has been already installed by an action above
       - name: Install required dependencies
@@ -156,7 +125,7 @@ jobs:
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
-      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      changelog: '${{ needs.prepare.outputs.jira_summary }}'
       build_description: '${{ inputs.build_description }}'
       is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
@@ -213,7 +182,7 @@ jobs:
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
-      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      changelog: '${{ needs.prepare.outputs.jira_summary }}'
       build_description: '${{ inputs.build_description }}'
       is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
@@ -263,7 +232,7 @@ jobs:
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
-      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      changelog: '${{ needs.prepare.outputs.jira_summary }}'
       build_description: '${{ inputs.build_description }}'
       encoded_release_url: '${{ needs.deploy.outputs.encoded_release_url }}'
       is_archive_analyzed: '${{ inputs.analyze_archive }}'
