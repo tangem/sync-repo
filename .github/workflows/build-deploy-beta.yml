@@ -47,6 +47,7 @@ concurrency:
 env:
   next_version_name: 'Next Release'
   should_find_latest_release_branch: ${{ !inputs.base_branch || inputs.base_branch == '' }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 jobs:
   prepare:
