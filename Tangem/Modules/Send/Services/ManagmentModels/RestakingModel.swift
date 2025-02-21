@@ -139,10 +139,10 @@ private extension RestakingModel {
         do {
             try sendAmountValidator.validate(amount: action.amount)
         } catch let error as StakingValidationError {
-            AppLog.shared.error(error)
+            AppLogger.error(error: error)
             throw error
         } catch {
-            AppLog.shared.error(error)
+            AppLogger.error(error: error)
         }
     }
 

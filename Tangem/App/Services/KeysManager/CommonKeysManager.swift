@@ -52,7 +52,7 @@ extension CommonKeysManager: KeysManager {
             // TODO: rename to solana
             quickNodeSolanaCredentials: .init(apiKey: keys.quiknodeApiKey, subdomain: keys.quiknodeSubdomain),
             quickNodeBscCredentials: .init(apiKey: keys.bscQuiknodeApiKey, subdomain: keys.bscQuiknodeSubdomain),
-            defaultNetworkProviderConfiguration: .init(logOptions: .verbose, urlSessionConfiguration: .standard),
+            defaultNetworkProviderConfiguration: .init(logOptions: .verbose, urlSessionConfiguration: .ephemeral),
             networkProviderConfigurations: [:],
             bittensorDwellirKey: keys.bittensorDwellirKey,
             bittensorOnfinalityKey: keys.bittensorOnfinalityKey,

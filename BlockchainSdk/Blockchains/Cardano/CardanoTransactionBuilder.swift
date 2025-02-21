@@ -283,7 +283,7 @@ private extension CardanoTransactionBuilder {
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
         if input.plan.error != .ok {
-            BSDKLogger.error("CardanoSigningIntpu has a error", error: output.errorMessage)
+            BSDKLogger.error("CardanoSigningInput has a error", error: "\(input.plan.error)")
             throw CardanoTransactionBuilderError.walletCoreError
         }
         return input
@@ -332,7 +332,7 @@ private extension CardanoTransactionBuilder {
         input.plan = AnySigner.plan(input: input, coin: coinType)
 
         if input.plan.error != .ok {
-            BSDKLogger.error("CardanoSigningInput has a error", error: preSigningOutput.errorMessage)
+            BSDKLogger.error("CardanoSigningInput has a error", error: "\(input.plan.error)")
             throw CardanoTransactionBuilderError.walletCoreError
         }
 
@@ -378,7 +378,7 @@ private extension CardanoTransactionBuilder {
         let output = try CardanoSigningOutput(serializedData: compileWithSignatures)
 
         if output.error != .ok {
-            Log.debug("CardanoSigningOutput has a error: \(output.errorMessage)")
+            BSDKLogger.error("CardanoPreSigningOutput has a error", error: output.errorMessage)
             throw WalletError.failedToBuildTx
         }
 
