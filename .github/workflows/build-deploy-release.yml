@@ -131,6 +131,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -173,6 +174,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -212,6 +214,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -233,6 +236,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -254,5 +258,6 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'

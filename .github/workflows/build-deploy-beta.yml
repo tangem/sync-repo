@@ -167,6 +167,7 @@ jobs:
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -206,6 +207,7 @@ jobs:
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -247,6 +249,7 @@ jobs:
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
       encoded_release_url: '${{ needs.deploy.outputs.encoded_release_url }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -269,6 +272,7 @@ jobs:
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -291,5 +295,6 @@ jobs:
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
