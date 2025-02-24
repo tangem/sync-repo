@@ -144,6 +144,7 @@ jobs:
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
       IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
+      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
 
   deploy_notification:
     name: Deploy Notification
