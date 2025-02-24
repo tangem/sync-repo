@@ -89,6 +89,9 @@ jobs:
         if: ${{ env.should_find_latest_release_branch == 'true' }}
         run: |
           ./Utilites/find-latest-release-branch.sh '${{ github.ref_name }}'
+          echo "test"
+          cat find-latest-release-branch.output
+          echo "test"
           echo "result=$(< 'find-latest-release-branch.output')" >> $GITHUB_OUTPUT
 
       - name: Get unreleased tasks
