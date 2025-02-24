@@ -10,72 +10,6 @@ import Foundation
 import TangemSdk
 import Combine
 import BitcoinCore
-import TangemFoundation
-
-protocol UnspentOutputManager {
-    func update(outputs: [UnspentOutput], for script: Data)
-    func outputs(for amount: UInt64, script: Data) throws -> [UnspentOutput]
-}
-
-extension UnspentOutputManager {
-    func update(outputs: [UnspentOutput], for address: LockingScriptAddress) {
-        update(outputs: outputs, for: address.scriptPubKey)
-    }
-
-    func outputs(for amount: UInt64, address: LockingScriptAddress) throws -> [UnspentOutput] {
-        try outputs(for: amount, script: address.scriptPubKey)
-    }
-}
-
-class CommonUnspentOutputManager {
-    private var outputs: ThreadSafeContainer<[Data: [UnspentOutput]]> = [:]
-}
-
-extension CommonUnspentOutputManager: UnspentOutputManager {
-    func update(outputs: [UnspentOutput], for script: Data) {
-        self.outputs.mutate { $0[script] = outputs }
-    }
-
-    func outputs(for amount: UInt64, script: Data) throws -> [UnspentOutput] {
-        guard let outputs = outputs[script] else {
-            BSDKLogger.error(error: "No outputs for \(script)")
-            throw Errors.noOutputs
-        }
-
-        // TODO: Add binary search
-        return outputs
-    }
-}
-
-extension CommonUnspentOutputManager {
-    enum Errors: LocalizedError {
-        case noOutputs
-
-        var errorDescription: String? {
-            switch self {
-            case .noOutputs:
-                return "No outputs"
-            }
-        }
-    }
-}
-
-// Unspent transaction output
-// Uncomf
-// Response ✅ 200: btcbook.nownodes.io; Info: /api/v2/utxo/bc1qrc458kmvxa46h6h5ypfsvec7pzzevj9lht48v5;
-// Body: [{"txid":"c6d6d4d3775a8b5421ca5fb893e5637865431c2147e5d00edb0546847858cb19","vout":1,"value":"1850200","confirmations":0,"lockTime":884710}]
-
-struct UnspentOutput {
-    /// a.k.a `height`. The block which included the output. For unconfirmed `-1`
-    let blockId: Int
-    /// The hash of transaction where the output was received
-    /// DO NOT `reverse()` it  It should do a transaction builder
-    let hash: String
-    /// The index of the output in transaction
-    let index: Int
-    /// The amount / value in the smallest denomination e.g. satoshi
-    let amount: UInt64
-}
 
 class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     let txBuilder: BitcoinTransactionBuilder
@@ -95,7 +29,6 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var loadedUnspents: [BitcoinUnspentOutput] = []
 
     var currentHost: String { networkService.host }
-//    var outputsCount: Int? { loadedUnspents.count }
 
     init(wallet: Wallet, txBuilder: BitcoinTransactionBuilder, networkService: BitcoinNetworkProvider) {
         self.txBuilder = txBuilder
@@ -105,16 +38,8 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        let publishers = wallet.addresses.map { address in
-            Publishers.Zip(
-                networkService.getInfo(address: address.value), // Pending tx,
-                networkService.getUnspentOutputs(address: address.value)
-            )
-        }
-
-        cancellable = Publishers
-            .MergeMany(publishers)
-            .collect()
+        cancellable = networkService.getInfo(addresses: wallet.addresses.map { $0.value })
+            .eraseToAnyPublisher()
             .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case .failure(let error) = completionSubscription {
@@ -122,7 +47,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
                     completion(.failure(error))
                 }
             }, receiveValue: { [weak self] response in
-                self?.updateWallet(with: [])
+                self?.updateWallet(with: response)
                 completion(.success(()))
             })
     }
@@ -349,3 +274,5 @@ extension BitcoinWalletManager: SignatureCountValidator {
             .eraseToAnyPublisher()
     }
 }
+
+extension BitcoinWalletManager: ThenProcessable {}

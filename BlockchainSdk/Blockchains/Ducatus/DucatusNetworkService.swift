@@ -20,6 +20,10 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         provider = BitcoreProvider(configuration: configuration)
     }
 
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        Empty().eraseToAnyPublisher()
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
             .tryMap { balance, unspents throws -> BitcoinResponse in
