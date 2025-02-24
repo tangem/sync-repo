@@ -142,17 +142,11 @@ class PolkadotTransactionBuilder {
         }
     }
 
-    private func encodeEraNonceTip(era: PolkadotBlockchainMeta.Era?, nonce: UInt64, tip: UInt64) throws -> Data {
+    private func encodeEraNonceTip(era: PolkadotBlockchainMeta.Era, nonce: UInt64, tip: UInt64) throws -> Data {
         var data = Data()
 
-        if let era = era {
-            let encodedEra = encodeEra(era)
-            data.append(encodedEra)
-        } else {
-            // TODO: This is taken from WalletCore code but it doesn't work.
-            // TODO: RPC error is returned: "Transaction has a bad signature".
-            data.append(try codec.encode(UInt64(0), .compact))
-        }
+        let encodedEra = encodeEra(era)
+        data.append(encodedEra)
 
         let nonce = try codec.encode(nonce, .compact)
         data.append(nonce)
