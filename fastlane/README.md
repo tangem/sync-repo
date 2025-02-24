@@ -136,6 +136,21 @@ Options:
 - code_sign_identity: Xcode code signing identity (string) used to analyze the archive. Optional, required only if `analyze_archive` is true
 
 
+### get_alpha_beta_version_number
+
+```sh
+[bundle exec] fastlane get_alpha_beta_version_number
+```
+
+
+A lane that creates the build version for the release using either branch name or a fallback value.
+Options:
+- build_version_override: Optional build version override (user input)
+- jira_issue_key: Optional Jira issue key
+- branch_name: Source branch name
+- build_version_fallback: Fallback value for cases when the app version can't be derived from the branch name
+
+
 ### get_release_version_number
 
 ```sh
