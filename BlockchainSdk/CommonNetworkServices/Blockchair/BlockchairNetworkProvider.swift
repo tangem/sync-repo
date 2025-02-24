@@ -50,6 +50,30 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
         provider = NetworkProvider<BlockchairTarget>(configuration: configuration)
     }
 
+    /// [{"block_id":-1,"transaction_hash":"ab11e42ef479598c7648780b625cb13d4b8e3147deaa0c2927dfc3d135d42319","index":0,"value":83104}]
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        execute(
+            type: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: true)
+        )
+        .tryMap { (response: BlockchairDTO.Address.Response) -> [UnspentOutput] in
+            guard let addressResponse = response.data[address] else {
+                throw WalletError.failedToParseNetworkResponse()
+            }
+
+            let utxo = addressResponse.utxo.map { utxo in
+                UnspentOutput(
+                    blockId: utxo.blockId,
+                    hash: utxo.transactionHash,
+                    index: utxo.index,
+                    amount: utxo.value
+                )
+            }
+
+            return utxo
+        }
+        .eraseToAnyPublisher()
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         publisher(for: .address(address: address, limit: 1000, endpoint: endpoint, transactionDetails: true))
             .tryMap { [weak self] json -> (BitcoinResponse, [BlockchairTransactionShort]) in // TODO: refactor to normal JSON
@@ -233,6 +257,14 @@ class BlockchairNetworkProvider: BitcoinNetworkProvider {
             .filterSuccessfulStatusAndRedirectCodes()
             .mapJSON()
             .map { JSON($0) }
+            .eraseToAnyPublisher()
+    }
+
+    private func execute<T: Decodable>(type: BlockchairTarget.BlockchairTargetType) -> AnyPublisher<T, MoyaError> {
+        provider
+            .requestPublisher(BlockchairTarget(type: type, apiKey: apiKey))
+            .filterSuccessfulStatusAndRedirectCodes()
+            .map(T.self, using: jsonDecoder)
             .eraseToAnyPublisher()
     }
 

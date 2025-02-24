@@ -34,6 +34,10 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         provider = NetworkProvider<BlockcypherTarget>(configuration: configuration)
     }
 
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        Empty().eraseToAnyPublisher()
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         getFullInfo(address: address)
             .tryMap { [weak self] (addressResponse: BlockcypherFullAddressResponse<BlockcypherBitcoinTx>) -> BitcoinResponse in

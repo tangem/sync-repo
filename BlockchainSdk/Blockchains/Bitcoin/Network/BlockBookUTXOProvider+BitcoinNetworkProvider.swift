@@ -1,5 +1,5 @@
 //
-//  BlockBookUTXOProvider+Netw.swift
+//  BlockBookUTXOProvider+BitcoinNetworkProvider.swift
 //  BlockchainSdk
 //
 //  Created by Sergey Balashov on 26.07.2023.
@@ -18,6 +18,21 @@ extension BlockBookUTXOProvider: BitcoinNetworkProvider {
 
     private var addressParameters: BlockBookTarget.AddressRequestParameters {
         .init(details: [.txs])
+    }
+
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        unspentTxData(address: address).map { utxos in
+            utxos.compactMap { utxo -> UnspentOutput? in
+                guard let value = UInt64(utxo.value) else {
+                    return nil
+                }
+
+                // From documentation:
+                // Unconfirmed utxos do not have field height, the field confirmations has value 0 and may contain field lockTime, if not zero.
+                return UnspentOutput(blockId: utxo.height ?? -1, hash: utxo.txid, index: utxo.vout, amount: value)
+            }
+        }
+        .eraseToAnyPublisher()
     }
 
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {

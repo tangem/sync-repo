@@ -41,6 +41,7 @@ class BlockBookUTXOProvider {
         executeRequest(.address(address: address, parameters: parameters))
     }
 
+    /// https://docs.syscoin.org/docs/dev-resources/documentation/javascript-sdk-ref/blockbook/#get-utxo
     func unspentTxData(address: String) -> AnyPublisher<[BlockBookUnspentTxResponse], Error> {
         executeRequest(.utxo(address: address))
     }

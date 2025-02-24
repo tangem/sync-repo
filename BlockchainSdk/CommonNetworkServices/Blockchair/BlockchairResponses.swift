@@ -9,6 +9,76 @@
 import Foundation
 import BitcoinCore
 
+enum BlockchairDTO {
+    enum Address {
+        struct Response: Decodable {
+            // Key is address
+            let data: [String: AddressInfo]
+            let context: Context
+
+            struct AddressInfo: Decodable {
+                let address: Address
+                let transactions: [Transactions]
+                let utxo: [Utxo]
+
+                struct Address: Decodable {
+                    let scriptHex: String
+                    /*
+                     let type: String?
+                     let balance: Int?
+                     let balance_usd: Double?
+                     let received: Int?
+                     let received_usd: Double?
+                     let spent: Int?
+                     let spent_usd: Int?
+                     let output_count: Int?
+                     let unspent_output_count: Int?
+                     let first_seen_receiving: String?
+                     let last_seen_receiving: String?
+                     let first_seen_spending: String?
+                     let last_seen_spending: String?
+                     let scripthash_type: String?
+                     let transaction_count: Int?
+                     */
+                }
+
+                struct Transactions: Codable {
+                    /*
+                     let block_id: Int?
+                     let hash: String?
+                     let time: String?
+                     let balance_change: Int?
+                     */
+                }
+
+                struct Utxo: Codable {
+                    let blockId: Int
+                    let transactionHash: String
+                    let index: Int
+                    let value: UInt64
+                }
+            }
+
+            struct Context: Codable {
+                /*
+                 let code: Int?
+                 let source: String?
+                 let limit: String?
+                 let offset: String?
+                 let results: Int?
+                 let state: Int?
+                 let market_price_usd: Int?
+                 let servers: String?
+                 let time: Double?
+                 let render_time: Double?
+                 let full_time: Double?
+                 let request_cost: Int?
+                 */
+            }
+        }
+    }
+}
+
 /// Blockchair transaction that returns in address request
 struct BlockchairTransactionShort: Codable {
     let blockId: Int64

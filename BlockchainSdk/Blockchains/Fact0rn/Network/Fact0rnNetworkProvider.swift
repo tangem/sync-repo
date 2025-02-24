@@ -29,6 +29,10 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
 
     // MARK: - BitcoinNetworkProvider Implementation
 
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        Empty().eraseToAnyPublisher()
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, any Error> {
         return Result { try Fact0rnAddressService.addressToScriptHash(address: address) }
             .publisher

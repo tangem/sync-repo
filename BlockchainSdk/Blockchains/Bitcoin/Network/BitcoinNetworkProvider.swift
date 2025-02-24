@@ -9,8 +9,11 @@
 import Foundation
 import Combine
 
+// Confirm by BlockBook, Blockchair, Blockcyper etc.
 protocol BitcoinNetworkProvider: AnyObject, HostProvider {
     var supportsTransactionPush: Bool { get }
+
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], Error>
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
     func getFee() -> AnyPublisher<BitcoinFee, Error>
@@ -31,6 +34,7 @@ extension BitcoinNetworkProvider {
     }
 }
 
+// Typeerasurer because of compiler behaviour
 class AnyBitcoinNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { provider.supportsTransactionPush }
     var host: String { provider.host }
@@ -39,6 +43,10 @@ class AnyBitcoinNetworkProvider: BitcoinNetworkProvider {
 
     init<P: BitcoinNetworkProvider>(_ provider: P) {
         self.provider = provider
+    }
+
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        provider.getUnspentOutputs(address: address)
     }
 
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {

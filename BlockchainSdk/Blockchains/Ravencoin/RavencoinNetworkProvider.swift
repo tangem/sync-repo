@@ -31,6 +31,10 @@ class RavencoinNetworkProvider: HostProvider {
 extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
 
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        Empty().eraseToAnyPublisher()
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         Publishers.Zip(getWalletInfo(address: address), getUTXO(address: address))
             .flatMap { [weak self] wallet, outputs -> AnyPublisher<BitcoinResponse, Error> in

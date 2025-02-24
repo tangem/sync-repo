@@ -20,18 +20,18 @@ public final class TangemNetworkLoggerPlugin {
 extension TangemNetworkLoggerPlugin: PluginType {
     public func willSend(_ request: RequestType, target: TargetType) {
         logNetworkRequest(request, target: target) { [weak self] output in
-            NetworkLogger.info(output)
+            NetworkLogger.tag(target.baseURL.hostOrUnknown).info(output)
         }
     }
 
     public func didReceive(_ result: Result<Moya.Response, MoyaError>, target: TargetType) {
         switch result {
         case .success(let response):
-            NetworkLogger.info(logSuccessNetworkResponse(response, target: target))
+            NetworkLogger.tag(target.baseURL.hostOrUnknown).info(logSuccessNetworkResponse(response, target: target))
         case .failure(.underlying(AFError.explicitlyCancelled, let response)):
-            NetworkLogger.warning(logNetworkError(.underlying(AFError.explicitlyCancelled, response), target: target))
+            NetworkLogger.tag(target.baseURL.hostOrUnknown).warning(logNetworkError(.underlying(AFError.explicitlyCancelled, response), target: target))
         case .failure(let error):
-            NetworkLogger.error(logNetworkError(error, target: target), error: error)
+            NetworkLogger.tag(target.baseURL.hostOrUnknown).error(logNetworkError(error, target: target), error: error)
         }
     }
 }

@@ -11,7 +11,7 @@ import Moya
 import Combine
 import TangemSdk
 
-class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
+class BitcoinNetworkService: BitcoinNetworkProvider, MultiNetworkProvider {
     let providers: [AnyBitcoinNetworkProvider]
     var currentProviderIndex: Int = 0
 
@@ -19,28 +19,25 @@ class BitcoinNetworkService: MultiNetworkProvider, BitcoinNetworkProvider {
         self.providers = providers
     }
 
-    var supportsTransactionPush: Bool { !providers.filter { $0.supportsTransactionPush }.isEmpty }
+    var supportsTransactionPush: Bool {
+        providers.contains { $0.supportsTransactionPush }
+    }
+
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        providerPublisher { $0.getUnspentOutputs(address: address) }
+    }
 
     func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        providerPublisher {
-            $0.getInfo(addresses: addresses)
-                .retry(2)
-                .eraseToAnyPublisher()
-        }
+        providerPublisher { $0.getInfo(addresses: addresses) }
     }
 
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        providerPublisher {
-            $0.getInfo(address: address)
-                .retry(2)
-                .eraseToAnyPublisher()
-        }
+        providerPublisher { $0.getInfo(address: address) }
     }
 
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
         Publishers.MergeMany(providers.map {
             $0.getFee()
-                .retry(2)
                 .catch { _ in
                     Empty()
                         .setFailureType(to: Error.self)
