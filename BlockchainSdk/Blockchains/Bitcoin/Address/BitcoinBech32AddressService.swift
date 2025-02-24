@@ -61,7 +61,8 @@ extension BitcoinBech32AddressService: AddressProvider {
             hdPublicKeyData: compressedKey
         )
 
-        let address = try segWitConverter.convert(publicKey: bitcoinCorePublicKey, type: .p2wpkh).stringValue
-        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
+        let address = try segWitConverter.convert(publicKey: bitcoinCorePublicKey, type: .p2wpkh)
+        BSDKLogger.info("pubKey: \(compressedKey.hexString), address: \(address.stringValue), lockingScript: \(address.lockingScript.hexString)")
+        return LockingScriptAddress(value: address.stringValue, publicKey: publicKey, type: addressType, scriptPubKey: address.lockingScript)
     }
 }
