@@ -9,12 +9,12 @@
 import Foundation
 
 struct PendingTransactionRecordMapper {
-    func makeDummy(blockchain: Blockchain) -> PendingTransactionRecord {
+    func makeDummy(hash: String = .unknown, amount: Amount? = nil, blockchain: Blockchain) -> PendingTransactionRecord {
         PendingTransactionRecord(
-            hash: .unknown,
+            hash: hash,
             source: .unknown,
             destination: .unknown,
-            amount: .zeroCoin(for: blockchain),
+            amount: amount ?? .zeroCoin(for: blockchain),
             fee: Fee(.zeroCoin(for: blockchain)),
             date: Date(),
             isIncoming: false,

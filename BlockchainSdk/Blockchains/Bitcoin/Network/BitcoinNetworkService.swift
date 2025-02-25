@@ -11,6 +11,7 @@ import Moya
 import Combine
 import TangemSdk
 
+/// Wrapper on many `BitcoinNetworkProvider`s with `MultiNetworkProvider` support
 class BitcoinNetworkService: BitcoinNetworkProvider, MultiNetworkProvider {
     let providers: [AnyBitcoinNetworkProvider]
     var currentProviderIndex: Int = 0
@@ -23,15 +24,7 @@ class BitcoinNetworkService: BitcoinNetworkProvider, MultiNetworkProvider {
         providers.contains { $0.supportsTransactionPush }
     }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
-        providerPublisher { $0.getUnspentOutputs(address: address) }
-    }
-
-    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        providerPublisher { $0.getInfo(addresses: addresses) }
-    }
-
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
         providerPublisher { $0.getInfo(address: address) }
     }
 

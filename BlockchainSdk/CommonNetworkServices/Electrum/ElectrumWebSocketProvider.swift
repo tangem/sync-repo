@@ -44,6 +44,7 @@ class ElectrumWebSocketProvider: HostProvider {
         }
     }
 
+    /// https://bitcoincash.network/electrum/protocol-methods.html#blockchain-transaction-get
     func getTransaction(hash: String) async throws -> ElectrumDTO.Response.Transaction {
         try await send(method: Method.Blockchain.Transaction.get, parameter: [AnyEncodable(hash), AnyEncodable(true)])
     }

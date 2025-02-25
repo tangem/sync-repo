@@ -14,6 +14,7 @@ import BitcoinCore
 class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     let txBuilder: BitcoinTransactionBuilder
     let networkService: BitcoinNetworkProvider
+    let unspentOutputManager: UnspentOutputManager
 
     /*
      The current default minimum relay fee is 1 sat/vbyte.
@@ -29,18 +30,33 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var loadedUnspents: [BitcoinUnspentOutput] = []
 
     var currentHost: String { networkService.host }
+    private lazy var pendingTransactionRecordMapper = PendingTransactionRecordMapper()
 
-    init(wallet: Wallet, txBuilder: BitcoinTransactionBuilder, networkService: BitcoinNetworkProvider) {
+    init(
+        wallet: Wallet,
+        txBuilder: BitcoinTransactionBuilder,
+        networkService: BitcoinNetworkProvider,
+        unspentOutputManager: UnspentOutputManager = CommonUnspentOutputManager()
+    ) {
         self.txBuilder = txBuilder
         self.networkService = networkService
+        self.unspentOutputManager = unspentOutputManager
 
         super.init(wallet: wallet)
     }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService.getInfo(addresses: wallet.addresses.map { $0.value })
-            .eraseToAnyPublisher()
-            .subscribe(on: DispatchQueue.global())
+        let publishers = wallet.addresses
+            .compactMap { $0 as? LockingScriptAddress }
+            .map { address in
+                networkService
+                    .getInfo(address: address.value)
+                    .map { UpdateResponse(address: address, response: $0) }
+            }
+
+        cancellable = Publishers.MergeMany(publishers)
+            .collect()
+            .receive(on: DispatchQueue.global())
             .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case .failure(let error) = completionSubscription {
                     self?.wallet.clearAmounts()
@@ -52,24 +68,23 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
             })
     }
 
-    func updateWallet(with response: [BitcoinResponse]) {
-        let balance = response.reduce(into: 0) { $0 += $1.balance }
-        let hasUnconfirmed = response.contains(where: { $0.hasUnconfirmed })
-        let unspents = response.flatMap { $0.unspentOutputs }
+    func updateWallet(with responses: [UpdateResponse]) {
+        responses.forEach { response in
+            unspentOutputManager.update(outputs: response.response.outputs, for: response.address)
+        }
+        txBuilder.fillBitcoinManager()
 
+        let balanceSatoshi = responses.reduce(0) { $0 + $1.confirmedBalance }
+        let balance = Decimal(balanceSatoshi) / wallet.blockchain.decimalValue
         wallet.add(coinValue: balance)
-        loadedUnspents = unspents
-        txBuilder.unspentOutputs = unspents
 
-        wallet.clearPendingTransaction()
-        if hasUnconfirmed {
-            response
-                .flatMap { $0.pendingTxRefs }
-                .forEach {
-                    let mapper = PendingTransactionRecordMapper()
-                    let transaction = mapper.mapToPendingTransactionRecord($0, blockchain: wallet.blockchain)
-                    wallet.addPendingTransaction(transaction)
-                }
+        let pendingTransactions = responses.flatMap { $0.response.pending }
+        if pendingTransactions.isEmpty {
+            wallet.clearPendingTransaction()
+        } else {
+            pendingTransactions.forEach { transaction in
+                wallet.addPendingTransaction(transaction)
+            }
         }
     }
 
@@ -185,7 +200,6 @@ extension BitcoinWalletManager: BitcoinTransactionFeeCalculator {
 @available(iOS 13.0, *)
 extension BitcoinWalletManager: TransactionSender {
     func send(_ transaction: Transaction, signer: TransactionSigner) -> AnyPublisher<TransactionSendResult, SendTxError> {
-        txBuilder.unspentOutputs = loadedUnspents
         return send(transaction, signer: signer, sequence: SequenceValues.default.rawValue, isPushingTx: false)
     }
 }
@@ -225,18 +239,7 @@ extension BitcoinWalletManager: TransactionPusher {
     }
 
     func getPushFee(for transactionHash: String) -> AnyPublisher<[Fee], Error> {
-        guard let tx = wallet.pendingTransactions.first(where: { $0.hash == transactionHash }) else {
-            return .anyFail(error: BlockchainSdkError.failedToFindTransaction)
-        }
-
-        txBuilder.unspentOutputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
-
-        return getFee(amount: tx.amount, destination: tx.destination)
-            .map { [weak self] feeDataModel in
-                self?.txBuilder.unspentOutputs = self?.loadedUnspents
-                return feeDataModel
-            }
-            .eraseToAnyPublisher()
+        .anyFail(error: BlockchainSdkError.notImplemented)
     }
 
     func pushTransaction(with transactionHash: String, newTransaction: Transaction, signer: TransactionSigner) -> AnyPublisher<Void, SendTxError> {
@@ -255,10 +258,6 @@ extension BitcoinWalletManager: TransactionPusher {
             return .sendTxFail(error: BlockchainSdkError.failedToFindTxInputs)
         }
 
-        //        let outputs = loadedUnspents.filter { unspent in params.inputs.contains(where: { $0.prevHash == unspent.transactionHash })}
-        let outputs = loadedUnspents.filter { $0.transactionHash != transactionHash }
-        txBuilder.unspentOutputs = outputs
-
         return send(newTransaction, signer: signer, sequence: sequence + 1, isPushingTx: true)
             .mapToVoid()
             .eraseToAnyPublisher()
@@ -275,4 +274,17 @@ extension BitcoinWalletManager: SignatureCountValidator {
     }
 }
 
-extension BitcoinWalletManager: ThenProcessable {}
+extension BitcoinWalletManager {
+    struct UpdateResponse {
+        let address: LockingScriptAddress
+        let response: UTXOResponse
+
+        var confirmedBalance: UInt64 {
+            response.outputs.filter { $0.isConfirmed }.reduce(0) { $0 + $1.amount }
+        }
+
+        var unconfirmedBalance: UInt64 {
+            response.outputs.filter { !$0.isConfirmed }.reduce(0) { $0 + $1.amount }
+        }
+    }
+}

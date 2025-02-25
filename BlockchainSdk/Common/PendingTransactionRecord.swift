@@ -8,6 +8,7 @@
 
 import Foundation
 
+// Used for store transaction in `Wallet`
 public struct PendingTransactionRecord {
     public enum TransactionType {
         case transfer

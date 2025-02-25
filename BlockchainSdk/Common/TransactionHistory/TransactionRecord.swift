@@ -8,6 +8,7 @@
 
 import Foundation
 
+// Used for transaction history
 public struct TransactionRecord: Hashable {
     public let hash: String
     /// Index of an individual transaction within the parent transaction (if applicable).
@@ -85,6 +86,13 @@ public extension TransactionRecord {
     enum SourceType: Hashable {
         case single(Source)
         case multiple([Source])
+
+        var sources: [Source] {
+            switch self {
+            case .single(let source): [source]
+            case .multiple(let sources): sources
+            }
+        }
     }
 
     struct Source: Hashable {
@@ -104,6 +112,13 @@ public extension TransactionRecord {
     enum DestinationType: Hashable {
         case single(Destination)
         case multiple([Destination])
+
+        var destinations: [Destination] {
+            switch self {
+            case .single(let destination): [destination]
+            case .multiple(let destinations): destinations
+            }
+        }
     }
 
     struct Destination: Hashable {

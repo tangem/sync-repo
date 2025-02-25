@@ -11,6 +11,8 @@ import Foundation
 protocol UnspentOutputManager {
     func update(outputs: [UnspentOutput], for script: Data)
     func outputs(for amount: UInt64, script: Data) throws -> [UnspentOutput]
+
+    func allOutputs() -> [ScriptUnspentOutput]
 }
 
 extension UnspentOutputManager {

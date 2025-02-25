@@ -18,7 +18,8 @@ class RavencoinNetworkProvider: HostProvider {
     let host: String
     let provider: NetworkProvider<RavencoinTarget>
 
-    private var decimalValue: Decimal { Blockchain.ravencoin(testnet: false).decimalValue }
+    private let blockchain = Blockchain.ravencoin(testnet: false)
+    private var decimalValue: Decimal { blockchain.decimalValue }
 
     init(host: String, provider: NetworkProvider<RavencoinTarget>) {
         self.host = host
@@ -31,32 +32,25 @@ class RavencoinNetworkProvider: HostProvider {
 extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
-        Empty().eraseToAnyPublisher()
-    }
 
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
-        Publishers.Zip(getWalletInfo(address: address), getUTXO(address: address))
-            .flatMap { [weak self] wallet, outputs -> AnyPublisher<BitcoinResponse, Error> in
-                guard let self else {
-                    return .anyFail(error: WalletError.empty)
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
+        getUTXO(address: address)
+            .withWeakCaptureOf(self)
+            .map { $0.mapToUnspentOutputs(outputs: $1) }
+            .withWeakCaptureOf(self)
+            .flatMap { provider, outputs in
+                let pending = outputs.filter { !$0.isConfirmed }.map {
+                    provider.getTxInfo(transactionId: $0.hash)
                 }
 
-                let hasUnconfirmed = wallet.unconfirmedTxApperances != 0
-                if hasUnconfirmed {
-                    return getTransactions(request: .init(address: address))
-                        .map { transactions -> BitcoinResponse in
-                            self.mapToBitcoinResponse(
-                                wallet: wallet,
-                                outputs: outputs,
-                                transactions: transactions
-                            )
+                return Publishers.MergeMany(pending).collect()
+                    .withWeakCaptureOf(provider)
+                    .tryMap { provider, transactions in
+                        try transactions.map { transaction in
+                            try provider.mapToPendingTransactionRecord(transaction: transaction, walletAddress: address)
                         }
-                        .eraseToAnyPublisher()
-                }
-
-                let response = mapToBitcoinResponse(wallet: wallet, outputs: outputs, transactions: [])
-                return .justWithError(output: response)
+                    }
+                    .map { UTXOResponse(outputs: outputs, pending: $0) }
             }
             .eraseToAnyPublisher()
     }
@@ -101,42 +95,14 @@ extension RavencoinNetworkProvider: BitcoinNetworkProvider {
 
 // MARK: - Mapping
 
-/// Incoming 0.88
-/// Outgoing 0.77
-
 private extension RavencoinNetworkProvider {
-    func mapToBitcoinResponse(
-        wallet: RavencoinWalletInfo,
-        outputs: [RavencoinWalletUTXO],
-        transactions: [RavencoinTransactionInfo]
-    ) -> BitcoinResponse {
-        let unspentOutputs = outputs.map { utxo in
-            BitcoinUnspentOutput(
-                transactionHash: utxo.txid,
-                outputIndex: utxo.vout,
-                amount: utxo.satoshis,
-                outputScript: utxo.scriptPubKey
-            )
+    func mapToUnspentOutputs(outputs: [RavencoinWalletUTXO]) -> [UnspentOutput] {
+        outputs.map { utxo in
+            UnspentOutput(blockId: utxo.height ?? -1, hash: utxo.txid, index: utxo.vout, amount: utxo.satoshis)
         }
-
-        let pendingTxRefs = transactions
-            .filter { $0.confirmations == 0 || $0.blockheight == -1 }
-            .compactMap { transaction -> PendingTransaction? in
-                mapToPendingTransaction(transaction: transaction, walletAddress: wallet.address)
-            }
-
-        return BitcoinResponse(
-            balance: wallet.balance ?? 0,
-            hasUnconfirmed: wallet.unconfirmedTxApperances != 0,
-            pendingTxRefs: pendingTxRefs,
-            unspentOutputs: unspentOutputs
-        )
     }
 
-    func mapToPendingTransaction(
-        transaction: RavencoinTransactionInfo,
-        walletAddress: String
-    ) -> PendingTransaction? {
+    func mapToPendingTransactionRecord(transaction: RavencoinTransactionInfo, walletAddress: String) throws -> PendingTransactionRecord {
         let isIncoming = transaction.vin.allSatisfy { $0.addr != walletAddress }
         let hash = transaction.txid
         let timestamp = transaction.time * 1000
@@ -165,17 +131,18 @@ private extension RavencoinNetworkProvider {
         }
 
         guard let otherAddress = otherAddresses.first?.scriptPubKey.addresses.first else {
-            return nil
+            throw WalletError.failedToParseNetworkResponse()
         }
 
-        return PendingTransaction(
+        return PendingTransactionRecord(
             hash: hash,
-            destination: isIncoming ? walletAddress : otherAddress,
-            value: value,
             source: isIncoming ? otherAddress : walletAddress,
-            fee: fee,
+            destination: isIncoming ? walletAddress : otherAddress,
+            amount: .init(with: blockchain, type: .coin, value: value),
+            fee: .init(.init(with: blockchain, type: .coin, value: fee)),
             date: Date(timeIntervalSince1970: TimeInterval(timestamp)),
             isIncoming: isIncoming,
+            transactionType: .transfer,
             transactionParams: nil
         )
     }

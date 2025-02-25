@@ -11,35 +11,15 @@ import TangemSdk
 import BitcoinCore
 
 class BitcoinTransactionBuilder {
-    var unspentOutputs: [BitcoinUnspentOutput]? {
-        didSet {
-            let utxoDTOs: [UtxoDTO]? = unspentOutputs?.map {
-                return UtxoDTO(
-                    hash: Data(Data(hex: $0.transactionHash).reversed()),
-                    index: $0.outputIndex,
-                    value: Int($0.amount),
-                    script: Data(hex: $0.outputScript)
-                )
-            }
-            if let utxos = utxoDTOs {
-                let spendingScripts: [Script] = walletScripts.compactMap { script in
-                    let chunks = script.chunks.enumerated().map { index, chunk in
-                        Chunk(scriptData: script.data, index: index, payloadRange: chunk.range)
-                    }
-                    return Script(with: script.data, chunks: chunks)
-                }
-                bitcoinManager.fillBlockchainData(unspentOutputs: utxos, spendingScripts: spendingScripts)
-            }
-        }
-    }
-
-    var bitcoinManager: BitcoinManager
+    let bitcoinManager: BitcoinManager
+    private let unspentOutputManager: UnspentOutputManager
 
     private(set) var changeScript: Data?
     private let walletScripts: [BitcoinScript]
 
-    init(bitcoinManager: BitcoinManager, addresses: [Address]) {
+    init(bitcoinManager: BitcoinManager, unspentOutputManager: UnspentOutputManager = CommonUnspentOutputManager(), addresses: [Address]) {
         self.bitcoinManager = bitcoinManager
+        self.unspentOutputManager = unspentOutputManager
 
         let scriptAddresses = addresses.compactMap { $0 as? BitcoinScriptAddress }
         let scripts = scriptAddresses.map { $0.script }
@@ -49,6 +29,27 @@ class BitcoinTransactionBuilder {
 
         walletScripts = scripts
         changeScript = defaultScriptData?.sha256()
+    }
+
+    // Call it after unspentOutputManager was filled
+    func fillBitcoinManager() {
+        let unspentOutputs: [UtxoDTO] = unspentOutputManager.allOutputs().map { value in
+            UtxoDTO(
+                hash: Data(Data(hex: value.output.hash).reversed()),
+                index: value.output.index,
+                value: Int(value.output.amount),
+                script: value.script
+            )
+        }
+
+        let spendingScripts: [Script] = walletScripts.compactMap { script in
+            let chunks = script.chunks.enumerated().map { index, chunk in
+                Chunk(scriptData: script.data, index: index, payloadRange: chunk.range)
+            }
+            return Script(with: script.data, chunks: chunks)
+        }
+
+        bitcoinManager.fillBlockchainData(unspentOutputs: unspentOutputs, spendingScripts: spendingScripts)
     }
 
     func buildForSign(transaction: Transaction, sequence: Int?, sortType: TransactionDataSortType = .bip69) -> [Data]? {

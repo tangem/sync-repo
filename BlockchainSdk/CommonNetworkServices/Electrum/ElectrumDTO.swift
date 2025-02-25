@@ -32,11 +32,11 @@ enum ElectrumDTO {
 
         struct ListUnspent: Decodable {
             let hasToken: Bool?
-            let height: Decimal
+            let height: UInt64
             let outpointHash: String?
             let txHash: String
             let txPos: Int
-            let value: Decimal
+            let value: UInt64
         }
 
         struct Broadcast: Decodable {
@@ -57,7 +57,7 @@ enum ElectrumDTO {
             let vin: [Vin]
             let vout: [Vout]
             let fee: Decimal?
-            let feeSatoshi: Decimal?
+            let feeSatoshi: UInt64
         }
 
         struct Vin: Decodable {
@@ -65,7 +65,7 @@ enum ElectrumDTO {
             let sequence: UInt64
             let txid: String
             let vout: Int
-            let address: String?
+            let address: String
         }
 
         struct Vout: Decodable {
@@ -80,7 +80,7 @@ enum ElectrumDTO {
         }
 
         struct ScriptPubKey: Decodable {
-            let address: String
+            let addresses: [String]
             let asm: String
             let hex: String
             let reqSigs: Int?

@@ -52,7 +52,7 @@ enum BlockchairDTO {
                 }
 
                 struct Utxo: Codable {
-                    let blockId: Int
+                    let blockId: UInt64
                     let transactionHash: String
                     let index: Int
                     let value: UInt64

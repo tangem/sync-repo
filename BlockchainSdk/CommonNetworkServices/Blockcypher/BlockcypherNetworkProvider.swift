@@ -34,7 +34,7 @@ class BlockcypherNetworkProvider: BitcoinNetworkProvider {
         provider = NetworkProvider<BlockcypherTarget>(configuration: configuration)
     }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
         Empty().eraseToAnyPublisher()
     }
 

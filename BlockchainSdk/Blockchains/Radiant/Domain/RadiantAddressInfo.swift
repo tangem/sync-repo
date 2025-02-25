@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RadiantAddressInfo {
-    let balance: Decimal
-    let outputs: [ElectrumUTXO]
-}
+//struct RadiantAddressInfo {
+//    let balance: Decimal
+//    let outputs: [ElectrumUTXO]
+//}

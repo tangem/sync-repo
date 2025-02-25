@@ -26,11 +26,7 @@ final class BitcoinCashBlockBookUTXOProvider: BitcoinNetworkProvider {
         blockBookUTXOProvider.supportsTransactionPush
     }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
-        Empty().eraseToAnyPublisher()
-    }
-
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
         blockBookUTXOProvider.getInfo(address: addAddressPrefixIfNeeded(address))
     }
 

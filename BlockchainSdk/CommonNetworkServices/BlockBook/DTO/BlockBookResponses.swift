@@ -108,7 +108,7 @@ extension BlockBookAddressResponse {
         let n: Int
         let addresses: [String]
         let isAddress: Bool
-        let value: String?
+        let value: String
         let hex: String?
         let vout: Int?
         let isOwn: Bool?
@@ -186,7 +186,7 @@ struct BlockBookUnspentTxResponse: Decodable {
     let value: String
     let confirmations: Int
     let lockTime: Int?
-    let height: Int?
+    let height: UInt64?
     let coinbase: Bool?
     let scriptPubKey: String?
 }

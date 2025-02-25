@@ -17,6 +17,12 @@ extension CommonUnspentOutputManager: UnspentOutputManager {
         self.outputs.mutate { $0[script] = outputs }
     }
 
+    func allOutputs() -> [ScriptUnspentOutput] {
+        outputs.read().flatMap { key, value in
+            value.map { ScriptUnspentOutput(output: $0, script: key) }
+        }
+    }
+
     func outputs(for amount: UInt64, script: Data) throws -> [UnspentOutput] {
         guard let outputs = outputs[script] else {
             BSDKLogger.error(error: "No outputs for \(script)")

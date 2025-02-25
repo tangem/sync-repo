@@ -13,9 +13,7 @@ import Combine
 protocol BitcoinNetworkProvider: AnyObject, HostProvider {
     var supportsTransactionPush: Bool { get }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], Error>
-    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error>
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error>
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, Error>
     func getFee() -> AnyPublisher<BitcoinFee, Error>
     func send(transaction: String) -> AnyPublisher<String, Error>
     func push(transaction: String) -> AnyPublisher<String, Error>
@@ -23,12 +21,6 @@ protocol BitcoinNetworkProvider: AnyObject, HostProvider {
 }
 
 extension BitcoinNetworkProvider {
-    func getInfo(addresses: [String]) -> AnyPublisher<[BitcoinResponse], Error> {
-        .multiAddressPublisher(addresses: addresses, requestFactory: { [weak self] in
-            self?.getInfo(address: $0) ?? .emptyFail
-        })
-    }
-
     func eraseToAnyBitcoinNetworkProvider() -> AnyBitcoinNetworkProvider {
         AnyBitcoinNetworkProvider(self)
     }
@@ -45,11 +37,7 @@ class AnyBitcoinNetworkProvider: BitcoinNetworkProvider {
         self.provider = provider
     }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
-        provider.getUnspentOutputs(address: address)
-    }
-
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
         provider.getInfo(address: address)
     }
 
@@ -67,5 +55,15 @@ class AnyBitcoinNetworkProvider: BitcoinNetworkProvider {
 
     func getSignatureCount(address: String) -> AnyPublisher<Int, Error> {
         provider.getSignatureCount(address: address)
+    }
+}
+
+struct UTXOResponse {
+    let outputs: [UnspentOutput]
+    let pending: [PendingTransactionRecord]
+
+    init(outputs: [UnspentOutput], pending: [PendingTransactionRecord]) {
+        self.outputs = outputs
+        self.pending = pending
     }
 }

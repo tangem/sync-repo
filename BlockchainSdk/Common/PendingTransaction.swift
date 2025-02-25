@@ -8,6 +8,7 @@
 
 import Foundation
 
+@available(*, deprecated, renamed: "PendingTransactionRecord", message: "Use other model")
 struct PendingTransaction {
     let hash: String
     var destination: String

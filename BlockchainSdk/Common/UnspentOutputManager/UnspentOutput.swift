@@ -15,7 +15,7 @@ import Foundation
 
 struct UnspentOutput {
     /// a.k.a `height`. The block which included the output. For unconfirmed `-1`
-    let blockId: Int
+    let blockId: UInt64
     /// The hash of transaction where the output was received
     /// DO NOT `reverse()` it  It should do a transaction builder
     let hash: String
@@ -23,4 +23,11 @@ struct UnspentOutput {
     let index: Int
     /// The amount / value in the smallest denomination e.g. satoshi
     let amount: UInt64
+
+    var isConfirmed: Bool { blockId > 0 }
+}
+
+struct ScriptUnspentOutput {
+    let output: UnspentOutput
+    let script: Data
 }

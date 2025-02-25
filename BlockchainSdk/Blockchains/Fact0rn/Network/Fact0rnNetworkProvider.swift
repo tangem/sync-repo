@@ -18,38 +18,45 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
     // MARK: - Private Properties
 
     private let provider: ElectrumWebSocketProvider
-    private let decimalValue: Decimal
+    private let blockchain: Blockchain = .fact0rn
+    private let mapper = UTXOPendingTransactionMapper(blockchain: .fact0rn)
 
     // MARK: - Init
 
-    init(provider: ElectrumWebSocketProvider, decimalValue: Decimal) {
+    init(provider: ElectrumWebSocketProvider) {
         self.provider = provider
-        self.decimalValue = decimalValue
     }
 
     // MARK: - BitcoinNetworkProvider Implementation
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
-        Empty().eraseToAnyPublisher()
-    }
+    func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
+        Future.async {
+            let scriptHash = Result { try Fact0rnAddressService.addressToScriptHash(address: address) }
+            let unspents = try await self.provider.getUnspents(identifier: .scriptHash(scriptHash.get()))
+            let outputs = self.mapUnspent(outputs: unspents)
 
-    func getInfo(address: String) -> AnyPublisher<BitcoinResponse, any Error> {
-        return Result { try Fact0rnAddressService.addressToScriptHash(address: address) }
-            .publisher
-            .withWeakCaptureOf(self)
-            .flatMap { provider, scriptHash in
-                provider.getAddressInfo(identifier: .scriptHash(scriptHash))
+            let unconfirmed = try await outputs.filter { !$0.isConfirmed }.asyncMap { output in
+                let transaction = try await self.provider.getTransaction(hash: output.hash)
+                return try self.mapToPendingTransactionRecord(transaction: transaction, address: address)
             }
-            .withWeakCaptureOf(self)
-            .tryMap { provider, accountInfo in
-                let outputScriptData = try Fact0rnAddressService.addressToScript(address: address).scriptData
 
-                return try provider.mapBitcoinResponse(
-                    account: accountInfo,
-                    outputScript: outputScriptData.hexString
-                )
-            }
-            .eraseToAnyPublisher()
+            return UTXOResponse(outputs: outputs, pending: unconfirmed)
+        }
+        .eraseToAnyPublisher()
+//
+//        return scriptHash
+//            .publisher
+//            .withWeakCaptureOf(self)
+//            .flatMap { provider, scriptHash in
+//                provider.getAddressInfo(identifier: .scriptHash(scriptHash))
+//            }
+//            .withWeakCaptureOf(self)
+//            .tryMap { provider, accountInfo in
+//                let outputScriptData = try scriptHash.get()
+//
+//                return try provider.mapToUTXOResponse(account: accountInfo, outputScript: outputScriptData)
+//            }
+//            .eraseToAnyPublisher()
     }
 
     func getFee() -> AnyPublisher<BitcoinFee, any Error> {
@@ -103,26 +110,26 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
 
     // MARK: - Private Implementation
 
-    private func getAddressInfo(identifier: ElectrumWebSocketProvider.Identifier) -> AnyPublisher<ElectrumAddressInfo, Error> {
-        Future.async {
-            async let balance = self.provider.getBalance(identifier: identifier)
-            async let unspents = self.provider.getUnspents(identifier: identifier)
-
-            return try await ElectrumAddressInfo(
-                balance: Decimal(balance.confirmed) / self.decimalValue,
-                unconfirmed: Decimal(balance.unconfirmed) / self.decimalValue,
-                outputs: unspents.map { unspent in
-                    ElectrumUTXO(
-                        position: unspent.txPos,
-                        hash: unspent.txHash,
-                        value: unspent.value,
-                        height: unspent.height
-                    )
-                }
-            )
-        }
-        .eraseToAnyPublisher()
-    }
+//    private func getAddressInfo(identifier: ElectrumWebSocketProvider.Identifier) -> AnyPublisher<ElectrumAddressInfo, Error> {
+//        Future.async {
+//            async let balance = self.provider.getBalance(identifier: identifier)
+//            async let unspents = self.provider.getUnspents(identifier: identifier)
+//
+//            return try await ElectrumAddressInfo(
+//                balance: Decimal(balance.confirmed) / self.decimalValue,
+//                unconfirmed: Decimal(balance.unconfirmed) / self.decimalValue,
+//                outputs: unspents.map { unspent in
+//                    ElectrumUTXO(
+//                        position: unspent.txPos,
+//                        hash: unspent.txHash,
+//                        value: unspent.value,
+//                        height: unspent.height
+//                    )
+//                }
+//            )
+//        }
+//        .eraseToAnyPublisher()
+//    }
 
     private func estimateFee(confirmation blocks: Int) -> AnyPublisher<Decimal, Error> {
         Future.async {
@@ -147,26 +154,22 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
 
     // MARK: - Helpers
 
-    private func mapBitcoinResponse(account: ElectrumAddressInfo, outputScript: String) throws -> BitcoinResponse {
-        let hasUnconfirmed = account.unconfirmed != .zero
-        let unspentOutputs = mapUnspent(outputs: account.outputs, outputScript: outputScript)
-
-        return BitcoinResponse(
-            balance: account.balance,
-            hasUnconfirmed: hasUnconfirmed,
-            pendingTxRefs: [],
-            unspentOutputs: unspentOutputs
+    private func mapToPendingTransactionRecord(transaction: ElectrumDTO.Response.Transaction, address: String) throws -> PendingTransactionRecord {
+        try mapper.mapPendingTransactionRecord(
+            transaction: .init(
+                hash: transaction.hash,
+                fee: transaction.feeSatoshi,
+                date: transaction.time.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? Date(),
+                vin: transaction.vin.map { .init(addresses: [$0.address], amount: UInt64($0.vout)) }, // TODO: Amount VIN
+                vout: transaction.vout.map { .init(addresses: $0.scriptPubKey.addresses, amount: $0.value.uint64Value) }
+            ),
+            address: address
         )
     }
 
-    private func mapUnspent(outputs: [ElectrumUTXO], outputScript: String) -> [BitcoinUnspentOutput] {
+    private func mapUnspent(outputs: [ElectrumDTO.Response.ListUnspent]) -> [UnspentOutput] {
         outputs.map {
-            BitcoinUnspentOutput(
-                transactionHash: $0.hash,
-                outputIndex: $0.position,
-                amount: $0.value.uint64Value,
-                outputScript: outputScript
-            )
+            UnspentOutput(blockId: $0.height, hash: $0.txHash, index: $0.txPos, amount: $0.value)
         }
     }
 }

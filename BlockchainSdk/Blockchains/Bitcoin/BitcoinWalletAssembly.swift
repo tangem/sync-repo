@@ -13,7 +13,8 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
             bip: input.pairPublicKey == nil ? .bip84 : .bip141
         )
 
-        let txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, addresses: input.wallet.addresses)
+        let unspentOutputManager = CommonUnspentOutputManager()
+        let txBuilder = BitcoinTransactionBuilder(bitcoinManager: bitcoinManager, unspentOutputManager: unspentOutputManager, addresses: input.wallet.addresses)
         let providers: [AnyBitcoinNetworkProvider] = input.apiInfo.reduce(into: []) { partialResult, providerType in
             switch providerType {
             case .nowNodes:
@@ -49,6 +50,6 @@ struct BitcoinWalletAssembly: WalletManagerAssembly {
 
         let networkService = BitcoinNetworkService(providers: providers)
 
-        return BitcoinWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService)
+        return BitcoinWalletManager(wallet: input.wallet, txBuilder: txBuilder, networkService: networkService, unspentOutputManager: unspentOutputManager)
     }
 }

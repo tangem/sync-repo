@@ -10,6 +10,7 @@ import Foundation
 
 struct RavencoinWalletUTXO: Decodable {
     let txid: String
+    let height: Int?
     let vout: Int
     let satoshis: UInt64
     let scriptPubKey: String
