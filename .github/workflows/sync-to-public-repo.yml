@@ -57,6 +57,7 @@ jobs:
         run: |
           git config --global user.name "Tangem Service"
           git config --global user.email "gitservice@tangem.com"
+          git config set advice.addEmbeddedRepo false
           git remote add public-repo "git@github.com:tangem-developments/tangem-app-ios-test-sync-repo.git" # TODO: Test only
           git checkout -b ${SOURCE_BRANCH}
           git add .
