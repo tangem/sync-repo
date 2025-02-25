@@ -40,6 +40,16 @@ Options:
 - xcode_version_override: Xcode version to use, optional (uses https://github.com/XcodesOrg/xcodes under the hood)
 
 
+### build_simulator
+
+```sh
+[bundle exec] fastlane build_simulator
+```
+
+
+A lane for building for CodeQL analysis
+ 
+
 ### release
 
 ```sh
@@ -134,6 +144,21 @@ Options:
 
 
 TBD
+
+
+### get_alpha_beta_version_number
+
+```sh
+[bundle exec] fastlane get_alpha_beta_version_number
+```
+
+
+A lane that creates the build version for the release using either branch name or a fallback value.
+Options:
+- build_version_override: Optional build version override (user input)
+- jira_issue_key: Optional Jira issue key
+- branch_name: Source branch name
+- build_version_fallback: Fallback value for cases when the app version can't be derived from the branch name
 
 
 ### get_release_version_number
