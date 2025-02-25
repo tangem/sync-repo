@@ -60,9 +60,10 @@ jobs:
       jira-issues-summary: '${{ steps.jira-issues-summary.outputs.result }}'
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
+          fetch-depth: 0  # Required, otherwise `git for-each-ref` won't work properly on MacOS-based runner
           ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
 
       - name: Authorize SSH session
