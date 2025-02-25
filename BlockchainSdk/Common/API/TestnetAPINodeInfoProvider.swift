@@ -269,6 +269,10 @@ struct TestnetAPINodeInfoProvider {
             return [
                 .init(url: URL(string: "https://rpc-vanguard.vanarchain.com")!),
             ]
+        case .zkLinkNova:
+            return [
+                .init(url: URL(string: "https://sepolia.rpc.zklink.io")!),
+            ]
         // TODO: Refactor in IOS-6639
         case .bitcoin, .litecoin, .disChain, .rsk, .bitcoinCash, .binance, .cardano,
              .xrp, .ducatus, .tezos, .dogecoin, .solana, .kusama, .dash, .gnosis,
