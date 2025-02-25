@@ -8,13 +8,13 @@
 
 import Foundation
 
-//struct ElectrumAddressInfo {
+// struct ElectrumAddressInfo {
 //    let balance: Decimal
 //    let unconfirmed: Decimal
 //    let outputs: [ElectrumUTXO]
-//}
+// }
 //
-//struct ElectrumUTXO {
+// struct ElectrumUTXO {
 //    let position: Int
 //    let hash: String
 //    let value: Decimal
@@ -22,9 +22,9 @@ import Foundation
 //
 //    var isConfirmed: Bool { height != 0 }
 //    var isNonConfirmed: Bool { height == 0 }
-//}
+// }
 //
-//struct ElectrumScriptUTXO {
+// struct ElectrumScriptUTXO {
 //    let transactionHash: String
 //    let outputs: [Vout]
 //
@@ -37,4 +37,4 @@ import Foundation
 //        let addresses: [String]
 //        let hex: String
 //    }
-//}
+// }

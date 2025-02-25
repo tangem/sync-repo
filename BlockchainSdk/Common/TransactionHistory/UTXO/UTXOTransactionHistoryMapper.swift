@@ -61,7 +61,6 @@ extension UTXOTransactionHistoryMapper: TransactionHistoryMapper {
     }
 }
 
-
 extension UTXOPendingTransactionMapper {
     enum Error: LocalizedError {
         case notFound(String)
@@ -73,7 +72,6 @@ extension UTXOPendingTransactionMapper {
         }
     }
 }
-
 
 // MARK: - Private
 

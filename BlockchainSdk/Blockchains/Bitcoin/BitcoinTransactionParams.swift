@@ -7,15 +7,16 @@
 //
 
 import Foundation
+
 //
-//struct BitcoinTransactionParams: TransactionParams {
+// struct BitcoinTransactionParams: TransactionParams {
 //    let inputs: [BitcoinInput]
-//}
+// }
 //
-//struct BitcoinInput {
+// struct BitcoinInput {
 //    let sequence: Int
 //    let address: String
 //    let outputIndex: Int
 //    let outputValue: UInt64
 //    let prevHash: String
-//}
+// }

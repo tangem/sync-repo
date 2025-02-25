@@ -32,7 +32,6 @@ class RavencoinNetworkProvider: HostProvider {
 extension RavencoinNetworkProvider: BitcoinNetworkProvider {
     var supportsTransactionPush: Bool { false }
 
-
     func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
         getUTXO(address: address)
             .withWeakCaptureOf(self)

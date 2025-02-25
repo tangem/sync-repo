@@ -31,13 +31,13 @@ struct BitcoinResponse {
 }
 
 /// Full bitcoin transaction. Currently using only in loading single transaction. In future can be used for displaying transaction detalization
-//struct BitcoinTransaction {
+// struct BitcoinTransaction {
 //    let hash: String
 //    let isConfirmed: Bool
 //    let time: Date
 //    let inputs: [BitcoinTransactionInput]
 //    let outputs: [BitcoinTransactionOutput]
-//}
+// }
 
 struct BitcoinTransactionInput {
     let unspentOutput: BitcoinUnspentOutput
