@@ -1584,7 +1584,6 @@
 		B62D42292CBC79DB00C2460E /* BlockBookResponse+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB02CBC79D900C2460E /* BlockBookResponse+.swift */; };
 		B62D422A2CBC79DB00C2460E /* BlockBookTarget.AddressRequestParameters.FilterType+.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB12CBC79D900C2460E /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */; };
 		B62D422B2CBC79DB00C2460E /* BlockBookResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB32CBC79D900C2460E /* BlockBookResponses.swift */; };
-		B62D422C2CBC79DB00C2460E /* NodeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB42CBC79D900C2460E /* NodeRequest.swift */; };
 		B62D422D2CBC79DB00C2460E /* BlockBookTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB62CBC79D900C2460E /* BlockBookTarget.swift */; };
 		B62D422E2CBC79DB00C2460E /* BlockBookUTXOProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB72CBC79D900C2460E /* BlockBookUTXOProvider.swift */; };
 		B62D422F2CBC79DB00C2460E /* BlockchairAddressBlockMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62D3EB92CBC79D900C2460E /* BlockchairAddressBlockMapper.swift */; };
@@ -4957,7 +4956,6 @@
 		B62D3EB02CBC79D900C2460E /* BlockBookResponse+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlockBookResponse+.swift"; sourceTree = "<group>"; };
 		B62D3EB12CBC79D900C2460E /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BlockBookTarget.AddressRequestParameters.FilterType+.swift"; sourceTree = "<group>"; };
 		B62D3EB32CBC79D900C2460E /* BlockBookResponses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookResponses.swift; sourceTree = "<group>"; };
-		B62D3EB42CBC79D900C2460E /* NodeRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NodeRequest.swift; sourceTree = "<group>"; };
 		B62D3EB62CBC79D900C2460E /* BlockBookTarget.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookTarget.swift; sourceTree = "<group>"; };
 		B62D3EB72CBC79D900C2460E /* BlockBookUTXOProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockBookUTXOProvider.swift; sourceTree = "<group>"; };
 		B62D3EB92CBC79D900C2460E /* BlockchairAddressBlockMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockchairAddressBlockMapper.swift; sourceTree = "<group>"; };
@@ -11627,21 +11625,12 @@
 			path = Config;
 			sourceTree = "<group>";
 		};
-		B62D3EB22CBC79D900C2460E /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				B62D3EB02CBC79D900C2460E /* BlockBookResponse+.swift */,
-				B62D3EB12CBC79D900C2460E /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		B62D3EB52CBC79D900C2460E /* DTO */ = {
 			isa = PBXGroup;
 			children = (
-				B62D3EB22CBC79D900C2460E /* Extensions */,
 				B62D3EB32CBC79D900C2460E /* BlockBookResponses.swift */,
-				B62D3EB42CBC79D900C2460E /* NodeRequest.swift */,
+				B62D3EB02CBC79D900C2460E /* BlockBookResponse+.swift */,
+				B62D3EB12CBC79D900C2460E /* BlockBookTarget.AddressRequestParameters.FilterType+.swift */,
 			);
 			path = DTO;
 			sourceTree = "<group>";
@@ -20369,7 +20358,6 @@
 				B62D414B2CBC79DA00C2460E /* NEARWalletManager.swift in Sources */,
 				B62D42862CBC79DB00C2460E /* PolygonTransactionHistoryTarget.swift in Sources */,
 				B62D42052CBC79DB00C2460E /* XRPAmount.swift in Sources */,
-				B62D422C2CBC79DB00C2460E /* NodeRequest.swift in Sources */,
 				B62D41302CBC79DA00C2460E /* NEARTransactionsInfo.swift in Sources */,
 				B62D403F2CBC79DA00C2460E /* AdaliteResponse.swift in Sources */,
 				B62D41932CBC79DA00C2460E /* SolanaWalletManager.swift in Sources */,

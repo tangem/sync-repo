@@ -31,30 +31,34 @@ final class BitcoinCashBlockBookUTXOProvider: BitcoinNetworkProvider {
     }
 
     func getFee() -> AnyPublisher<BitcoinFee, Error> {
-        blockBookUTXOProvider.executeRequest(
-            .fees(NodeRequest.estimateFeeRequest(method: "estimatefee")),
-            responseType: NodeEstimateFeeResponse.self
-        )
-        .tryMap { [weak self] response in
-            guard let self else {
-                throw WalletError.empty
-            }
+        blockBookUTXOProvider
+            .rpcCall(
+                method: "estimatefee",
+                params: AnyEncodable([Int]()),
+                responseType: NodeEstimateFeeResponse.self
+            )
+            .tryMap { [weak self] response in
+                guard let self else {
+                    throw WalletError.empty
+                }
 
-            return try blockBookUTXOProvider.convertFeeRate(response.result)
-        }.map { fee in
-            // fee for BCH is constant
-            BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
-        }
-        .eraseToAnyPublisher()
+                return try blockBookUTXOProvider.convertFeeRate(response.result.get().result)
+            }.map { fee in
+                // fee for BCH is constant
+                BitcoinFee(minimalSatoshiPerByte: fee, normalSatoshiPerByte: fee, prioritySatoshiPerByte: fee)
+            }
+            .eraseToAnyPublisher()
     }
 
     func send(transaction: String) -> AnyPublisher<String, Error> {
-        blockBookUTXOProvider.executeRequest(
-            .sendNode(NodeRequest.sendRequest(signedTransaction: transaction)),
-            responseType: SendResponse.self
-        )
-        .map { $0.result }
-        .eraseToAnyPublisher()
+        blockBookUTXOProvider
+            .rpcCall(
+                method: "sendrawtransaction",
+                params: AnyEncodable([transaction]),
+                responseType: SendResponse.self
+            )
+            .tryMap { try $0.result.get().result }
+            .eraseToAnyPublisher()
     }
 
     private func addAddressPrefixIfNeeded(_ address: String) -> String {
