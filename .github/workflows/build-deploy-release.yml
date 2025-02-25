@@ -161,7 +161,7 @@ jobs:
 
   deploy_notification:
     name: Deploy Notification
-    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build

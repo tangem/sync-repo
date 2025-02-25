@@ -92,7 +92,7 @@ jobs:
 
       - name: Get unreleased tasks
         id: git-diff
-        uses: tangem-developments/github-action@main
+        uses: tangem-developments/github-action@feature/IOS-8785_ci_cd_create_release
         with:
           github-token: '${{ secrets.GH_MOBILE_PAT }}'
           base: '${{ inputs.base_branch || steps.find-latest-release-branch.outputs.result }}'
@@ -145,7 +145,7 @@ jobs:
 
   build_notification:
     name: Build Notification
-    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs: prepare
     with:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
@@ -181,7 +181,7 @@ jobs:
 
   deploy_notification:
     name: Deploy Notification
-    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    uses: tangem-developments/actions/.github/workflows/notification.yml@feature/IOS-8785_ci_cd_create_release
     needs:
       - prepare
       - build
