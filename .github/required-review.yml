@@ -1,0 +1,20 @@
+## Only teams as requred reviewers
+
+## Any Blockchain SDK files must be reviewed by members from ios-team AND by a blockchain analyst,
+- name: Blockchain SDK
+  paths:
+    - 'BlockchainSdk/**'
+    - 'BlockchainSdkTests/**'
+  teams:
+    - all-of:
+      - ios-core
+      - ios-maintenance
+      - blockchain-analytics
+
+## All other files
+- name: Misc
+  paths: unmatched
+  teams:
+    - all-of:
+      - ios-maintenance
+      - ios-core

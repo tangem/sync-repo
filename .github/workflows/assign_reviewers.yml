@@ -1,0 +1,28 @@
+name: Required review check
+on:
+  pull_request_review:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  check:
+    name: Checking required reviews
+    runs-on: ubuntu-latest
+
+    if: github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Automattic/action-required-review@ebcef2499a4ea8491c5e61d7e9eb3135ce83fec7 # 4.0.2
+        with:
+          requirements-file: .github/required-review.yml
+
+          # Set the status context in the PR's checks list
+          status: Required review
+
+          # Request reviews from the required reviewers
+          request-reviews: true
+
+          # GitHub Access Token
+          token: ${{ secrets.GH_MOBILE_PAT }}
+
