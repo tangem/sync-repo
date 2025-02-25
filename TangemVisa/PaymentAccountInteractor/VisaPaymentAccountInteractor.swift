@@ -1,5 +1,5 @@
 //
-//  VisaBridgeInteractor.swift
+//  VisaPaymentAccountInteractor.swift
 //  TangemVisa
 //
 //  Created by Andrew Son on 15/01/24.
@@ -10,9 +10,10 @@ import Foundation
 import Combine
 import BlockchainSdk
 
-public protocol VisaBridgeInteractor {
+public protocol VisaPaymentAccountInteractor {
     var visaToken: Token { get }
     var accountAddress: String { get }
+    var cardWalletAddress: String { get }
     func loadBalances() async throws -> VisaBalances
-    func loadLimits() async throws -> VisaLimits
+    func loadCardSettings() async throws -> VisaPaymentAccountCardSettings
 }
