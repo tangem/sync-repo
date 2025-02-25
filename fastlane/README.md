@@ -40,6 +40,16 @@ Options:
 - xcode_version_override: Xcode version to use, optional (uses https://github.com/XcodesOrg/xcodes under the hood)
 
 
+### build_simulator
+
+```sh
+[bundle exec] fastlane build_simulator
+```
+
+
+A lane for building for CodeQL analysis
+ 
+
 ### release
 
 ```sh
@@ -169,19 +179,6 @@ Options:
 - asc_key: App Store Connect API Key (NOT in the base64 format)
 
 
-### refresh_dsyms
-
-```sh
-[bundle exec] fastlane refresh_dsyms
-```
-
-
-Load from testFlight dSyms and upload it to Firebase
-Options:
-- version: app version
-- build: build number
-
-
 ### update_translations
 
 ```sh
@@ -218,7 +215,7 @@ Options:
 ```
 
 
-This lane deploy binary to TestFLight
+This lane deploy binary to TestFlight
 Options:
 - asc_key_id: App Store Connect API Key ID
 - asc_issuer_id: App Store Connect API Key Issuer ID

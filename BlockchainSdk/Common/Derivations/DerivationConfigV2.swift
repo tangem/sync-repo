@@ -73,7 +73,9 @@ struct DerivationConfigV2: DerivationConfig {
              .odysseyChain,
              .bitrock,
              .apeChain,
-             .sonic:
+             .sonic,
+             .vanar,
+             .zkLinkNova:
             return "m/44'/60'/0'/0/0"
         case .binance:
             return "m/44'/714'/0'/0/0"
@@ -141,6 +143,8 @@ struct DerivationConfigV2: DerivationConfig {
             return "m/44'/1313'/0'/0/0"
         case .fact0rn:
             return "m/84'/42069'/0'/0/0"
+        case .alephium:
+            return "m/44'/1234'/0'/0/0"
         }
     }
 }

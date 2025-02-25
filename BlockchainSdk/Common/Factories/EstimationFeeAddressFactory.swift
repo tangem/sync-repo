@@ -59,7 +59,7 @@ struct EstimationFeeAddressFactory {
              .zkSync, .moonbeam, .polygonZkEVM, .moonriver, .mantle,
              .flare, .taraxa, .base, .blast, .cyber, .energyWebEVM,
              .core, .canxium, .chiliz, .xodex, .odysseyChain, .bitrock,
-             .apeChain, .sonic:
+             .apeChain, .sonic, .vanar, .zkLinkNova:
             return "0x52bb4012854f808CF9BAbd855e44E506dAf6C077"
         case .ethereumClassic:
             return "0xc49722a6f4Fe5A1347710dEAAa1fafF4c275689b"
@@ -114,6 +114,8 @@ struct EstimationFeeAddressFactory {
             return "AJfAu7RJxiTowM9qVaTbVuS5JCPCpV3p7M"
         case .fact0rn:
             return "fact1q69h3nzh7rl2uv09zp5pw26vw58wdcl2j4lyag0"
+        case .alephium:
+            return "16tfjvsTi34r5bhifdBtY793n3fmrM7EtvvtE8XUN1Hv1"
         }
     }
 }

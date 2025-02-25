@@ -53,7 +53,9 @@ struct DerivationConfigV1: DerivationConfig {
              .canxium,
              .chiliz,
              .xodex,
-             .apeChain:
+             .apeChain,
+             .vanar,
+             .zkLinkNova:
             return "m/44'/60'/0'/0/0"
         case .ethereumClassic:
             return "m/44'/61'/0'/0/0"
@@ -159,6 +161,8 @@ struct DerivationConfigV1: DerivationConfig {
             return "m/44'/7171666'/0'/0/0"
         case .sonic:
             return "m/44'/10007'/0'/0/0"
+        case .alephium:
+            return "m/44'/1234'/0'/0/0"
         }
     }
 }

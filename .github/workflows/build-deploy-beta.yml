@@ -17,6 +17,8 @@ on:
           - builder2
           - builder3
           - builder4
+          - builder5
+          - builder6
         default: ''
       build_description:
         description: >
@@ -44,6 +46,7 @@ concurrency:
 
 env:
   should_find_latest_release_branch: ${{ !inputs.base_branch || inputs.base_branch == '' }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 jobs:
   prepare:
@@ -126,6 +129,36 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
+      - name: Create version
+        id: version
+        env:
+          BRANCH_NAME: '${{ github.head_ref || github.ref_name }}'
+          BUILD_VERSION_FALLBACK: 'Develop'
+        run: |
+          # The initialization of rbenv is required before every `bundle` call since Gihub Actions spawns each 'run' step in a separate process
+          eval "$(rbenv init - bash)"
+
+          bundle exec fastlane \
+          get_alpha_beta_version_number \
+          branch_name:"${BRANCH_NAME}" \
+          build_version_fallback:"${BUILD_VERSION_FALLBACK}"
+
+  build_notification:
+    name: Build Notification
+    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    needs: prepare
+    with:
+      channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      status: 'building'
+      deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
+      version: '${{ needs.prepare.outputs.version }}'
+      build_number: '${{ needs.prepare.outputs.build_number }}'
+      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
+    secrets:
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+
   build:
     name: Tangem Beta
     needs: prepare
@@ -144,6 +177,27 @@ jobs:
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
       IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
+      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
+
+  deploy_notification:
+    name: Deploy Notification
+    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    needs:
+      - prepare
+      - build
+      - build_notification
+    with:
+      channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      message_ts: '${{ needs.build_notification.outputs.ts }}'
+      status: 'deploying'
+      deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
+      version: '${{ needs.prepare.outputs.version }}'
+      build_number: '${{ needs.prepare.outputs.build_number }}'
+      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
+    secrets:
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
   deploy_notification:
     name: Deploy Notification
@@ -196,13 +250,13 @@ jobs:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
       message_ts: '${{ needs.build_notification.outputs.ts }}'
       status: 'success'
-      app_name: '${{ needs.prepare.outputs.version }}'
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
       encoded_release_url: '${{ needs.deploy.outputs.encoded_release_url }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -219,12 +273,12 @@ jobs:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
       message_ts: '${{ needs.build_notification.outputs.ts }}'
       status: 'error'
-      app_name: '${{ needs.prepare.outputs.version }}'
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -241,11 +295,11 @@ jobs:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
       message_ts: '${{ needs.build_notification.outputs.ts }}'
       status: 'cancel'
-      app_name: '${{ needs.prepare.outputs.version }}'
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'

@@ -31,7 +31,8 @@ extension PublicKeyType {
              .sei,
              .casper,
              .clore,
-             .fact0rn:
+             .fact0rn,
+             .alephium:
             self = PublicKeyType.secp256k1
         case .ethereum,
              .bsc,
@@ -71,7 +72,9 @@ extension PublicKeyType {
              .odysseyChain,
              .bitrock,
              .apeChain,
-             .sonic:
+             .sonic,
+             .vanar,
+             .zkLinkNova:
             self = PublicKeyType.secp256k1Extended
         case .stellar,
              .ton,

@@ -101,6 +101,9 @@ public indirect enum Blockchain: Equatable, Hashable {
     case bitrock(testnet: Bool)
     case apeChain(testnet: Bool)
     case sonic(testnet: Bool)
+    case alephium(testnet: Bool)
+    case vanar(testnet: Bool)
+    case zkLinkNova(testnet: Bool)
 
     public var isTestnet: Bool {
         switch self {
@@ -149,7 +152,10 @@ public indirect enum Blockchain: Equatable, Hashable {
              .odysseyChain(let testnet),
              .bitrock(let testnet),
              .apeChain(let testnet),
-             .sonic(let testnet):
+             .sonic(let testnet),
+             .alephium(let testnet),
+             .vanar(let testnet),
+             .zkLinkNova(let testnet):
             return testnet
         case .litecoin,
              .ducatus,
@@ -327,7 +333,10 @@ public indirect enum Blockchain: Equatable, Hashable {
              .odysseyChain,
              .bitrock,
              .apeChain,
-             .sonic:
+             .sonic,
+             .alephium,
+             .vanar,
+             .zkLinkNova:
             return 18
         case .cardano,
              .xrp,
@@ -374,7 +383,8 @@ public indirect enum Blockchain: Equatable, Hashable {
              .polygonZkEVM,
              .base,
              .cyber,
-             .blast:
+             .blast,
+             .zkLinkNova:
             return "ETH"
         case .ethereumClassic:
             return "ETC"
@@ -516,6 +526,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return "APE"
         case .sonic:
             return "S"
+        case .alephium:
+            return "ALPH"
+        case .vanar:
+            return isTestnet ? "VG" : "VANRY"
         }
     }
 
@@ -606,6 +620,10 @@ public indirect enum Blockchain: Equatable, Hashable {
             return isTestnet ? "Curtis Testnet" : "ApeChain"
         case .sonic:
             return "Sonic" + (isTestnet ? " Blaze Testnet" : "")
+        case .vanar:
+            return isTestnet ? "Vanguard Testnet" : "Vanar Chain"
+        case .zkLinkNova:
+            return isTestnet ? "zkLink Nova Sepolia Testnet" : "zkLink Nova"
         default:
             var name = "\(self)".capitalizingFirstLetter()
             if let index = name.firstIndex(of: "(") {
@@ -869,6 +887,8 @@ public extension Blockchain {
         case .bitrock: return isTestnet ? 7771 : 7171
         case .apeChain: return isTestnet ? 33111 : 33139
         case .sonic: return isTestnet ? 57054 : 146
+        case .vanar: return isTestnet ? 78600 : 2040
+        case .zkLinkNova: return isTestnet ? 810181 : 810180
         default:
             return nil
         }
@@ -884,7 +904,8 @@ public extension Blockchain {
              .polygonZkEVM,
              .base,
              .cyber,
-             .blast:
+             .blast,
+             .zkLinkNova:
             return true
         default:
             return false
@@ -944,7 +965,9 @@ public extension Blockchain {
         case .odysseyChain: return true
         case .bitrock: return false // eth_feeHistory all zeroes
         case .apeChain: return true
+        case .vanar: return false // eth_feeHistory baseFeePerGas is zeroes
         case .sonic: return true
+        case .zkLinkNova: return false // eth_feeHistory method returns error
         default:
             assertionFailure("Don't forget about evm here")
             return false
@@ -958,7 +981,7 @@ public extension Blockchain {
 public extension Blockchain {
     func derivationPath(for style: DerivationStyle) -> DerivationPath? {
         guard curve.supportsDerivation else {
-            Log.debug("Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
+            BSDKLogger.error(error: "Wrong attempt to get a `DerivationPath` for a unsupported derivation curve")
             return nil
         }
 
@@ -1092,6 +1115,9 @@ extension Blockchain: Codable {
         case .bitrock: return "bitrock"
         case .apeChain: return "apechain"
         case .sonic: return "sonic"
+        case .alephium: return "alephium"
+        case .vanar: return "vanar"
+        case .zkLinkNova: return "zklink"
         }
     }
 
@@ -1198,6 +1224,9 @@ extension Blockchain: Codable {
         case "bitrock": self = .bitrock(testnet: isTestnet)
         case "apechain": self = .apeChain(testnet: isTestnet)
         case "sonic": self = .sonic(testnet: isTestnet)
+        case "alephium": self = .alephium(testnet: isTestnet)
+        case "vanar": self = .vanar(testnet: isTestnet)
+        case "zklink": self = .zkLinkNova(testnet: isTestnet)
         default:
             throw BlockchainSdkError.decodingFailed
         }
@@ -1465,6 +1494,18 @@ private extension Blockchain {
             case .network: return "sonic"
             case .coin: return "sonic-3"
             }
+        case .alephium:
+            return "alephium"
+        case .vanar:
+            switch type {
+            case .network: return "vanar"
+            case .coin: return "vanry"
+            }
+        case .zkLinkNova:
+            switch type {
+            case .network: return "zklink"
+            case .coin: return "zklink"
+            }
         }
     }
 
@@ -1526,7 +1567,9 @@ extension Blockchain {
              .odysseyChain,
              .bitrock,
              .apeChain,
-             .sonic:
+             .sonic,
+             .vanar,
+             .zkLinkNova:
             return EthereumWalletAssembly()
         case .optimism,
              .manta,
@@ -1592,6 +1635,8 @@ extension Blockchain {
             return CloreWalletAssembly()
         case .fact0rn:
             return Fact0rnWalletAssembly()
+        case .alephium:
+            return AlephiumWalletAssembly()
         }
     }
 }

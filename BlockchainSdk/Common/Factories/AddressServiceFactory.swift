@@ -68,7 +68,9 @@ public struct AddressServiceFactory {
              .odysseyChain,
              .bitrock,
              .apeChain,
-             .sonic:
+             .sonic,
+             .vanar,
+             .zkLinkNova:
             return EthereumAddressService()
         case .rsk:
             return RskAddressService()
@@ -152,6 +154,8 @@ public struct AddressServiceFactory {
             return BitcoinLegacyAddressService(networkParams: networkParams)
         case .fact0rn:
             return Fact0rnAddressService()
+        case .alephium:
+            return AlephiumAddressService()
         }
     }
 }
