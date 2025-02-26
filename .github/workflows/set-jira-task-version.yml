@@ -15,6 +15,7 @@ jobs:
     uses: tangem-developments/actions/.github/workflows/set-jira-task-version.yml@feature/IOS-8785_ci_cd_create_release
     with:
       next_version_name: 'Next Release'
+      pull_request_number: ${{ github.event.pull_request.number }}
     secrets:
       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
