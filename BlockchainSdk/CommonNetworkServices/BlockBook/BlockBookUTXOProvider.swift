@@ -112,6 +112,22 @@ class BlockBookUTXOProvider {
     }
 }
 
+extension BlockBookUTXOProvider {
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        unspentTxData(address: address)
+            .withWeakCaptureOf(self)
+            .map { $0.mapToUnspentOutput(outputs: $1) }
+            .eraseToAnyPublisher()
+    }
+
+    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<TransactionRecord, any Error> {
+        transactionInfo(hash: hash)
+            .withWeakCaptureOf(self)
+            .tryMap { try $0.mapToTransactionRecord(transaction: $1, address: address) }
+            .eraseToAnyPublisher()
+    }
+}
+
 // MARK: - Private
 
 extension BlockBookUTXOProvider {
@@ -150,7 +166,15 @@ extension BlockBookUTXOProvider {
 // MARK: - Mapping
 
 private extension BlockBookUTXOProvider {
-    func mapToPendingTransaction(transaction: BlockBookAddressResponse.Transaction, address: String) throws -> PendingTransactionRecord {
+    func mapToUnspentOutput(outputs: [BlockBookUnspentTxResponse]) -> [UnspentOutput] {
+        outputs.compactMap { output in
+            Decimal(stringValue: output.value).map { value in
+                .init(blockId: output.height ?? 0, hash: output.txid, index: output.vout, amount: value.uint64Value)
+            }
+        }
+    }
+
+    func mapToPendingTransactionRecord(transaction: BlockBookAddressResponse.Transaction, address: String) throws -> PendingTransactionRecord {
         guard let fee = Decimal(stringValue: transaction.fees) else {
             throw WalletError.failedToParseNetworkResponse()
         }
@@ -173,5 +197,10 @@ private extension BlockBookUTXOProvider {
             ),
             address: address
         )
+    }
+
+    func mapToTransactionRecord(transaction: BlockBookAddressResponse.Transaction, address: String) throws -> TransactionRecord {
+        try UTXOTransactionHistoryMapper(blockchain: blockchain)
+            .mapToTransactionRecord(transaction: transaction, walletAddress: address)
     }
 }

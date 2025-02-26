@@ -14,7 +14,13 @@ struct BitcoinFee {
     let prioritySatoshiPerByte: Decimal
 }
 
+struct UTXOResponse {
+    let outputs: [UnspentOutput]
+    let pending: [TransactionRecord]
+}
+
 /// Unified bitcoin response that contain all information for blockchain sdk. Maps information from API's responses
+@available(*, deprecated, message: "Use UTXOResponse")
 struct BitcoinResponse {
     let balance: Decimal
     let hasUnconfirmed: Bool
@@ -30,6 +36,7 @@ struct BitcoinResponse {
 }
 
 /// Full bitcoin transaction. Currently using only in loading single transaction. In future can be used for displaying transaction detalization
+@available(*, deprecated)
 struct BitcoinTransaction {
     let hash: String
     let isConfirmed: Bool
@@ -38,17 +45,20 @@ struct BitcoinTransaction {
     let outputs: [BitcoinTransactionOutput]
 }
 
+@available(*, deprecated)
 struct BitcoinTransactionInput {
     let unspentOutput: BitcoinUnspentOutput
     let sender: String
     let sequence: Int
 }
 
+@available(*, deprecated)
 struct BitcoinTransactionOutput {
     let amount: Decimal
     let recipient: String
 }
 
+@available(*, deprecated, message: "Use UnspentOutput")
 struct BitcoinUnspentOutput {
     let transactionHash: String
     let outputIndex: Int
