@@ -14,11 +14,6 @@ struct BitcoinFee {
     let prioritySatoshiPerByte: Decimal
 }
 
-struct UTXOResponse {
-    let outputs: [UnspentOutput]
-    let pending: [TransactionRecord]
-}
-
 /// Unified bitcoin response that contain all information for blockchain sdk. Maps information from API's responses
 @available(*, deprecated, message: "Use UTXOResponse")
 struct BitcoinResponse {

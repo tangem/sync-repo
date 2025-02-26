@@ -22,14 +22,6 @@ final class BitcoinCashBlockBookUTXOProvider: BitcoinNetworkProvider {
         blockBookUTXOProvider.host
     }
 
-    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
-        blockBookUTXOProvider.getUnspentOutputs(address: addAddressPrefixIfNeeded(address))
-    }
-
-    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<TransactionRecord, any Error> {
-        blockBookUTXOProvider.getTransactionInfo(hash: hash, address: addAddressPrefixIfNeeded(address))
-    }
-
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         blockBookUTXOProvider.getInfo(address: addAddressPrefixIfNeeded(address))
     }
@@ -72,5 +64,35 @@ final class BitcoinCashBlockBookUTXOProvider: BitcoinNetworkProvider {
             let prefix = "bitcoincash:"
             return address.hasPrefix(prefix) ? address : prefix + address
         }
+    }
+}
+
+// MARK: - UTXONetworkProvider
+
+extension BitcoinCashBlockBookUTXOProvider: UTXONetworkProvider {
+    func getFee() -> AnyPublisher<UTXOFee, any Error> {
+        getFee()
+            .map {
+                UTXOFee(
+                    slowSatoshiPerByte: $0.minimalSatoshiPerByte,
+                    marketSatoshiPerByte: $0.normalSatoshiPerByte,
+                    prioritySatoshiPerByte: $0.prioritySatoshiPerByte
+                )
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func send(transaction: String) -> AnyPublisher<TransactionSendResult, any Error> {
+        send(transaction: transaction)
+            .map { TransactionSendResult(hash: $0) }
+            .eraseToAnyPublisher()
+    }
+
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        blockBookUTXOProvider.getUnspentOutputs(address: addAddressPrefixIfNeeded(address))
+    }
+
+    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<TransactionRecord, any Error> {
+        blockBookUTXOProvider.getTransactionInfo(hash: hash, address: addAddressPrefixIfNeeded(address))
     }
 }

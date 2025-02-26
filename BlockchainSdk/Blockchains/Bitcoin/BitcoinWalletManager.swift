@@ -16,6 +16,7 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var allowsFeeSelection: Bool { true }
     var txBuilder: BitcoinTransactionBuilder!
     var networkService: BitcoinNetworkProvider!
+    var utxoNetworkService: UTXONetworkProvider!
 
     /*
      The current default minimum relay fee is 1 sat/vbyte.
@@ -33,8 +34,9 @@ class BitcoinWalletManager: BaseManager, WalletManager, DustRestrictable {
     var outputsCount: Int? { loadedUnspents.count }
 
     override func update(completion: @escaping (Result<Void, Error>) -> Void) {
-        cancellable = networkService.getInfo(addresses: wallet.addresses.map { $0.value })
-            .eraseToAnyPublisher()
+        cancellable = utxoNetworkService.getInfo(address: wallet.defaultAddress.value)
+            .combineLatest(networkService.getInfo(addresses: wallet.addresses.map { $0.value }))
+            .map { $1 }
             .subscribe(on: DispatchQueue.global())
             .sink(receiveCompletion: { [weak self] completionSubscription in
                 if case .failure(let error) = completionSubscription {

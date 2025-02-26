@@ -15927,8 +15927,6 @@
 				DA90396A2C520DEB002C1E6E /* CommonSendTransactionSummaryDescriptionBuilder.swift */,
 				DA90396C2C520E0E002C1E6E /* KoinosSendTransactionSummaryDescriptionBuilder.swift */,
 				EF22B9902C66235900839110 /* StakingTransactionSummaryDescriptionBuilder.swift */,
-				0A2A04DA2C91B167007EAE64 /* TronSendTransactionSummaryDescriptionBuilder.swift */,
-			);
 			path = Interactor;
 			sourceTree = "<group>";
 		};
@@ -19767,6 +19765,7 @@
 				B62D413A2CBC79DA00C2460E /* NEARNetworkResult.APIError.swift in Sources */,
 				B62D42882CBC79DB00C2460E /* PolygonTransactionHistoryProvider.swift in Sources */,
 				B62D42B82CBC79DB00C2460E /* Token.swift in Sources */,
+				EF798FD42D6F876C00B9B4A1 /* UTXOFee.swift in Sources */,
 				B62D41882CBC79DA00C2460E /* SolanaApiLoggerUtil.swift in Sources */,
 				B62D42CD2CBC79DB00C2460E /* Decimal+.swift in Sources */,
 				B62D415F2CBC79DA00C2460E /* PolkadotAddress.swift in Sources */,
@@ -20383,6 +20382,7 @@
 				2D665C092CDCA3F000C9BA85 /* CasperTransactionParams.swift in Sources */,
 				B62D40B62CBC79DA00C2460E /* MoonriverExternalLinkProvider.swift in Sources */,
 				B62D42012CBC79DB00C2460E /* XDCExternalLinkProvider.swift in Sources */,
+				EF798FD02D6F871C00B9B4A1 /* UTXONetworkProvider.swift in Sources */,
 				B62D41742CBC79DA00C2460E /* RadiantTransactionBuilder.swift in Sources */,
 				B62D410A2CBC79DA00C2460E /* KaspaWalletAssembly.swift in Sources */,
 				B62D414B2CBC79DA00C2460E /* NEARWalletManager.swift in Sources */,
@@ -20450,6 +20450,7 @@
 				B62D41622CBC79DA00C2460E /* PolkadotExternalLinkProvider.swift in Sources */,
 				B62D40642CBC79DA00C2460E /* SeiExternalLinkProvider.swift in Sources */,
 				B62D3FCC2CBC79DA00C2460E /* OP_ABS.swift in Sources */,
+				EF798FD62D6F8A0800B9B4A1 /* MultiUTXONetworkProvider.swift in Sources */,
 				B62D3FE22CBC79DA00C2460E /* OP_AND.swift in Sources */,
 				B62D41D52CBC79DB00C2460E /* TronAddressService.swift in Sources */,
 				B62D41762CBC79DA00C2460E /* RadiantWalletAssembly.swift in Sources */,
@@ -20486,6 +20487,7 @@
 				B62D3FF62CBC79DA00C2460E /* OP_IF.swift in Sources */,
 				B62D428D2CBC79DB00C2460E /* BlockBookTransactionHistoryTotalPageCountExtractor.swift in Sources */,
 				B62D41872CBC79DA00C2460E /* SolanaAddressService.swift in Sources */,
+				EF798FD22D6F875F00B9B4A1 /* UTXOResponse.swift in Sources */,
 				B62D41392CBC79DA00C2460E /* NEARNetworkResult.AccountInfo.swift in Sources */,
 				B62D42D32CBC79DB00C2460E /* Log+.swift in Sources */,
 				B62D42A92CBC79DB00C2460E /* ErrorCodeProviding.swift in Sources */,
