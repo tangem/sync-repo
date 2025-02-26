@@ -174,31 +174,6 @@ private extension BlockBookUTXOProvider {
         }
     }
 
-    func mapToPendingTransactionRecord(transaction: BlockBookAddressResponse.Transaction, address: String) throws -> PendingTransactionRecord {
-        guard let fee = Decimal(stringValue: transaction.fees) else {
-            throw WalletError.failedToParseNetworkResponse()
-        }
-
-        return try UTXOPendingTransactionMapper(blockchain: blockchain).mapPendingTransactionRecord(
-            transaction: .init(
-                hash: transaction.txid,
-                fee: fee.uint64Value,
-                date: Date(timeIntervalSince1970: TimeInterval(transaction.blockTime)),
-                vin: transaction.compat.vin.compactMap { vin in
-                    Decimal(stringValue: vin.value).map {
-                        .init(addresses: vin.addresses, amount: $0.uint64Value)
-                    }
-                },
-                vout: transaction.compat.vout.compactMap { vout in
-                    Decimal(stringValue: vout.value).map {
-                        .init(addresses: vout.addresses, amount: $0.uint64Value)
-                    }
-                }
-            ),
-            address: address
-        )
-    }
-
     func mapToTransactionRecord(transaction: BlockBookAddressResponse.Transaction, address: String) throws -> TransactionRecord {
         try UTXOTransactionHistoryMapper(blockchain: blockchain)
             .mapToTransactionRecord(transaction: transaction, walletAddress: address)

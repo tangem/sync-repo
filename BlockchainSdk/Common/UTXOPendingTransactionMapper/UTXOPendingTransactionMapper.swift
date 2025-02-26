@@ -17,19 +17,19 @@ struct UTXOPendingTransactionMapper {
         self.blockchain = blockchain
     }
 
-    func mapPendingTransactionRecord(transaction: Transaction, address: String) throws -> PendingTransactionRecord {
-        let isIncoming = !transaction.vin.contains(where: { $0.addresses.contains(address) })
+    func mapToPendingTransactionRecord(transaction: Transaction, address: String) throws -> PendingTransactionRecord {
+        let isIncoming = !transaction.vin.contains(where: { $0.address == address })
         let outs = transaction.vout
-        let destination = outs.first?.addresses.first(where: { $0 != address }) ?? .unknown
+        let destination = outs.first(where: { $0.address != address })?.address ?? .unknown
 
         let value: UInt64 = {
             if isIncoming {
                 // All outs which was sent only to `wallet` address
-                return outs.filter { $0.addresses.contains(address) }.reduce(0) { $0 + $1.amount }
+                return outs.filter { $0.address == address }.reduce(0) { $0 + $1.amount }
             }
 
             // All outs which was sent only to `other` addresses
-            return outs.filter { !$0.addresses.contains(address) }.reduce(0) { $0 + $1.amount }
+            return outs.filter { $0.address != address }.reduce(0) { $0 + $1.amount }
         }()
 
         return PendingTransactionRecord(
@@ -42,6 +42,29 @@ struct UTXOPendingTransactionMapper {
             isIncoming: isIncoming,
             // For UTXO only one transactionType is applicable
             transactionType: .transfer
+        )
+    }
+
+    func mapToTransactionRecord(transaction: Transaction, address: String) throws -> TransactionRecord {
+        let isOutgoing = transaction.vin.contains(where: { $0.address == address })
+        let sources: [TransactionRecord.Source] = transaction.vin.map {
+            .init(address: $0.address, amount: Decimal($0.amount) / blockchain.decimalValue)
+        }
+        let destinations: [TransactionRecord.Destination] = transaction.vout.map {
+            .init(address: .user($0.address), amount: Decimal($0.amount) / blockchain.decimalValue)
+        }
+
+        return TransactionRecord(
+            hash: transaction.hash,
+            index: 0,
+            source: .from(sources),
+            destination: .from(destinations),
+            fee: .init(.init(with: blockchain, type: .coin, value: Decimal(transaction.fee) / blockchain.decimalValue)),
+            status: .unconfirmed,
+            isOutgoing: isOutgoing,
+            type: .transfer,
+            date: transaction.date,
+            tokenTransfers: nil
         )
     }
 }
@@ -58,7 +81,7 @@ extension UTXOPendingTransactionMapper {
     }
 
     struct Input {
-        var addresses: [String]
+        var address: String
         var amount: UInt64
     }
 

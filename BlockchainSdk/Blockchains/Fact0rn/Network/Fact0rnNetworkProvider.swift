@@ -18,16 +18,32 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
     // MARK: - Private Properties
 
     private let provider: ElectrumWebSocketProvider
-    private let decimalValue: Decimal
+    private let blockchain: Blockchain = .fact0rn
 
     // MARK: - Init
 
-    init(provider: ElectrumWebSocketProvider, decimalValue: Decimal) {
+    init(provider: ElectrumWebSocketProvider) {
         self.provider = provider
-        self.decimalValue = decimalValue
     }
 
     // MARK: - BitcoinNetworkProvider Implementation
+
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        Future.async {
+            let scriptHash = try Fact0rnAddressService.addressToScriptHash(address: address)
+            let unspents = try await self.provider.getUnspents(identifier: .scriptHash(scriptHash))
+            return self.mapUnspent(outputs: unspents)
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<TransactionRecord, any Error> {
+        Future.async {
+            let transaction = try await self.provider.getTransaction(hash: hash)
+            return try self.mapToTransactionRecord(transaction: transaction, address: address)
+        }
+        .eraseToAnyPublisher()
+    }
 
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, any Error> {
         return Result { try Fact0rnAddressService.addressToScriptHash(address: address) }
@@ -92,8 +108,8 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
             async let unspents = self.provider.getUnspents(identifier: identifier)
 
             return try await ElectrumAddressInfo(
-                balance: Decimal(balance.confirmed) / self.decimalValue,
-                unconfirmed: Decimal(balance.unconfirmed) / self.decimalValue,
+                balance: Decimal(balance.confirmed) / self.blockchain.decimalValue,
+                unconfirmed: Decimal(balance.unconfirmed) / self.blockchain.decimalValue,
                 outputs: unspents.map { unspent in
                     ElectrumUTXO(
                         position: unspent.txPos,
@@ -117,13 +133,6 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
     private func send(transactionHex: String) -> AnyPublisher<String, Error> {
         Future.async {
             try await self.provider.send(transactionHex: transactionHex)
-        }
-        .eraseToAnyPublisher()
-    }
-
-    private func getTransactionInfo(hash: String) -> AnyPublisher<ElectrumDTO.Response.Transaction, Error> {
-        Future.async {
-            try await self.provider.getTransaction(hash: hash)
         }
         .eraseToAnyPublisher()
     }
@@ -155,8 +164,34 @@ final class Fact0rnNetworkProvider: BitcoinNetworkProvider {
 }
 
 extension Fact0rnNetworkProvider {
+    private func mapToTransactionRecord(transaction: ElectrumDTO.Response.Transaction, address: String) throws -> TransactionRecord {
+        guard let fee = transaction.feeSatoshi else {
+            throw ProviderError.fieldNotFound("feeSatoshi")
+        }
+
+        return try UTXOPendingTransactionMapper(blockchain: blockchain).mapToTransactionRecord(
+            transaction: .init(
+                hash: transaction.hash,
+                fee: fee.uint64Value,
+                date: transaction.time.map { Date(timeIntervalSince1970: TimeInterval($0)) } ?? Date(),
+                vin: transaction.vin.map { .init(address: $0.address, amount: UInt64($0.vout)) }, // TODO: Amount VIN
+                vout: transaction.vout.map { .init(address: $0.scriptPubKey.addresses.first ?? .unknown, amount: $0.value.uint64Value) }
+            ),
+            address: address
+        )
+    }
+
+    private func mapUnspent(outputs: [ElectrumDTO.Response.ListUnspent]) -> [UnspentOutput] {
+        outputs.map {
+            UnspentOutput(blockId: $0.height.intValue(), hash: $0.txHash, index: $0.txPos, amount: $0.value.uint64Value)
+        }
+    }
+}
+
+extension Fact0rnNetworkProvider {
     enum ProviderError: LocalizedError {
         case failedScriptHashForAddress
+        case fieldNotFound(String)
     }
 
     enum Constants {

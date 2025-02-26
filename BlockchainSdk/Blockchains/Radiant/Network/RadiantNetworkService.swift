@@ -9,6 +9,7 @@
 import Foundation
 import Combine
 
+// Make as BitcoinNetworkProvider
 class RadiantNetworkService {
     let electrumProvider: ElectrumNetworkProvider
 
