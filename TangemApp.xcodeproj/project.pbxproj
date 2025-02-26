@@ -3174,6 +3174,10 @@
 		EFF034AC28B4B6ED00F70FF7 /* Publisher+TangemAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF034AB28B4B6ED00F70FF7 /* Publisher+TangemAPIError.swift */; };
 		EFF034AF28B6522500F70FF7 /* WalletModelsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF034AE28B6522500F70FF7 /* WalletModelsManager.swift */; };
 		EFF034B128B6523F00F70FF7 /* CommonWalletModelsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF034B028B6523F00F70FF7 /* CommonWalletModelsManager.swift */; };
+		EFF1D2332D6E3E29004FBC64 /* UnspentOutputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF1D2312D6E3E29004FBC64 /* UnspentOutputManager.swift */; };
+		EFF1D2342D6E3E29004FBC64 /* CommonUnspentOutputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF1D22F2D6E3E29004FBC64 /* CommonUnspentOutputManager.swift */; };
+		EFF1D2352D6E3E29004FBC64 /* UnspentOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF1D2302D6E3E29004FBC64 /* UnspentOutput.swift */; };
+		EFF1D2382D6E41F0004FBC64 /* UTXOPendingTransactionMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF1D2362D6E41F0004FBC64 /* UTXOPendingTransactionMapper.swift */; };
 		EFF2A52B2C60B70A007DB0C1 /* StakingNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF2A52A2C60B70A007DB0C1 /* StakingNotificationManager.swift */; };
 		EFF2A52D2C60BA0F007DB0C1 /* StakingNotificationEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFF2A52C2C60BA0F007DB0C1 /* StakingNotificationEvent.swift */; };
 		EFF466E32ACC337500ACC3EA /* FakeTokenQuotesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = B01178482AC1B86200C5AD07 /* FakeTokenQuotesRepository.swift */; };
@@ -6528,6 +6532,10 @@
 		EFF034AB28B4B6ED00F70FF7 /* Publisher+TangemAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+TangemAPIError.swift"; sourceTree = "<group>"; };
 		EFF034AE28B6522500F70FF7 /* WalletModelsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletModelsManager.swift; sourceTree = "<group>"; };
 		EFF034B028B6523F00F70FF7 /* CommonWalletModelsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonWalletModelsManager.swift; sourceTree = "<group>"; };
+		EFF1D22F2D6E3E29004FBC64 /* CommonUnspentOutputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUnspentOutputManager.swift; sourceTree = "<group>"; };
+		EFF1D2302D6E3E29004FBC64 /* UnspentOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnspentOutput.swift; sourceTree = "<group>"; };
+		EFF1D2312D6E3E29004FBC64 /* UnspentOutputManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnspentOutputManager.swift; sourceTree = "<group>"; };
+		EFF1D2362D6E41F0004FBC64 /* UTXOPendingTransactionMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UTXOPendingTransactionMapper.swift; sourceTree = "<group>"; };
 		EFF2A52A2C60B70A007DB0C1 /* StakingNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNotificationManager.swift; sourceTree = "<group>"; };
 		EFF2A52C2C60BA0F007DB0C1 /* StakingNotificationEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingNotificationEvent.swift; sourceTree = "<group>"; };
 		EFF466E92ACD928800ACC3EA /* PendingTransactionRecordMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTransactionRecordMapper.swift; sourceTree = "<group>"; };
@@ -11999,6 +12007,7 @@
 				EF798FE92D6F8DEC00B9B4A1 /* TransactionRecordMapper */,
 				EF798FE52D6F8D3000B9B4A1 /* UnspentOutputManager */,
 				EF798FDD2D6F8D0900B9B4A1 /* UTXONetworkProvider */,
+				EFF1D2372D6E41F0004FBC64 /* UTXOPendingTransactionMapper */,
 				EF0C0CA12D6605DE00DA7E87 /* JSONRPC */,
 				B62D3ECA2CBC79D900C2460E /* Account */,
 				B62D3ED02CBC79D900C2460E /* Address */,
@@ -17034,6 +17043,24 @@
 			path = WalletModelsManager;
 			sourceTree = "<group>";
 		};
+		EFF1D2322D6E3E29004FBC64 /* UnspentOutputManager */ = {
+			isa = PBXGroup;
+			children = (
+				EFF1D2302D6E3E29004FBC64 /* UnspentOutput.swift */,
+				EFF1D2312D6E3E29004FBC64 /* UnspentOutputManager.swift */,
+				EFF1D22F2D6E3E29004FBC64 /* CommonUnspentOutputManager.swift */,
+			);
+			path = UnspentOutputManager;
+			sourceTree = "<group>";
+		};
+		EFF1D2372D6E41F0004FBC64 /* UTXOPendingTransactionMapper */ = {
+			isa = PBXGroup;
+			children = (
+				EFF1D2362D6E41F0004FBC64 /* UTXOPendingTransactionMapper.swift */,
+			);
+			path = UTXOPendingTransactionMapper;
+			sourceTree = "<group>";
+		};
 		EFF2A5292C60B6CF007DB0C1 /* StakingNotifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -19860,6 +19887,9 @@
 				B62D3FDC2CBC79DA00C2460E /* OP_NUMEQUAL.swift in Sources */,
 				B62D40CD2CBC79DA00C2460E /* EthereumOptimisticRollupWalletManager.swift in Sources */,
 				B62D410D2CBC79DA00C2460E /* KoinosAccountNonce.swift in Sources */,
+				EFF1D2332D6E3E29004FBC64 /* UnspentOutputManager.swift in Sources */,
+				EFF1D2342D6E3E29004FBC64 /* CommonUnspentOutputManager.swift in Sources */,
+				EFF1D2352D6E3E29004FBC64 /* UnspentOutput.swift in Sources */,
 				B62D41E62CBC79DB00C2460E /* VeChainAccountInfo.swift in Sources */,
 				B62D413C2CBC79DA00C2460E /* NEARNetworkResult.ProtocolConfig.swift in Sources */,
 				B62D423A2CBC79DB00C2460E /* AccountCreator.swift in Sources */,
@@ -20622,6 +20652,7 @@
 				B62D42252CBC79DB00C2460E /* GetBlockBlockBookConfig.swift in Sources */,
 				B62D40BB2CBC79DA00C2460E /* PolygonZkEvmExternalLinkProvider.swift in Sources */,
 				B62D3FE02CBC79DA00C2460E /* OP_SUB.swift in Sources */,
+				EFF1D2382D6E41F0004FBC64 /* UTXOPendingTransactionMapper.swift in Sources */,
 				B62D40FA2CBC79DA00C2460E /* ICPExternalLinkProvider.swift in Sources */,
 				B62D41B82CBC79DB00C2460E /* TONProviderModels.swift in Sources */,
 				2D8D5EA42D5F2FA1005AECC9 /* AlephiumAPIResolver.swift in Sources */,
