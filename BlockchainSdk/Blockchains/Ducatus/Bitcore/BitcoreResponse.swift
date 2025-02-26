@@ -14,10 +14,11 @@ struct BitcoreBalance: Codable {
 }
 
 struct BitcoreUtxo: Codable {
-    var mintTxid: String?
-    var mintIndex: Int?
-    var value: Int64?
-    var script: String?
+    let mintHeight: Int?
+    let mintTxid: String?
+    let mintIndex: Int?
+    let value: UInt64?
+    let script: String?
 }
 
 struct BitcoreSendResponse: Codable {

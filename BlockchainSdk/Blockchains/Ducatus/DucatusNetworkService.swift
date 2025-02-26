@@ -20,6 +20,19 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         provider = BitcoreProvider(configuration: configuration)
     }
 
+    func getUnspentOutputs(address: String) -> AnyPublisher<[UnspentOutput], any Error> {
+        provider.getUnspents(address: address)
+            .withWeakCaptureOf(self)
+            .map { $0.mapToUnspentOutputs(outputs: $1) }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
+
+    func getTransactionInfo(hash: String, address: String) -> AnyPublisher<TransactionRecord, any Error> {
+        // TODO: https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md#get-transaction-by-txid
+        Empty().eraseToAnyPublisher()
+    }
+
     func getInfo(address: String) -> AnyPublisher<BitcoinResponse, Error> {
         return Publishers.Zip(provider.getBalance(address: address), provider.getUnspents(address: address))
             .tryMap { balance, unspents throws -> BitcoinResponse in
@@ -67,5 +80,20 @@ class DucatusNetworkService: BitcoinNetworkProvider {
         return Just(fee)
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
+    }
+}
+
+extension DucatusNetworkService {
+    func mapToUnspentOutputs(outputs: [BitcoreUtxo]) -> [UnspentOutput] {
+        outputs.compactMap { output -> UnspentOutput? in
+            guard let hash = output.mintTxid,
+                  let index = output.mintIndex,
+                  let value = output.value else {
+                return nil
+            }
+
+            // All confirmed
+            return UnspentOutput(blockId: 1, hash: hash, index: index, amount: UInt64(value))
+        }
     }
 }

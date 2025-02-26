@@ -11,6 +11,7 @@ import Moya
 import Combine
 import TangemNetworkUtils
 
+/// https://github.com/bitpay/bitcore/blob/master/packages/bitcore-node/docs/api-documentation.md
 class BitcoreProvider {
     private let provider: NetworkProvider<BitcoreTarget>
 
