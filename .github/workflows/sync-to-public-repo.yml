@@ -54,20 +54,25 @@ jobs:
           rm -rf fastlane
 
       - name: Commit and push changes
+        env:
+          GH_USERNAME: 'tangem-service'
+          GH_TOKEN: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
         run: |
           git config --global user.name "Tangem Service"
           git config --global user.email "gitservice@tangem.com"
           git config set advice.addEmbeddedRepo false
-          git remote add public-repo "git@github.com:tangem-developments/tangem-app-ios-test-sync-repo.git" # TODO: Test only
+          git remote add public-repo "https://${GH_USERNAME}:${GH_TOKEN}@github.com/tangem/tangem-app-ios.git"
           git checkout -b ${SOURCE_BRANCH}
           git add .
           git commit -m "Sync@${GITHUB_SHA}"
           git push -u public-repo ${SOURCE_BRANCH} --force
 
       - name: Open a PR
+        env:
+          GH_TOKEN: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
         run: |
           gh pr create \
-          --repo tangem-developments/tangem-app-ios-test-sync-repo \
+          --repo tangem/tangem-app \
           --base ${TARGET_BRANCH} \
           --head ${SOURCE_BRANCH} \
           --title "Sync@${GITHUB_SHA}" \
