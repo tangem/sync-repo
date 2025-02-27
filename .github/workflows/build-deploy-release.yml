@@ -39,7 +39,6 @@ on:
         type: string
       # TODO: Enable by default, requires IOS-8942
       analyze_archive:
-        # TODO: Enable by default
         description: >
           Whether the archive should be analyzed during the build process (default: false)
         type: boolean
