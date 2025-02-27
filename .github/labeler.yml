@@ -1,0 +1,3 @@
+# Add 'release' label to any PR that is opened against the `main` branch
+release:
+ - base-branch: 'release/*'

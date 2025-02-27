@@ -15,7 +15,7 @@ class CommonUnstakingStepsManager {
     private let summaryStep: SendSummaryStep
     private let finishStep: SendFinishStep
     private let action: UnstakingModel.Action
-    private let initialStepIsSummary: Bool
+    private let isPartialUnstakeAllowed: Bool
 
     private var stack: [SendStep]
     private var bag: Set<AnyCancellable> = []
@@ -26,15 +26,15 @@ class CommonUnstakingStepsManager {
         summaryStep: SendSummaryStep,
         finishStep: SendFinishStep,
         action: UnstakingModel.Action,
-        initialStepIsSummary: Bool
+        isPartialUnstakeAllowed: Bool
     ) {
         self.amountStep = amountStep
         self.summaryStep = summaryStep
         self.finishStep = finishStep
         self.action = action
-        self.initialStepIsSummary = initialStepIsSummary
+        self.isPartialUnstakeAllowed = isPartialUnstakeAllowed
 
-        stack = [initialStepIsSummary ? summaryStep : amountStep]
+        stack = [isPartialUnstakeAllowed ? amountStep : summaryStep]
     }
 
     private func currentStep() -> SendStep {
@@ -117,10 +117,10 @@ extension CommonUnstakingStepsManager: SendStepsManager {
     }
 
     var initialState: SendStepsManagerViewState {
-        if initialStepIsSummary {
-            .init(step: summaryStep, action: .action, backButtonVisible: false)
-        } else {
+        if isPartialUnstakeAllowed {
             .init(step: amountStep, action: .next, backButtonVisible: false)
+        } else {
+            .init(step: summaryStep, action: .action, backButtonVisible: false)
         }
     }
 
