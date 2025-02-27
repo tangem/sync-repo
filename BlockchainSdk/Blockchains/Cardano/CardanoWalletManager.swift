@@ -239,20 +239,8 @@ extension CardanoWalletManager: CardanoTransferRestrictable {
 
 // MARK: - StakeKitTransactionSender, StakeKitTransactionSenderProvider
 
-extension CardanoWalletManager: StakeKitTransactionSender, StakeKitTransactionSenderProvider {
+extension CardanoWalletManager: StakeKitTransactionSender, StakeKitTransactionsBuilder, StakeKitTransactionDataBroadcaster {
     typealias RawTransaction = Data
-
-    func prepareDataForSign(transaction: StakeKitTransaction) throws -> Data {
-        try CardanoStakeKitTransactionHelper(
-            transactionBuilder: transactionBuilder
-        ).prepareForSign(transaction)
-    }
-
-    func prepareDataForSend(transaction: StakeKitTransaction, signature: SignatureInfo) throws -> RawTransaction {
-        try CardanoStakeKitTransactionHelper(
-            transactionBuilder: transactionBuilder
-        ).prepareForSend(transaction, signatures: [signature])
-    }
 
     func broadcast(transaction: StakeKitTransaction, rawTransaction: RawTransaction) async throws -> String {
         try await networkService.send(transaction: rawTransaction).async()
@@ -260,16 +248,16 @@ extension CardanoWalletManager: StakeKitTransactionSender, StakeKitTransactionSe
 
     func buildRawTransactions(
         from transactions: [StakeKitTransaction],
-        wallet: Wallet,
+        publicKey: Wallet.PublicKey,
         signer: TransactionSigner
     ) async throws -> [Data] {
         let firstDerivationPath: DerivationPath
         let secondDerivationPath: DerivationPath
 
-        let firstPublicKey = wallet.publicKey.blockchainKey
+        let firstPublicKey = publicKey.blockchainKey
         let secondPublicKey: Data
 
-        switch wallet.publicKey.derivationType {
+        switch publicKey.derivationType {
         case .double(let first, let second):
             firstDerivationPath = first.path
             secondDerivationPath = second.path
@@ -281,9 +269,13 @@ extension CardanoWalletManager: StakeKitTransactionSender, StakeKitTransactionSe
 
         var transactionHashes = [StakeKitTransaction: Data]()
 
+        let stakeKitTransactionHelper = CardanoStakeKitTransactionHelper(
+            transactionBuilder: transactionBuilder
+        )
+
         var dataToSign = [SignData]()
         for transaction in transactions {
-            let hashToSign = try prepareDataForSign(transaction: transaction)
+            let hashToSign = try stakeKitTransactionHelper.prepareForSign(transaction)
 
             transactionHashes[transaction] = hashToSign
 
@@ -297,10 +289,8 @@ extension CardanoWalletManager: StakeKitTransactionSender, StakeKitTransactionSe
 
         let signatures: [SignatureInfo] = try await signer.sign(
             dataToSign: dataToSign,
-            seedKey: wallet.publicKey.seedKey
+            seedKey: publicKey.seedKey
         ).async()
-
-        let stakeKitTransactionHelper = CardanoStakeKitTransactionHelper(transactionBuilder: transactionBuilder)
 
         return try transactions.compactMap { transaction -> Data? in
             guard let hash = transactionHashes[transaction] else { return nil }
