@@ -13,8 +13,8 @@ jobs:
     name: Prepare Release
     uses: tangem-developments/actions/.github/workflows/prepare-release.yml@feature/IOS-8785_ci_cd_create_release
     with:
-      versionName: ${{ inputs.versionName }}
-      projectName: 'IOS'
+      version_name: ${{ inputs.versionName }}
+      project_name: 'IOS'
     secrets:
       JIRA_BASE_URL: ${{ secrets.JIRA_URL }}
       JIRA_USER_EMAIL: ${{ secrets.JIRA_USER }}
