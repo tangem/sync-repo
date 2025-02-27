@@ -21,14 +21,14 @@ jobs:
                     #error: 'Your first line has to contain a commit type like "IOS-0000".'
 
      - name: Get PR Commits
-        id: 'get-pr-commits'
-        uses: tim-actions/get-pr-commits@master
-        with:
-          token: ${{ secrets.GH_MOBILE_PAT }}
+       id: 'get-pr-commits'
+       uses: tim-actions/get-pr-commits@198af03565609bb4ed924d1260247b4881f09e7d #1.3.1
+       with:
+         token: ${{ secrets.GH_MOBILE_PAT }}
 
-      - name: Check Commit Prefix
-        uses: tim-actions/commit-message-checker-with-regex@094fc16ff83d04e2ec73edb5eaf6aa267db33791 #v0.3.2
-        with:
-          commits: ${{ steps.get-pr-commits.outputs.commits }}
-          pattern: '[A-Z]+-\d+'
-          error: 'Your first line has to contain a commit type like "IOS-0000"'
+     - name: Check Commit Prefix
+       uses: tim-actions/commit-message-checker-with-regex@094fc16ff83d04e2ec73edb5eaf6aa267db33791 #v0.3.2
+       with:
+         commits: ${{ steps.get-pr-commits.outputs.commits }}
+         pattern: '[A-Z]+-\d+'
+         error: 'Your first line has to contain a commit type like "IOS-0000"'
