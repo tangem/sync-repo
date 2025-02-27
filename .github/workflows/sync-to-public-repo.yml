@@ -85,18 +85,16 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git clone --bare "git@github.com:tangem/tangem-app-ios.git" "public-repo"
+          git clone --depth 1 --branch=develop --single-branch --no-checkout git@github.com:tangem/tangem-app-ios.git public-repo
           ls -l private-repo/tangem-app-config  || true # TODO: Test only
           ls -l public-repo/tangem-app-config  || true # TODO: Test only
           cd public-repo
           git config --global user.name "Tangem Service"
           git config --global user.email "gitservice@tangem.com"
           git config set advice.addEmbeddedRepo false
-          #git remote add public-repo "git@github.com:tangem/tangem-app-ios.git"
-          git fetch origin develop
-          git checkout -b ${SOURCE_BRANCH} origin/develop
-          touch 1234 && git add 1234 # TODO: Test only
-          #git add .
+          git checkout -b ${SOURCE_BRANCH}
+          touch 1234
+          git add .
           git commit -m "Sync@${GITHUB_SHA}"
           git push origin ${SOURCE_BRANCH} --force
 
