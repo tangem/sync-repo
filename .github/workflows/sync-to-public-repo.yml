@@ -56,7 +56,8 @@ jobs:
       - name: Remove unused files
         if: false # TODO: Test only
         run: |
-          du -d 0 -h ${SPM_DEPENDENCIES_CACHE_PATH} # TODO: Test only
+          #du -d 0 -h ${SPM_DEPENDENCIES_CACHE_PATH} # TODO: Test only
+          cd private-repo
           rm -rf .jira
           rm -rf .github/workflows
           rm -rf .gitmodules
@@ -68,7 +69,8 @@ jobs:
         with:
           repository: 'tangem/tangem-app-ios'
           path: 'public-repo'
-          fetch-depth: 0
+          fetch-depth: 1
+          ref: 'develop'
           submodules: false # Explicitly prevents submodules from being cloned
           ssh-key: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
 
@@ -83,17 +85,39 @@ jobs:
           ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
           ssh-add ~/.ssh/ssh_key
 
-      - name: Commit and push changes
+      - name: Configure git
         run: |
-          git clone --depth 1 --branch=develop --single-branch --no-checkout git@github.com:tangem/tangem-app-ios.git public-repo
-          ls -l private-repo/tangem-app-config  || true # TODO: Test only
-          ls -l public-repo/tangem-app-config  || true # TODO: Test only
-          cd public-repo
           git config --global user.name "Tangem Service"
           git config --global user.email "gitservice@tangem.com"
-          git config set advice.addEmbeddedRepo false
+          #git config set advice.addEmbeddedRepo false
+
+      - name: Clone destination repo
+        run: |
+          git clone \
+          --depth 1 \
+          --branch=develop \
+          --single-branch \
+          --no-checkout \
+          git@github.com:tangem/tangem-app-ios.git public-repo
+
+      - name: Sync all changes from source to destination repo
+        run: |
+          rsync -av --delete \
+          --exclude='.git' \
+          --exclude='.jira' \
+          --exclude='.gitmodules' \
+          --exclude='.github/workflows/*' \
+          --exclude='bootstrap.sh' \
+          --exclude='swiftgen.yml' \
+          --exclude='Gemfile*' \
+          --exclude='fastlane/*' \
+          --exclude='Utilites/*' \
+          private-repo/ public-repo
+
+      - name: Commit and push changes
+        run: |
+          cd public-repo
           git checkout -b ${SOURCE_BRANCH}
-          touch 1234
           git add .
           git commit -m "Sync@${GITHUB_SHA}"
           git push origin ${SOURCE_BRANCH} --force
