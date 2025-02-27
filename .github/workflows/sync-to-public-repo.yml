@@ -19,8 +19,12 @@ jobs:
   prepare-and-sync:
     runs-on: macos-15
     steps:
-      - name: Checkout repository
+      - name: Checkout GH Enterprise repository
         uses: actions/checkout@v4
+        with:
+          path: 'private-repo'
+          fetch-depth: 0
+          submodules: false # Explicitly prevents submodules from being cloned
 
       - name: Authorize SSH session (for GH Enterprise)
         if: false # TODO: Test only
@@ -36,6 +40,7 @@ jobs:
 
       # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
       - name: Install Ruby
+        if: false # TODO: Test only
         uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
 
       # Skipping Ruby installation since it has been already installed by an action above
@@ -57,6 +62,15 @@ jobs:
           rm -rf .gitmodules
           rm -rf fastlane
 
+      - name: Checkout GH Public repository
+        uses: actions/checkout@v4
+        with:
+          repository: 'tangem/tangem-app-ios'
+          path: 'public-repo'
+          fetch-depth: 0
+          submodules: false # Explicitly prevents submodules from being cloned
+          ssh-key: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
+
       - name: Authorize SSH session (for GH Public)
         env:
           SSH_KEY: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
@@ -70,10 +84,13 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          ls -l private-repo/tangem-app-config  || true # TODO: Test only
+          ls -l public-repo/tangem-app-config  || true # TODO: Test only
+          cd public-repo
           git config --global user.name "Tangem Service"
           git config --global user.email "gitservice@tangem.com"
           git config set advice.addEmbeddedRepo false
-          git remote add public-repo "git@github.com:tangem/tangem-app-ios.git"
+          #git remote add public-repo "git@github.com:tangem/tangem-app-ios.git"
           git checkout -b ${SOURCE_BRANCH}
           touch 1234 && git add 1234 # TODO: Test only
           #git add .
