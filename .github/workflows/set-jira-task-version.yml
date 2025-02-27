@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: 
       #- 'develop'
+      #- 'releases/*'
       - 'test/IOS-8785_ci_cd_create_release'  # TODO: Test only
     types: 
       - closed
@@ -12,9 +13,28 @@ jobs:
   prepare:
     name: Prepare Release
     if: ${{ github.event.pull_request.merged }}
+    runs-on: ubuntu-latest
+    outputs:
+      version_name: ${{ steps.version.outputs.VERSION_NAME }}
+    steps:
+      - name: Determine Version Name
+        id: version
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [[ "$BASE_REF" == "develop" ]]; then
+            echo "VERSION_NAME=Next Release" >> $GITHUB_OUTPUT
+          elif [[ "$BASE_REF" =~ ^releases/.* ]]; then
+            VERSION="${BASE_REF#releases/}"
+            echo "VERSION_NAME=${VERSION}" >> $GITHUB_OUTPUT
+          fi
+
+  set-jira-version:
+    name: Set Jira Task Version
+    needs: prepare
     uses: tangem-developments/actions/.github/workflows/set-jira-task-version.yml@feature/IOS-8785_ci_cd_create_release
     with:
-      next_version_name: 'Next Release'
+      version_name: ${{ needs.prepare.outputs.version_name }}
       projectName: 'IOS'
       pull_request_number: ${{ github.event.pull_request.number }}
     secrets:
