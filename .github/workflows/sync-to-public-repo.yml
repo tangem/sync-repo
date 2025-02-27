@@ -13,7 +13,7 @@ env:
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   SPM_DEPENDENCIES_CACHE_PATH: ./vendor/ios_dependencies
   SOURCE_BRANCH: sync/revision_${{ github.sha }}
-  TARGET_BRANCH: main
+  TARGET_BRANCH: main # TODO: Use develop instead?
 
 jobs:
   prepare-and-sync:
@@ -63,6 +63,7 @@ jobs:
           rm -rf fastlane
 
       - name: Checkout GH Public repository
+        if: false # TODO: Test only
         uses: actions/checkout@v4
         with:
           repository: 'tangem/tangem-app-ios'
@@ -84,6 +85,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          git clone --bare "git@github.com:tangem/tangem-app-ios.git" "public-repo"
           ls -l private-repo/tangem-app-config  || true # TODO: Test only
           ls -l public-repo/tangem-app-config  || true # TODO: Test only
           cd public-repo
@@ -91,11 +93,12 @@ jobs:
           git config --global user.email "gitservice@tangem.com"
           git config set advice.addEmbeddedRepo false
           #git remote add public-repo "git@github.com:tangem/tangem-app-ios.git"
-          git checkout -b ${SOURCE_BRANCH}
+          git fetch origin develop
+          git checkout -b ${SOURCE_BRANCH} origin/develop
           touch 1234 && git add 1234 # TODO: Test only
           #git add .
           git commit -m "Sync@${GITHUB_SHA}"
-          git push -u public-repo ${SOURCE_BRANCH} --force
+          git push origin ${SOURCE_BRANCH} --force
 
       - name: Open a PR
         if: false # TODO: Test only
