@@ -19,7 +19,6 @@ jobs:
       - name: Checkout GH Enterprise repository
         uses: actions/checkout@v4
         with:
-          path: 'private-repo'
           fetch-depth: 0
           submodules: false # Explicitly prevents submodules from being cloned
 
@@ -32,8 +31,7 @@ jobs:
         run: ./bootstrap.sh --skip-ruby
 
       - name: Fetch and cache SPM dependencies
-        run: |
-          bundle exec fastlane cache_spm_dependencies cache_path:${SPM_DEPENDENCIES_CACHE_PATH}
+        run: bundle exec fastlane cache_spm_dependencies cache_path:${SPM_DEPENDENCIES_CACHE_PATH}
 
       - name: Authorize SSH session (for GH Public)
         env:
@@ -50,7 +48,6 @@ jobs:
         run: |
           git config --global user.name "Tangem Service"
           git config --global user.email "gitservice@tangem.com"
-          #git config set advice.addEmbeddedRepo false
 
       - name: Clone destination repo
         run: |
@@ -72,7 +69,8 @@ jobs:
           --exclude='Gemfile*' \
           --exclude='bootstrap.sh' \
           --exclude='tangem-app-config' \
-          private-repo/ public-repo
+          --exclude='public-repo' \
+          ./ public-repo
 
       - name: Commit and push changes
         run: |
