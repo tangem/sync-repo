@@ -46,6 +46,9 @@ enum NotificationButtonActionType: Identifiable, Hashable {
     case openCurrency
     case seedSupportYes
     case seedSupportNo
+    case seedSupport2Yes
+    case seedSupport2No
+    case scanCard
 
     var id: Int { hashValue }
 
@@ -95,13 +98,20 @@ enum NotificationButtonActionType: Identifiable, Hashable {
             return Localization.commonYes
         case .seedSupportNo:
             return Localization.commonNo
+        case .seedSupport2Yes:
+            return Localization.seedWarningYes
+        case .seedSupport2No:
+            return Localization.seedWarningNo
+        case .scanCard:
+            return "Scan card"
         }
     }
 
     var icon: MainButton.Icon? {
         switch self {
         case .generateAddresses,
-             .retryKaspaTokenTransaction:
+             .retryKaspaTokenTransaction,
+             .scanCard:
             return .trailing(Assets.tangemIcon)
         case .swap:
             return .leading(Assets.exchangeMini)
@@ -123,7 +133,9 @@ enum NotificationButtonActionType: Identifiable, Hashable {
              .support,
              .openCurrency,
              .seedSupportYes,
-             .seedSupportNo:
+             .seedSupportNo,
+             .seedSupport2Yes,
+             .seedSupport2No:
             return nil
         }
     }
@@ -133,7 +145,8 @@ enum NotificationButtonActionType: Identifiable, Hashable {
         case .generateAddresses,
              .openLink,
              .openAppStoreReview,
-             .empty:
+             .empty,
+             .scanCard:
             return .primary
         case .backupCard,
              .buyCrypto,
@@ -152,7 +165,9 @@ enum NotificationButtonActionType: Identifiable, Hashable {
              .openCurrency,
              .swap,
              .seedSupportNo,
-             .seedSupportYes:
+             .seedSupportYes,
+             .seedSupport2Yes,
+             .seedSupport2No:
             return .secondary
         }
     }

@@ -89,7 +89,8 @@ final class TokenDetailsViewModel: SingleTokenBaseViewModel, ObservableObject {
 
     override func didTapNotification(with id: NotificationViewId, action: NotificationButtonActionType) {
         switch action {
-        case .empty:
+        case .empty,
+             .scanCard:
             break
         case .openFeeCurrency:
             openFeeCurrency()
@@ -113,7 +114,9 @@ final class TokenDetailsViewModel: SingleTokenBaseViewModel, ObservableObject {
              .support,
              .openCurrency,
              .seedSupportNo,
-             .seedSupportYes:
+             .seedSupportYes,
+             .seedSupport2No,
+             .seedSupport2Yes:
             super.didTapNotification(with: id, action: action)
         }
     }
