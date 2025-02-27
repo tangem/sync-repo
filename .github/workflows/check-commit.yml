@@ -16,4 +16,6 @@ jobs:
         uses: gsactions/commit-message-checker@16fa2d5de096ae0d35626443bcd24f1e756cafee # v2
         with:
           pattern: '[A-Z]+-\d+'
+          checkAllCommitMessages: "true" # optional: this checks all commits associated with a pull request
+          accessToken: ${{ secrets.GH_PRIVATE }} # github access token is only required if checkAllCommitMessages is true
           error: 'Your first line has to contain a commit type like "IOS-0000".'
