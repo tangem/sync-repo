@@ -12,10 +12,23 @@ jobs:
     name: Check Commit Message
     runs-on: ubuntu-latest
     steps:
-      - name: Check Commit Type
-        uses: gsactions/commit-message-checker@16fa2d5de096ae0d35626443bcd24f1e756cafee # v2
+                #- name: Check Commit Type
+                #  uses: gsactions/commit-message-checker@16fa2d5de096ae0d35626443bcd24f1e756cafee # v2
+                 # with:
+                  #  pattern: '[A-Z]+-\d+'
+                   # checkAllCommitMessages: "true" # optional: this checks all commits associated with a pull request
+                    #accessToken: ${{ secrets.GH_MOBILE_PAT }} # github access token is only required if checkAllCommitMessages is true
+                    #error: 'Your first line has to contain a commit type like "IOS-0000".'
+
+     - name: Get PR Commits
+        id: 'get-pr-commits'
+        uses: tim-actions/get-pr-commits@master
         with:
+          token: ${{ secrets.GH_MOBILE_PAT }}
+
+      - name: Check Commit Prefix
+        uses: tim-actions/commit-message-checker-with-regex@094fc16ff83d04e2ec73edb5eaf6aa267db33791 #v0.3.2
+        with:
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '[A-Z]+-\d+'
-          checkAllCommitMessages: "true" # optional: this checks all commits associated with a pull request
-          accessToken: ${{ secrets.GH_MOBILE_PAT }} # github access token is only required if checkAllCommitMessages is true
-          error: 'Your first line has to contain a commit type like "IOS-0000".'
+          error: 'Your first line has to contain a commit type like "IOS-0000"'
