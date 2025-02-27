@@ -105,13 +105,13 @@ jobs:
           rsync -av --delete \
           --exclude='.git' \
           --exclude='.jira' \
+          --exclude='.github' \
           --exclude='.gitmodules' \
-          --exclude='.github/workflows/*' \
+          --exclude='fastlane' \
+          --exclude='Utilites' \
+          --exclude='Gemfile*' \
           --exclude='bootstrap.sh' \
           --exclude='swiftgen.yml' \
-          --exclude='Gemfile*' \
-          --exclude='fastlane/*' \
-          --exclude='Utilites/*' \
           private-repo/ public-repo
 
       - name: Commit and push changes
