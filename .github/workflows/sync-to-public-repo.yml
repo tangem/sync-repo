@@ -97,7 +97,6 @@ jobs:
           --depth 1 \
           --branch=develop \
           --single-branch \
-          --no-checkout \
           git@github.com:tangem/tangem-app-ios.git public-repo
 
       - name: Sync all changes from source to destination repo
@@ -111,7 +110,7 @@ jobs:
           --exclude='Utilites' \
           --exclude='Gemfile*' \
           --exclude='bootstrap.sh' \
-          --exclude='swiftgen.yml' \
+          --exclude='tangem-app-config' \
           private-repo/ public-repo
 
       - name: Commit and push changes
