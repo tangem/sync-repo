@@ -104,12 +104,3 @@ struct StakingFlowBaseBuilder {
         return viewModel
     }
 }
-
-extension Blockchain {
-    var isStakeAmountEditable: Bool {
-        switch self {
-        case .cardano: false
-        default: true
-        }
-    }
-}

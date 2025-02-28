@@ -20,7 +20,7 @@ class MultipleSignTask: CardSessionRunnable {
     }
 
     deinit {
-        Log.debug("MultipleSignTask deinit")
+        TSDKLogger.debug("MultipleSignTask deinit")
     }
 
     public func run(in session: CardSession, completion: @escaping CompletionResult<[MultipleSignTaskResponse]>) {

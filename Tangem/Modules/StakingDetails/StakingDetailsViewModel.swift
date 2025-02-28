@@ -368,7 +368,7 @@ private extension StakingDetailsViewModel {
     private func openFlow(for action: StakingAction) {
         switch action.type {
         case .stake,
-             .pending(.stake) where tokenItem.blockchain.isStakeAmountEditable:
+             .pending(.stake) where tokenItem.blockchain.isPartialUnstakeAllowed:
             coordinator?.openStakingFlow()
         case .pending(.voteLocked):
             coordinator?.openRestakingFlow(action: action)

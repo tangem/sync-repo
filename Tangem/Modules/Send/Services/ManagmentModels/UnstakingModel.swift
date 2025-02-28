@@ -428,8 +428,14 @@ extension UnstakingModel {
         // preferred == false means it's disabled in admin tool
         guard validatorInfo.preferred else { return false }
 
-        return switch tokenItem.blockchain {
-        case .ton: false // ton does not support partial unstake
+        return tokenItem.blockchain.isPartialUnstakeAllowed
+    }
+}
+
+extension Blockchain {
+    var isPartialUnstakeAllowed: Bool {
+        switch self {
+        case .cardano, .ton: false
         default: true
         }
     }
