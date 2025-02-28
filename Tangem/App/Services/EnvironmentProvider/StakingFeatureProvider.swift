@@ -32,6 +32,11 @@ class StakingFeatureProvider {
             return nil
         }
 
+        // cardano staking require extended key
+        if case .cardano(let extended) = tokenItem.blockchain, !extended {
+            return nil
+        }
+
         guard let stakingTokenItem = tokenItem.stakingTokenItem else {
             return nil
         }
