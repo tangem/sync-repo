@@ -1,5 +1,32 @@
 # Lines starting with '#' are comments.
 # Each line is a file pattern followed by one or more owners.
 
-# These owners will be the default owners for everything in the repo.
-*           @tangem-developments/ios-reviewers @aosokin_tangem
+# Region global
+
+* @aosokin_tangem
+
+# Region CI
+
+.github/ @afedorov_tangem
+.jira/ @afedorov_tangem
+
+# Region BSDK
+
+BlockchainSdk/ @askibin_tangem
+BlockchainSdkExample/ @askibin_tangem
+BlockchainSdkTests/ @askibin_tangem
+
+# Region Visa
+
+TangemVisa/ @ason_tangem
+TangemVisaTests/ @ason_tangem
+
+# Region Express
+
+TangemExpress/ @sbalashov_tangem
+TangemExpressTests/ @sbalashov_tangem
+
+# Region Staking
+
+TangemStaking/ @dfedorov_tangem
+TangemStakingTests/ @dfedorov_tangem
