@@ -470,7 +470,8 @@ private extension CommonStakingManager {
             balanceType: balance.balanceType,
             validatorType: validatorType,
             inProgress: false,
-            actions: balance.actions
+            actions: balance.actions,
+            actionConstraints: balance.actionConstraints
         )
     }
 

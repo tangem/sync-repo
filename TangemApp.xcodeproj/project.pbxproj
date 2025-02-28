@@ -14,6 +14,7 @@
 		0A2A04DB2C91B167007EAE64 /* TronSendTransactionSummaryDescriptionBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2A04DA2C91B167007EAE64 /* TronSendTransactionSummaryDescriptionBuilder.swift */; };
 		0A3BF9692C6CDAD900163492 /* AdditionalAddresses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BF9682C6CDAD900163492 /* AdditionalAddresses.swift */; };
 		0A3BF96B2C6CE96B00163492 /* StakingAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3BF96A2C6CE96B00163492 /* StakingAction.swift */; };
+		0A553D662D70BD8B00D65C6A /* StakingPendingActionConstraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A553D652D70BD8A00D65C6A /* StakingPendingActionConstraint.swift */; };
 		0A66678F2D1C0749008BE9D4 /* CardanoStakeKitTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A66678E2D1C0749008BE9D4 /* CardanoStakeKitTransactionHelper.swift */; };
 		0A713CEC2CAA6DA30042FC27 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		0A713CEE2CAA73BF0042FC27 /* RestakingFlowBaseBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A713CED2CAA73BF0042FC27 /* RestakingFlowBaseBuilder.swift */; };
@@ -3374,6 +3375,7 @@
 		0A2A04DA2C91B167007EAE64 /* TronSendTransactionSummaryDescriptionBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TronSendTransactionSummaryDescriptionBuilder.swift; sourceTree = "<group>"; };
 		0A3BF9682C6CDAD900163492 /* AdditionalAddresses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalAddresses.swift; sourceTree = "<group>"; };
 		0A3BF96A2C6CE96B00163492 /* StakingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingAction.swift; sourceTree = "<group>"; };
+		0A553D652D70BD8A00D65C6A /* StakingPendingActionConstraint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StakingPendingActionConstraint.swift; sourceTree = "<group>"; };
 		0A66678E2D1C0749008BE9D4 /* CardanoStakeKitTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardanoStakeKitTransactionHelper.swift; sourceTree = "<group>"; };
 		0A713CED2CAA73BF0042FC27 /* RestakingFlowBaseBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestakingFlowBaseBuilder.swift; sourceTree = "<group>"; };
 		0A713CEF2CAA76530042FC27 /* CommonRestakingStepsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonRestakingStepsManager.swift; sourceTree = "<group>"; };
@@ -16607,6 +16609,7 @@
 				EF7C4B3C2C93419F005F9360 /* StakingBalance.swift */,
 				EF7C4B3A2C93413C005F9360 /* StakingBalanceType.swift */,
 				EF7C4B3E2C9341E8005F9360 /* StakingPendingActionType.swift */,
+				0A553D652D70BD8A00D65C6A /* StakingPendingActionConstraint.swift */,
 				EF7C4B402C936200005F9360 /* StakingValidatorType.swift */,
 			);
 			path = Models;
@@ -20799,6 +20802,7 @@
 				EF407E5D2C04D64B00366733 /* StakingAPIProvider.swift in Sources */,
 				EFBC5C732C00A74100B662E0 /* YieldInfo.swift in Sources */,
 				0A3BF9692C6CDAD900163492 /* AdditionalAddresses.swift in Sources */,
+				0A553D662D70BD8B00D65C6A /* StakingPendingActionConstraint.swift in Sources */,
 				EFBC5C752C00A74100B662E0 /* StakingAPIService.swift in Sources */,
 				EFBC5C902C00B8B800B662E0 /* StakeKitDTO+Yield.swift in Sources */,
 				EF8DBCEA2C061B0E009072CF /* CommonStakingManager.swift in Sources */,

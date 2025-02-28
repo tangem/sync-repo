@@ -272,23 +272,10 @@ private extension StakingDetailsViewModel {
                     fiatFormatted: rewardsFiatFormatted,
                     cryptoFormatted: rewardsCryptoFormatted
                 ) { [weak self] in
-                    guard let self else { return }
-
-                    guard rewardsClaimable else {
-                        alert = AlertBuilder.makeAlert(
-                            title: Localization.stakingDetailsMinRewardsNotification(yield.item.name, "1 ADA"),
-                            message: "",
-                            primaryButton: .default(Text(Localization.warningButtonOk), action: {})
-                        )
-                        return
-                    }
-                    if rewards.count == 1, let balance = rewards.first {
-                        openFlow(balance: balance, validators: yield.validators)
-
-                        let name = balance.validatorType.validator?.name
-                        Analytics.log(event: .stakingButtonRewards, params: [.validator: name ?? ""])
+                    if rewardsClaimable {
+                        self?.openRewardsFlow(rewardsBalances: rewards, yield: yield)
                     } else {
-                        coordinator?.openMultipleRewards()
+                        self?.validateRewardsClaimable(balances: balances, yield: yield, rewardsValue: rewardsValue)
                     }
                 }
             )
@@ -338,6 +325,44 @@ private extension StakingDetailsViewModel {
         } catch {
             alert = AlertBuilder.makeOkErrorAlert(message: error.localizedDescription)
         }
+    }
+
+    private func openRewardsFlow(rewardsBalances: [StakingBalance], yield: YieldInfo) {
+        if rewardsBalances.count == 1, let rewardsBalance = rewardsBalances.first {
+            openFlow(balance: rewardsBalance, validators: yield.validators)
+
+            let name = rewardsBalance.validatorType.validator?.name
+            Analytics.log(event: .stakingButtonRewards, params: [.validator: name ?? ""])
+        } else {
+            coordinator?.openMultipleRewards()
+        }
+    }
+
+    private func validateRewardsClaimable(
+        balances: [StakingBalance],
+        yield: YieldInfo,
+        rewardsValue: Decimal
+    ) {
+        let constraint = balances
+            .compactMap(\.actionConstraints)
+            .flatMap(\.self)
+            .first(where: { $0.type == .claimRewards })
+
+        var minAmountString: String?
+        if let minAmount = constraint?.amount.minimum, minAmount > rewardsValue {
+            minAmountString = balanceFormatter.formatCryptoBalance(
+                minAmount,
+                currencyCode: tokenItem.currencySymbol
+            )
+        }
+
+        guard let minAmountString else { return }
+
+        alert = AlertBuilder.makeAlert(
+            title: Localization.stakingDetailsMinRewardsNotification(yield.item.name, minAmountString),
+            message: "",
+            primaryButton: .default(Text(Localization.warningButtonOk), action: {})
+        )
     }
 
     private func openFlow(for action: StakingAction) {

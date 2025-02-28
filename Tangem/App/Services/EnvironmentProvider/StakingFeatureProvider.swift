@@ -89,6 +89,8 @@ extension StakingFeatureProvider {
             return "bsc-bnb-native-staking"
         case (.ton, .none):
             return "ton-ton-tonwhales-pools-staking"
+        case (.cardano, .none):
+            return "cardano-ada-native-staking"
         default:
             return nil
         }
