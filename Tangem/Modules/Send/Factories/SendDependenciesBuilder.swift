@@ -414,7 +414,9 @@ struct SendDependenciesBuilder {
         repository: OnrampRepository,
         dataRepository: OnrampDataRepository
     ) {
-        let apiProvider = ExpressAPIProviderFactory().makeExpressAPIProvider(userId: userWalletId)
+        let apiProvider = ExpressAPIProviderFactory().makeExpressAPIProvider(
+            userWalletModel: userWalletModel
+        )
 
         let factory = TangemExpressFactory()
         let repository = factory.makeOnrampRepository(storage: CommonOnrampStorage())
@@ -460,7 +462,8 @@ struct SendDependenciesBuilder {
     func makePendingExpressTransactionsManager() -> PendingExpressTransactionsManager {
         CommonPendingOnrampTransactionsManager(
             userWalletId: userWalletModel.userWalletId.stringValue,
-            walletModel: walletModel
+            walletModel: walletModel,
+            expressAPIProvider: ExpressAPIProviderFactory().makeExpressAPIProvider(userWalletModel: userWalletModel)
         )
     }
 }
