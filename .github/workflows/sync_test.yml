@@ -24,10 +24,10 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
 
-      - name: Run eslint to remove sensitive comments
-        run: |
-          npm install eslint@8 --global
-          eslint --fix .
+      #- name: Run eslint to remove sensitive comments
+      #  run: |
+      #    npm install eslint@8 --global
+      #    eslint --fix .
 
       - name: Push mirror to public repo
         run: |
