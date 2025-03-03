@@ -12,6 +12,7 @@ ALPHA_SCHEME = "Tangem Alpha"
 BSDK_EXAMPLE_SCHEME = "BlockchainSdkExample"
 PROJECT_NAME = "TangemApp.xcodeproj"
 FIREBASE_TESTERS_GROUP = "testers"
+UNIT_TESTS_DEVICE = "iPhone 16 Pro Max (18.2)"  # Update when Xcode is updated
 
 AppVersion = Struct.new(:version_string, :version_source)
 
@@ -59,6 +60,9 @@ lane :test do
   run_tests(
     project: PROJECT_NAME,
     scheme: PRODUCTION_SCHEME,
+    device: UNIT_TESTS_DEVICE,
+    skip_detect_devices: true,
+    ensure_devices_found: true,
     clean: true,
     code_coverage: true
   )
@@ -75,9 +79,9 @@ lane :test_modules do |options|
   run_tests(
     package_path: "Modules",
     scheme: "TangemModules",
-    # Without it fastlane won't pass the "-destination" argument to the "xcodebuild" and the build will fail.
-    # A real & valid device name is not required, fastlane will use the first available device.
-    device: "iPhone",
+    device: UNIT_TESTS_DEVICE,
+    skip_detect_devices: true,
+    ensure_devices_found: true,
     # Still required in 2024 https://github.com/fastlane/fastlane/issues/20012#issuecomment-1263765513
     output_directory: File.join(Dir.pwd, "test_output"),
     result_bundle: true,
