@@ -45,6 +45,8 @@ enum UserWalletFeature: Int, CaseIterable { // TODO: Add comments
     case accessCodeRecoverySettings
 
     case promotion
+
+    case nft
 }
 
 extension UserWalletFeature {
