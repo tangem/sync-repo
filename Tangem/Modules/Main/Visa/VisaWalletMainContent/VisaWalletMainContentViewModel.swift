@@ -98,7 +98,6 @@ class VisaWalletMainContentViewModel: ObservableObject {
         }
 
         coordinator?.openTransactionDetails(tokenItem: tokenItem, for: transactionRecord)
-        VisaLogger.info("[Visa Main Content View Model] Explore transaction with id: \(transactionId)")
     }
 
     func reloadTransactionHistory() {
@@ -177,7 +176,7 @@ class VisaWalletMainContentViewModel: ObservableObject {
             failedToLoadInfoNotificationInput = .init(
                 style: .withButtons([.init(
                     action: weakify(self, forFunction: VisaWalletMainContentViewModel.notificationButtonTapped),
-                    actionType: .scanCard,
+                    actionType: .unlock,
                     isWithLoader: true
                 )]),
                 severity: .info,
@@ -190,7 +189,7 @@ class VisaWalletMainContentViewModel: ObservableObject {
 
     private func notificationButtonTapped(notificationId: NotificationViewId, buttonActionType: NotificationButtonActionType) {
         switch buttonActionType {
-        case .scanCard:
+        case .unlock:
             isScannerBusy = true
             visaWalletModel.authorizeCard { [weak self] in
                 DispatchQueue.main.async {
