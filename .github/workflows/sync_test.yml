@@ -35,5 +35,6 @@ jobs:
           git push --mirror
 
       - name: Cleanup SSH keys
+        if: always()
         run: |
           rm -rf ~/.ssh
