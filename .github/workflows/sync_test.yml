@@ -32,6 +32,7 @@ jobs:
       - name: Push mirror to public repo
         run: |
           git remote set-url --push origin git@github.com:tangem/sync-repo.git
+          git fetch --all
           git push --mirror
 
       - name: Cleanup SSH keys
