@@ -11,9 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout private repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 
+        run: |
+           git clone --recursive https://x-access-token:${{ secrets.GH_MOBILE_PAT }}@tangem-developments/tangem-app-ios.git
         
       - name: Set up SSH
         run: |
@@ -31,9 +30,8 @@ jobs:
 
       - name: Push mirror to public repo
         run: |
-          git remote set-url --push origin git@github.com:tangem/sync-repo.git
-          git fetch --all
-          git push --mirror
+          cd tangem-app-ios.git
+          git push --mirror git@github.com:tangem/sync-repo.git
 
       - name: Cleanup SSH keys
         if: always()
