@@ -26,7 +26,7 @@ jobs:
 
       - name: Run eslint to remove sensitive comments
         run: |
-          npm install eslint --global
+          npm install eslint@8 --global
           eslint --fix .
 
       - name: Push mirror to public repo
