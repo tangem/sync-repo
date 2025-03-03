@@ -1,0 +1,41 @@
+name: Mirror Private Repo to Public
+
+on:
+  push:
+    branches:
+      - release
+  workflow_dispatch: 
+  
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+        
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
+
+      #- name: Run eslint to remove sensitive comments
+      #  run: |
+      #    npm install eslint@8 --global
+      #    eslint --fix .
+
+      - name: Push mirror to public repo
+        run: |
+          git remote set-url --push origin git@github.com:tangem/sync-repo.git
+          git fetch --all
+          git push --mirror
+
+      - name: Cleanup SSH keys
+        if: always()
+        run: |
+          rm -rf ~/.ssh
