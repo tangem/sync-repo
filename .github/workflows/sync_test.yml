@@ -33,6 +33,8 @@ jobs:
         run: |
           git remote set-url --push origin git@github.com:tangem/sync-repo.git
           git fetch --all
+          git branch -a
+          git remote -v
           git push origin --all
 
       - name: Cleanup SSH keys
