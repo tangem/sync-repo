@@ -23,28 +23,41 @@ extension KaspaTransactionHistoryTarget {
 extension KaspaTransactionHistoryTarget: TargetType {
     var baseURL: URL {
         switch type {
-        case .getCoinTransactionHistory(address: let address, page: let page, limit: let limit):
-            <#code#>
-        case .getTokenTransactionHistory(address: let address, contract: let contract, page: let page, limit: let limit):
-            <#code#>
+        case .getCoinTransactionHistory:
+            URL(string: "https://api.kaspa.org/")!
+        case .getTokenTransactionHistory:
+            URL(string: "https://api.kasplex.org/v1/")!
         }
     }
-    
+
     var path: String {
-        <#code#>
+        switch type {
+        case .getCoinTransactionHistory(let address, let page, let limit):
+            "addresses/\(address)/full-transactions"
+        case .getTokenTransactionHistory(address: let address, contract: let contract, _, _):
+            "krc20/oplist?address=\(address)&tick=\(contract)"
+        }
     }
-    
+
     var method: Moya.Method {
-        <#code#>
+        switch type {
+        case .getCoinTransactionHistory, .getTokenTransactionHistory: .get
+        }
     }
-    
+
     var task: Moya.Task {
-        <#code#>
+        switch type {
+        case .getCoinTransactionHistory(_, let page, let limit):
+            .requestParameters(
+                parameters: ["limit": limit, "offset": page, "resolve_previous_outpoints": "light"],
+                encoding: URLEncoding()
+            )
+        case .getTokenTransactionHistory:
+            .requestPlain
+        }
     }
-    
-    var headers: [String : String]? {
-        <#code#>
+
+    var headers: [String: String]? {
+        nil
     }
-    
-    
 }
