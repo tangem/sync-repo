@@ -297,6 +297,12 @@ class PendingExpressTxStatusBottomSheetViewModel: ObservableObject, Identifiable
             showGoToProviderHeaderButton = externalProviderTxURL != nil
         }
 
+        showLongTimeExchangeNotificationIfNeeded(
+            for: currentStatus,
+            inputs: &inputs,
+            notificationFactory: notificationFactory
+        )
+
         if let refundedTokenItem {
             let input = notificationFactory.buildNotificationInput(
                 for: ExpressNotificationEvent.refunded(tokenItem: refundedTokenItem),
@@ -323,6 +329,30 @@ class PendingExpressTxStatusBottomSheetViewModel: ObservableObject, Identifiable
         // to prevent glitches while updating other views (labels, icons, etc.)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: notificationUpdateWorkItem!)
     }
+
+    // Show long time exchange notification if needed for active exchange state
+    private func showLongTimeExchangeNotificationIfNeeded(
+        for currentStatus: PendingExpressTransactionStatus,
+        inputs: inout [NotificationViewInput],
+        notificationFactory: NotificationsFactory
+    ) {
+        guard
+            currentStatus.isProcessExchange,
+            let averageDuration = pendingTransaction.averageDuration,
+            let createdAt = pendingTransaction.createdAt
+        else {
+            return
+        }
+
+        if Date().timeIntervalSince(createdAt) > (averageDuration * 5) {
+            let input = notificationFactory.buildNotificationInput(
+                for: ExpressNotificationEvent.longTimeAverageDuration,
+                buttonAction: weakify(self, forFunction: PendingExpressTxStatusBottomSheetViewModel.didTapNotification(with:action:))
+            )
+
+            inputs.append(input)
+        }
+    }
 }
 
 extension PendingExpressTxStatusBottomSheetViewModel {
@@ -333,7 +363,7 @@ extension PendingExpressTxStatusBottomSheetViewModel {
         }
 
         switch event {
-        case .verificationRequired:
+        case .verificationRequired, .longTimeAverageDuration:
             Analytics.log(
                 event: .tokenButtonGoToProvider,
                 params: [

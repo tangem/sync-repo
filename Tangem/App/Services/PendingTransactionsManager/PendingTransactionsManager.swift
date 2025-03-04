@@ -39,6 +39,9 @@ struct PendingTransaction {
     /// Average duration of transaction processing in seconds based on historical data.
     /// If nil, there is not enough data to calculate average duration.
     let averageDuration: TimeInterval?
+
+    /// This parameter obtain from createdAt raw from status response
+    let createdAt: Date?
 }
 
 final class CompoundPendingTransactionsManager: PendingExpressTransactionsManager {

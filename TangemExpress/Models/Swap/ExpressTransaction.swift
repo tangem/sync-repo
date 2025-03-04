@@ -13,4 +13,5 @@ public struct ExpressTransaction {
     public let externalStatus: ExpressTransactionStatus
     public let refundedCurrency: ExpressCurrency?
     public let averageDuration: TimeInterval?
+    public let createdAt: Date?
 }

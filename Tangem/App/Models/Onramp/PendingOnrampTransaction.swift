@@ -35,7 +35,8 @@ extension PendingOnrampTransaction {
             transactionStatus: transactionRecord.transactionStatus,
             refundedTokenItem: nil,
             statuses: statuses,
-            averageDuration: nil
+            averageDuration: nil,
+            createdAt: nil
         )
     }
 }

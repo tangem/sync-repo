@@ -127,4 +127,26 @@ enum PendingExpressTransactionStatus: String, Equatable, Codable {
             false
         }
     }
+
+    var isProcessExchange: Bool {
+        switch self {
+        case .created,
+             .awaitingDeposit,
+             .confirming,
+             .exchanging,
+             .buying,
+             .sendingToUser:
+            return true
+        case .done,
+             .failed,
+             .txFailed,
+             .verificationRequired,
+             .awaitingHash,
+             .unknown,
+             .paused,
+             .refunded,
+             .canceled:
+            return false
+        }
+    }
 }

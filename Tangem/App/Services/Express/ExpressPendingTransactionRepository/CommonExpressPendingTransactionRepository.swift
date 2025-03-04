@@ -79,6 +79,7 @@ extension CommonExpressPendingTransactionRepository: ExpressPendingTransactionRe
             externalTxId: txData.expressTransactionData.externalTxId,
             externalTxURL: txData.expressTransactionData.externalTxUrl,
             averageDuration: nil, // Set nil because we don't have any data yet
+            createdAt: nil, // Set nil because we don't have any data yet
             isHidden: false,
             transactionStatus: .awaitingDeposit
         )

@@ -29,6 +29,9 @@ struct ExpressPendingTransactionRecord: Codable, Equatable {
     /// Will be updated when transaction status changes
     var averageDuration: TimeInterval?
 
+    /// This raw from status createdAt raw response
+    var createdAt: Date?
+
     // Flag for hide transaction from UI. But keep saving in the storage
     var isHidden: Bool
     var transactionStatus: PendingExpressTransactionStatus

@@ -28,7 +28,8 @@ extension PendingExpressTransaction {
             transactionStatus: transactionRecord.transactionStatus,
             refundedTokenItem: transactionRecord.refundedTokenItem,
             statuses: statuses,
-            averageDuration: transactionRecord.averageDuration
+            averageDuration: transactionRecord.averageDuration,
+            createdAt: transactionRecord.createdAt
         )
     }
 }
