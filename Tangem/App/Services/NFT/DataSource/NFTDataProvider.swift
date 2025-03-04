@@ -2,7 +2,7 @@
 //  NFTDataProvider.swift
 //  Tangem
 //
-//  Created by m3g0byt3 on 03.03.2025.
+//  Created by Andrey Fedorov on 03.03.2025.
 //  Copyright © 2025 Tangem AG. All rights reserved.
 //
 

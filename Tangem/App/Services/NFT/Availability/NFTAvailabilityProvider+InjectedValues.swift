@@ -2,7 +2,7 @@
 //  NFTAvailabilityProvider+InjectedValues.swift
 //  Tangem
 //
-//  Created by Andrei Fedorov on 27.02.2025.
+//  Created by Andrey Fedorov on 27.02.2025.
 //  Copyright © 2025 Tangem AG. All rights reserved.
 //
 
