@@ -10,9 +10,24 @@ jobs:
   sync-repo:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+
+          
       - name: Checkout private repo
         run: |
-           git clone --recursive https://x-access-token:${{ secrets.GH_MOBILE_PAT }}@tangem-developments/tangem-app-ios.git
+           git clone --recursive git@github.com:tangem-developments/tangem-app-ios.git
+
+      - name: Cleanup SSH keys
+        run: |
+          rm -rf ~/.ssh
         
       - name: Set up SSH
         run: |
