@@ -132,22 +132,3 @@ extension KaspaTransactionHistoryMapper: TransactionHistoryMapper {
 
     func reset() {}
 }
-
-// MARK: - Constants
-
-private extension KaspaTransactionHistoryMapper {
-    enum Constants {
-        static let maxRateLimitReachedResultPrefix = "max rate limit reached"
-        /// Method names in the API look like `swap(address executor,tuple desc,bytes permit,bytes data)`,
-        /// so we have to remove all method signatures (parameters, types, etc).
-        static let methodNameSeparator = "("
-    }
-}
-
-// MARK: - Convenience extensions
-
-private extension KaspaTransactionHistoryResponse.Transaction {
-    var isContractInteraction: Bool {
-        false
-    }
-}

@@ -33,7 +33,7 @@ final class KaspaTransactionHistoryProvider: TransactionHistoryProvider {
     }
 
     var canFetchHistory: Bool {
-        hasReachedEnd == false
+        !hasReachedEnd
     }
 
     // TODO: implement history for tokens
@@ -80,6 +80,7 @@ final class KaspaTransactionHistoryProvider: TransactionHistoryProvider {
 
     func reset() {
         page = nil
+        hasReachedEnd = false
     }
 }
 
