@@ -51,6 +51,7 @@ struct KaspaOutpoint: Codable {
 struct KaspaUtxoEntry: Codable {
     let amount: String
     let scriptPublicKey: KaspaScriptPublicKeyResponse
+    let blockDaaScore: String?
 }
 
 struct KaspaScriptPublicKeyResponse: Codable {

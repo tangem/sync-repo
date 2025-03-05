@@ -175,10 +175,7 @@ class KaspaTransactionBuilder {
     }
 
     private func scriptPublicKey(address: String) throws -> Data {
-        guard let components = addressService.parse(address) else {
-            throw WalletError.failedToBuildTx
-        }
-
+        let components = try addressService.parse(address)
         let startOpCode: OpCode?
         let endOpCode: OpCode
 

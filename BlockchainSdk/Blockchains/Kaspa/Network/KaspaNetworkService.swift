@@ -41,15 +41,13 @@ class KaspaNetworkService: MultiNetworkProvider {
                 .retry(2)
                 .map { utxos in
                     return utxos.compactMap { utxo -> ScriptUnspentOutput? in
-                        guard
-                            let amount = UInt64(utxo.utxoEntry.amount)
-                        else {
+                        guard let amount = UInt64(utxo.utxoEntry.amount) else {
                             return nil
                         }
 
                         return ScriptUnspentOutput(
                             output: .init(
-                                blockId: -1,
+                                blockId: utxo.utxoEntry.blockDaaScore.flatMap { Int($0) } ?? -1,
                                 hash: Data(hexString: utxo.outpoint.transactionId),
                                 index: utxo.outpoint.index,
                                 amount: amount
