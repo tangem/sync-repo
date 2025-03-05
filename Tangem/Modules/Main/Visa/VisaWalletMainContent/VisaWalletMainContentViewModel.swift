@@ -229,6 +229,7 @@ class VisaWalletMainContentViewModel: ObservableObject {
 
 // MARK: - Buttons setup logic
 
+// TODO: Extension will be changed in IOS-9325, after `WalletModel` refactoring
 private extension VisaWalletMainContentViewModel {
     private func setupButtons() {
         let tokenActionInfo = try? makeTokenActionInfo()
@@ -317,6 +318,7 @@ private extension VisaWalletMainContentViewModel {
 
 // MARK: - Buttons actions
 
+// TODO: Extension will be changed in IOS-9325, after `WalletModel` refactoring
 private extension VisaWalletMainContentViewModel {
     func openReceive() {
         let info: TokenActionInfo
