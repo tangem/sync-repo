@@ -212,7 +212,7 @@ struct StakeKitMapper {
             return []
         }
 
-        return try balances.compactMap { balance -> StakingBalanceInfo? in
+        return try balances.compactMap { balance in
             guard let amount = Decimal(stringValue: balance.amount) else {
                 return nil
             }

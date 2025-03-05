@@ -40,7 +40,7 @@ struct StakingFlowBaseBuilder {
             actionType: .stake,
             sendFeeLoader: stakingModel,
             sendQRCodeService: .none,
-            sendAmountValidator: builder.makeStakingSendAmountValidator(stakingManager: manager),
+            sendAmountValidator: builder.makeStakingSendAmountValidator(stakingManager: manager, action: .stake),
             amountModifier: builder.makeStakingAmountModifier(actionType: .stake),
             source: .staking
         )
@@ -102,5 +102,21 @@ struct StakingFlowBaseBuilder {
         stakingModel.router = viewModel
 
         return viewModel
+    }
+}
+
+extension Blockchain {
+    var isStakingAmountEditable: Bool {
+        switch self {
+        case .cardano: false
+        default: true
+        }
+    }
+
+    var stakingDeposit: Decimal? {
+        switch self {
+        case .cardano: Decimal(stringValue: "2")
+        default: nil
+        }
     }
 }

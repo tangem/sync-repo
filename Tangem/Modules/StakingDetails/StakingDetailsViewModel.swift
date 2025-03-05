@@ -343,13 +343,20 @@ private extension StakingDetailsViewModel {
         yield: YieldInfo,
         rewardsValue: Decimal
     ) {
-        let constraint = balances
+        var constraint = balances
             .compactMap(\.actionConstraints)
             .flatMap(\.self)
             .first(where: { $0.type == .claimRewards })
 
+        let minAmount: Decimal? = switch constraint?.amount.minimum {
+        // StakeKit didn't implement constraints for polygon yet, this code will be removed once done
+        case .none where yield.item.network == .polygon: 1
+        case .none: .none
+        case .some(let amount): amount
+        }
+
         var minAmountString: String?
-        if let minAmount = constraint?.amount.minimum, minAmount > rewardsValue {
+        if let minAmount, minAmount > rewardsValue {
             minAmountString = balanceFormatter.formatCryptoBalance(
                 minAmount,
                 currencyCode: tokenItem.currencySymbol

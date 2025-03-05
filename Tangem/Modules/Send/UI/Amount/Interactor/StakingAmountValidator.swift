@@ -1,5 +1,5 @@
 //
-//  StakingSendAmountValidator.swift
+//  StakingAmountValidator.swift
 //  Tangem
 //
 //  Created by Dmitry Fedorov on 08.08.2024.
@@ -11,9 +11,10 @@ import BlockchainSdk
 import Combine
 import TangemStaking
 
-class StakingSendAmountValidator {
+class StakingAmountValidator {
     private let tokenItem: TokenItem
     private let validator: TransactionValidator
+    private let action: StakingAction.ActionType
     private var minimumAmount: Decimal?
     private let stakingManagerStatePublisher: AnyPublisher<StakingManagerState, Never>
     private var bag = Set<AnyCancellable>()
@@ -21,22 +22,28 @@ class StakingSendAmountValidator {
     init(
         tokenItem: TokenItem,
         validator: TransactionValidator,
+        action: StakingAction.ActionType,
         stakingManagerStatePublisher: AnyPublisher<StakingManagerState, Never>
     ) {
         self.tokenItem = tokenItem
         self.validator = validator
         self.stakingManagerStatePublisher = stakingManagerStatePublisher
+        self.action = action
         bind()
     }
 
     private func bind() {
         stakingManagerStatePublisher
-            .compactMap { state -> Decimal? in
+            .compactMap { [action, weak self] state -> Decimal? in
                 switch state {
                 case .availableToStake(let yieldInfo):
-                    return yieldInfo.enterMinimumRequirement
+                    return self?.enterMinimumRequirement(yield: yieldInfo)
                 case .staked(let staked):
-                    return staked.yieldInfo.enterMinimumRequirement
+                    return switch action {
+                    case .unstake: staked.yieldInfo.exitMinimumRequirement
+                    case .pending(.stake): self?.enterMinimumRequirement(yield: staked.yieldInfo)
+                    default: nil
+                    }
                 default:
                     return nil
                 }
@@ -46,9 +53,19 @@ class StakingSendAmountValidator {
             })
             .store(in: &bag)
     }
+
+    private func enterMinimumRequirement(yield: YieldInfo) -> Decimal {
+        switch (tokenItem.blockchain.stakingDeposit, action) {
+        case (.some(let deposit), .pending(.stake)):
+            // .pending(.stake) == restake for cardano
+            yield.enterMinimumRequirement - deposit
+        default:
+            yield.enterMinimumRequirement
+        }
+    }
 }
 
-extension StakingSendAmountValidator: SendAmountValidator {
+extension StakingAmountValidator: SendAmountValidator {
     func validate(amount: Decimal) throws {
         if let minAmount = minimumAmount, amount < minAmount {
             throw StakingValidationError.amountRequirementError(minAmount: minAmount)

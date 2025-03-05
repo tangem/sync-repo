@@ -310,7 +310,7 @@ struct SendDependenciesBuilder {
             stakingManager: stakingManager,
             transactionDispatcher: makeStakingTransactionDispatcher(stakingManger: stakingManager),
             transactionValidator: walletModel.transactionValidator,
-            sendAmountValidator: makeStakingSendAmountValidator(stakingManager: stakingManager),
+            sendAmountValidator: makeStakingSendAmountValidator(stakingManager: stakingManager, action: action.type),
             action: action,
             tokenItem: walletModel.tokenItem,
             feeTokenItem: walletModel.feeTokenItem
@@ -332,10 +332,11 @@ struct SendDependenciesBuilder {
         CommonStakingNotificationManager(tokenItem: walletModel.tokenItem, feeTokenItem: walletModel.feeTokenItem)
     }
 
-    func makeStakingSendAmountValidator(stakingManager: some StakingManager) -> SendAmountValidator {
-        StakingSendAmountValidator(
+    func makeStakingSendAmountValidator(stakingManager: some StakingManager, action: StakingAction.ActionType) -> SendAmountValidator {
+        StakingAmountValidator(
             tokenItem: walletModel.tokenItem,
             validator: walletModel.transactionValidator,
+            action: action,
             stakingManagerStatePublisher: stakingManager.statePublisher
         )
     }
