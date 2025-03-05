@@ -4,6 +4,7 @@
 --exclude BlockchainSdk/Resources/Generated
 --exclude Utilites/XCTemplate
 --exclude **/*.pb.swift    # Protobufs
+--exclude vendor    # Fastlane source files
 
 # Format options
 # Disable all default options
@@ -30,6 +31,12 @@
 --enable linebreakAtEndOfFile
 --enable linebreaks
 --enable modifierOrder
+--enable unusedPrivateDeclarations
+--enable consistentSwitchCaseSpacing
+--enable docCommentsBeforeModifiers
+--enable initCoderUnavailable
+--enable noExplicitOwnership
+--enable docComments
 
 ## Redundant rules
 --enable redundantBackticks
@@ -49,6 +56,9 @@
 --enable redundantType
 --enable redundantVoidReturnType
 --enable redundantFileprivate
+--enable redundantInternal
+--enable redundantStaticSelf
+--enable redundantTypedThrows
 
 --enable semicolons
 --enable typeSugar
@@ -70,6 +80,7 @@
 --typeattributes prev-line
 --varattributes preserve
 --enable wrapEnumCases
+--enable wrapLoopBodies
 
 # Spacing rules options
 --enable consecutiveSpaces
@@ -93,7 +104,6 @@
 --enable spaceAroundOperators
 --enable spaceAroundParens
 --enable spaceInsideBraces
---enable spaceInsideBrackets
 --enable spaceInsideBrackets
 --enable spaceInsideComments
 --enable spaceInsideGenerics

@@ -28,8 +28,6 @@ class CommonUserTokensManager {
     weak var keysDerivingProvider: KeysDerivingProvider?
 
     private var pendingUserTokensSyncCompletions: [() -> Void] = []
-    private var bag: Set<AnyCancellable> = []
-
     init(
         userWalletId: UserWalletId,
         shouldLoadExpressAvailability: Bool,
@@ -156,6 +154,23 @@ extension CommonUserTokensManager: UserTokensManager {
             return true
         case .token(let token, _):
             return targetEntry.tokens.contains(token)
+        }
+    }
+
+    func containsDerivationInsensitive(_ tokenItem: TokenItem) -> Bool {
+        let tokenItem = withBlockchainNetwork(tokenItem)
+
+        let targetsEntry = userTokenListManager.userTokens.filter {
+            $0.blockchainNetwork.blockchain.networkId == tokenItem.blockchainNetwork.blockchain.networkId
+        }
+
+        guard targetsEntry.isNotEmpty else { return false }
+
+        switch tokenItem {
+        case .blockchain:
+            return true
+        case .token(let token, _):
+            return targetsEntry.flatMap(\.tokens).contains(token)
         }
     }
 

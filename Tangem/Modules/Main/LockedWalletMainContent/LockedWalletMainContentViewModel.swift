@@ -49,7 +49,6 @@ class LockedWalletMainContentViewModel: ObservableObject {
     private let userWalletModel: UserWalletModel
     private let contextData: AnalyticsContextData?
 
-    private var canManageTokens: Bool { userWalletModel.config.hasFeature(.multiCurrency) }
     private weak var lockedUserWalletDelegate: MainLockedUserWalletDelegate?
 
     init(
@@ -61,7 +60,7 @@ class LockedWalletMainContentViewModel: ObservableObject {
         self.isMultiWallet = isMultiWallet
         self.lockedUserWalletDelegate = lockedUserWalletDelegate
 
-        contextData = userWalletModel.getAnalyticsContextData()
+        contextData = userWalletModel.analyticsContextData
 
         if isMultiWallet {
             actionButtonsViewModel = makeActionButtonsViewModel()

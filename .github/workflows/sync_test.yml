@@ -1,0 +1,54 @@
+name: Mirror Private Repo to Public
+
+on:
+  push:
+    branches:
+      - release
+  workflow_dispatch: 
+  
+jobs:
+  sync-repo:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+
+          
+      - name: Checkout private repo
+        run: |
+           git clone --recursive git@github.com:tangem-developments/tangem-app-ios.git
+
+      - name: Cleanup SSH keys
+        run: |
+          rm -rf ~/.ssh
+        
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.IOS_PUBLIC_REPO_SYNC_TOKEN }}
+
+      #- name: Run eslint to remove sensitive comments
+      #  run: |
+      #    npm install eslint@8 --global
+      #    eslint --fix .
+
+      - name: Push mirror to public repo
+        run: |
+          cd /home/runner/work/tangem-app-ios/tangem-app-ios/tangem-app-ios.git
+          git push --mirror git@github.com:tangem/sync-repo.git
+
+      - name: Cleanup SSH keys
+        if: always()
+        run: |
+          rm -rf ~/.ssh

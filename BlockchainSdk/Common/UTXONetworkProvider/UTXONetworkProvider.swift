@@ -19,7 +19,7 @@ protocol UTXONetworkProvider: AnyObject, HostProvider {
 }
 
 extension UTXONetworkProvider {
-    // Default implementation
+    /// Default implementation
     func getInfo(address: String) -> AnyPublisher<UTXOResponse, any Error> {
         getUnspentOutputs(address: address)
             .withWeakCaptureOf(self)
@@ -29,10 +29,7 @@ extension UTXONetworkProvider {
                 }
 
                 return Publishers.MergeMany(pending).collect()
-                    .withWeakCaptureOf(provider)
-                    .tryMap { provider, transactions in
-                        UTXOResponse(outputs: outputs, pending: transactions)
-                    }
+                    .map { UTXOResponse(outputs: outputs, pending: $0) }
             }
             .eraseToAnyPublisher()
     }
