@@ -77,8 +77,7 @@ extension VisaConfig: UserWalletConfig {
     }
 
     var cardHeaderImage: ImageType? {
-        // TODO: Update card image when available
-        Assets.Cards.noteCardano
+        Assets.Cards.visa
     }
 
     var hasDefaultToken: Bool {
