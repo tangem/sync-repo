@@ -22,8 +22,7 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: |
-          if [[ "$BASE_REF" == "test/IOS-8785_ci_cd_create_release" ]]; then  # TODO: Test only
-          #if [[ "$BASE_REF" == "develop" ]]; then
+          if [[ "$BASE_REF" == "develop" ]]; then
             echo "VERSION_NAME=Next Release" >> $GITHUB_OUTPUT
           elif [[ "$BASE_REF" =~ ^releases/.* ]]; then
             VERSION="${BASE_REF#releases/}"
