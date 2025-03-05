@@ -47,7 +47,7 @@ extension KaspaAddressService: AddressProvider {
     func makeAddress(for publicKey: Wallet.PublicKey, with addressType: AddressType) throws -> Address {
         let compressedKey = try Secp256k1Key(with: publicKey.blockchainKey).compress()
         let address = CashAddrBech32.encode(version.rawValue.data + compressedKey, prefix: prefix)
-        return PlainAddress(value: "kaspa:qpecnmugatjg0nu7ydntqkf6dgnu4fr2l5tdrmu5rk5vxqvlz7lh5emtk0wsy", publicKey: publicKey, type: addressType)
+        return PlainAddress(value: address, publicKey: publicKey, type: addressType)
     }
 }
 

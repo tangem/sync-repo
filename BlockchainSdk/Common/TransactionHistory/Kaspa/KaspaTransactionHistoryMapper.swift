@@ -9,8 +9,8 @@
 final class KaspaTransactionHistoryMapper {
     private let blockchain: Blockchain
 
-    init() {
-        blockchain = .kaspa(testnet: false)
+    init(blockchian: Blockchain) {
+        blockchain = blockchian
     }
 
     private func extractTransactionAmount(
@@ -45,14 +45,13 @@ final class KaspaTransactionHistoryMapper {
         if isOutgoing {
             let outputAddresses = transaction.outputs
                 .filter { $0.scriptPublicKeyAddress != walletAddress }
-                .map { TransactionRecord.Destination(address: .user($0.scriptPublicKeyAddress), amount: amount)
-                }
+                .map { TransactionRecord.Destination(address: .user($0.scriptPublicKeyAddress), amount: amount) }
 
             switch outputAddresses.count {
             case 0: return nil
             case 1:
-                guard let first = outputAddresses.first else { return nil }
-                return .single(first)
+                guard let firstAddress = outputAddresses.first else { return nil }
+                return .single(firstAddress)
             default:
                 return .multiple(outputAddresses)
             }
@@ -92,15 +91,30 @@ extension KaspaTransactionHistoryMapper: TransactionHistoryMapper {
 
             let fee = transaction.inputs.map(\.previousOutpointAmount).reduce(0, +) - transaction.outputs.map(\.amount).reduce(0, +)
 
-            guard let amount = extractTransactionAmount(transaction: transaction, isOutgoing: isOutgoing, fee: fee, walletAddress: walletAddress) else {
+            guard let amount = extractTransactionAmount(
+                transaction: transaction,
+                isOutgoing: isOutgoing,
+                fee: fee,
+                walletAddress: walletAddress
+            ) else {
                 return nil
             }
 
-            guard let destination = extractDestination(transaction: transaction, isOutgoing: isOutgoing, amount: amount, walletAddress: walletAddress) else {
+            guard let destination = extractDestination(
+                transaction: transaction,
+                isOutgoing: isOutgoing,
+                amount: amount,
+                walletAddress: walletAddress
+            ) else {
                 return nil
             }
 
-            guard let source = extractSource(transaction: transaction, amount: amount, isOutgoing: isOutgoing, walletAddress: walletAddress) else { return nil }
+            guard let source = extractSource(
+                transaction: transaction,
+                amount: amount,
+                isOutgoing: isOutgoing,
+                walletAddress: walletAddress
+            ) else { return nil }
 
             return TransactionRecord(
                 hash: transaction.hash,

@@ -36,28 +36,31 @@ final class KaspaTransactionHistoryProvider: TransactionHistoryProvider {
         hasReachedEnd == false
     }
 
+    // TODO: implement history for tokens
     func loadTransactionHistory(request: TransactionHistory.Request) -> AnyPublisher<TransactionHistory.Response, any Error> {
-        let requestPage: Int
         // if indexing is created, load the next page
-        if let page {
-            requestPage = page.number + 1
+        let requestPage: Int = if let page {
+            page.number + 1
         } else {
-            requestPage = 0
+            0
         }
+
+        let limit = min(request.limit, Constants.maxPageSize)
 
         let target = KaspaTransactionHistoryTarget(
             type: .getCoinTransactionHistory(
                 address: request.address,
                 page: requestPage,
-                limit: request.limit
+                limit: limit
             )
         )
         return networkProvider.requestPublisher(target)
             .filterSuccessfulStatusAndRedirectCodes()
             .map(KaspaTransactionHistoryResponse.self, using: decoder)
             .eraseError()
-            .handleEvents(receiveOutput: { [weak self] _ in
+            .handleEvents(receiveOutput: { [weak self] result in
                 self?.page = TransactionHistoryIndexPage(number: requestPage)
+                self?.hasReachedEnd = result.transactions.count < limit
             })
             .withWeakCaptureOf(self)
             .tryMap { historyProvider, result in
@@ -77,5 +80,11 @@ final class KaspaTransactionHistoryProvider: TransactionHistoryProvider {
 
     func reset() {
         page = nil
+    }
+}
+
+extension KaspaTransactionHistoryProvider {
+    enum Constants {
+        static let maxPageSize: Int = 50 // kaspa api limit
     }
 }

@@ -16,6 +16,7 @@ struct KaspaTransactionHistoryTarget {
 extension KaspaTransactionHistoryTarget {
     enum TargetType {
         case getCoinTransactionHistory(address: String, page: Int, limit: Int)
+        // currently not used, will be implemented later
         case getTokenTransactionHistory(address: String, contract: String, page: Int, limit: Int)
     }
 }
@@ -32,10 +33,10 @@ extension KaspaTransactionHistoryTarget: TargetType {
 
     var path: String {
         switch type {
-        case .getCoinTransactionHistory(let address, let page, let limit):
+        case .getCoinTransactionHistory(let address, _, _):
             "addresses/\(address)/full-transactions"
-        case .getTokenTransactionHistory(address: let address, contract: let contract, _, _):
-            "krc20/oplist?address=\(address)&tick=\(contract)"
+        case .getTokenTransactionHistory:
+            "krc20/oplist"
         }
     }
 
@@ -49,11 +50,15 @@ extension KaspaTransactionHistoryTarget: TargetType {
         switch type {
         case .getCoinTransactionHistory(_, let page, let limit):
             .requestParameters(
-                parameters: ["limit": limit, "offset": page, "resolve_previous_outpoints": "light"],
+                parameters: [
+                    "limit": limit,
+                    "offset": page * limit, // assume limit is constant across calls
+                    "resolve_previous_outpoints": "light",
+                ],
                 encoding: URLEncoding()
             )
-        case .getTokenTransactionHistory:
-            .requestPlain
+        case .getTokenTransactionHistory(let address, _, _, _):
+            .requestParameters(parameters: ["address": address], encoding: URLEncoding())
         }
     }
 
