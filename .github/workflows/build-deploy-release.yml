@@ -49,12 +49,6 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # GA boolean inputs are just awful https://stackoverflow.com/questions/76292948
-  # - The reusable workflow requires all input params to be of type string, so we use this ugly ternary operator here
-  # - When a workflow is triggered by push, there is no input, therefore the condition
-  #  `github.event_name == 'push'` provides the default value (`true`) in this case
-  #analyze_archive: ${{ (github.event_name == 'push' || inputs.analyze_archive == true) && 'true' || 'false' }}
-  analyze_archive: ${{ inputs.analyze_archive == true && 'true' || 'false' }}  # TODO: Enable by default, requires IOS-8942
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 jobs:
@@ -66,6 +60,14 @@ jobs:
       stage: 'RC'
       version: '${{ env.release_version_number }}'
       build_number: '${{ env.release_build_number }}'
+      # GA boolean inputs are just awful https://stackoverflow.com/questions/76292948
+      # - The reusable workflow requires all input params to be of type string, so we use this ugly ternary operator here
+      # - When a workflow is triggered by push, there is no input, therefore the condition
+      #  `github.event_name == 'push'` provides the default value (`true`) in this case
+      # Also this variable is exposed as a job output to overcome yet another GA limitation, 
+      # see https://github.com/actions/runner/issues/2372 for details
+      #analyze_archive: ${{ (github.event_name == 'push' || inputs.analyze_archive == true) && 'true' || 'false' }}
+      analyze_archive: ${{ inputs.analyze_archive == true && 'true' || 'false' }}  # TODO: Enable by default, requires IOS-8942
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -136,7 +138,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
-      is_archive_analyzed: '${{ env.analyze_archive }}'
+      is_archive_analyzed: '${{ needs.prepare.outputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -152,7 +154,7 @@ jobs:
       filename: 'Tangem-${{ needs.prepare.outputs.stage }}-${{ needs.prepare.outputs.version }}(${{ needs.prepare.outputs.build_number }}).ipa'
       xcode_version_override: '${{ inputs.xcode_version_override }}'
       arm_runners_only: true
-      analyze_archive: ${{ env.analyze_archive }}
+      analyze_archive: '${{ needs.prepare.outputs.analyze_archive }}'
       runner_name: ${{ inputs.runner_name }}
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
@@ -174,7 +176,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
-      is_archive_analyzed: '${{ env.analyze_archive }}'
+      is_archive_analyzed: '${{ needs.prepare.outputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -213,7 +215,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
-      is_archive_analyzed: '${{ env.analyze_archive }}'
+      is_archive_analyzed: '${{ needs.prepare.outputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -234,7 +236,7 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
-      is_archive_analyzed: '${{ env.analyze_archive }}'
+      is_archive_analyzed: '${{ needs.prepare.outputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -255,6 +257,6 @@ jobs:
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       build_description: '${{ inputs.build_description }}'
-      is_archive_analyzed: '${{ env.analyze_archive }}'
+      is_archive_analyzed: '${{ needs.prepare.outputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
