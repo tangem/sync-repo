@@ -344,6 +344,7 @@ class PendingExpressTxStatusBottomSheetViewModel: ObservableObject, Identifiable
             return
         }
 
+        // Check current time interval in seconds more then x5 average duration
         if Date().timeIntervalSince(createdAt) > (averageDuration * 5) {
             let input = notificationFactory.buildNotificationInput(
                 for: ExpressNotificationEvent.longTimeAverageDuration,

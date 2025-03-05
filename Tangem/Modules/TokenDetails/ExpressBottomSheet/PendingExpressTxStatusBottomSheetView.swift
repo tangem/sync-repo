@@ -190,11 +190,11 @@ struct ExpressPendingTxStatusBottomSheetView_Preview: PreviewProvider {
             transactionStatus: .awaitingDeposit
         )
         let transactionParams = PendingExpressTransactionParams(
-            currentStatus: .sending,
+            externalStatus: .sending,
             averageDuration: nil,
             createdAt: nil
         )
-        let pendingTransaction = factory.buildPendingExpressTransaction(params: transactionParams, refundedTokenItem: .blockchain(.init(.ethereum(testnet: false), derivationPath: nil)), for: record)
+        let pendingTransaction = factory.buildPendingExpressTransaction(with: transactionParams, refundedTokenItem: .blockchain(.init(.ethereum(testnet: false), derivationPath: nil)), for: record)
         let expressAPIProvider = ExpressAPIProviderFactory().makeExpressAPIProvider(userId: userWalletId, refcodeProvider: refcodeProvider)
         return .init(
             pendingTransaction: pendingTransaction.pendingTransaction,
