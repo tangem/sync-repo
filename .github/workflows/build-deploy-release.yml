@@ -83,8 +83,9 @@ jobs:
         uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
 
       # Skipping Ruby installation since it has been already installed by an action above
+      # Skipping dependencies installation using Mint since we don't build the app in this job
       - name: Install required dependencies
-        run: ./bootstrap.sh --skip-ruby
+        run: ./bootstrap.sh --skip-ruby --skip-mint
 
       - name: Get Release Version
         id: get-release-version

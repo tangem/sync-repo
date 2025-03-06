@@ -11,6 +11,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: Install Python and pip
+        run: |
+          sudo apt update
+          sudo apt install -y python3 python3-pip
+
+      - name: Verify Python installation
+        run: |
+          python3 --version
+          pip3 --version
+
+      - name: Install git-filter-repo
+        run: |
+          pip3 install git-filter-repo
+
+      - name: Verify git-filter-repo installation
+        run: |
+          git-filter-repo --version
+
+
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -18,16 +37,28 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.IOS_PRIVATE_REPO_SYNC_TOKEN }}
 
           
       - name: Checkout private repo
         run: |
-           git clone --recursive git@github.com:tangem-developments/tangem-app-ios.git
+           git clone --mirror git@github.com:tangem-developments/tangem-app-ios.git
+           cd tangem-app-ios.git
+           git config --global user.name "Service Account"
+           git config --global user.email "service@example.com"
+           git filter-repo --replace-refs delete-no-add \
+              --commit-callback '
+              commit.author_name = b"Service Account"
+              commit.author_email = b"service@example.com"
+              commit.committer_name = b"Service Account"
+              commit.committer_email = b"service@example.com"
+              '
+
 
       - name: Cleanup SSH keys
         run: |
           rm -rf ~/.ssh
+
         
       - name: Set up SSH
         run: |
@@ -45,8 +76,9 @@ jobs:
 
       - name: Push mirror to public repo
         run: |
-          cd /home/runner/work/tangem-app-ios/tangem-app-ios/tangem-app-ios.git
+          cd tangem-app-ios.git
           git push --mirror git@github.com:tangem/sync-repo.git
+
 
       - name: Cleanup SSH keys
         if: always()

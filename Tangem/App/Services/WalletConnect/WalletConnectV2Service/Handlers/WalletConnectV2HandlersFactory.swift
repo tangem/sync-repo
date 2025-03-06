@@ -78,8 +78,7 @@ final class WalletConnectHandlersFactory: WalletConnectHandlersCreator {
                 uiDelegate: uiDelegate
             )
 
-            // MARK: - Solana
-
+        // MARK: - Solana
         case .solanaSignMessage:
             return try WalletConnectSolanaSignMessageHandler(
                 request: params,
@@ -102,8 +101,7 @@ final class WalletConnectHandlersFactory: WalletConnectHandlersCreator {
                 walletModelProvider: walletModelProvider
             )
 
-            // MARK: - BNB
-
+        // MARK: - BNB
         case .bnbSign, .bnbTxConfirmation:
             // TODO: https://tangem.atlassian.net/browse/IOS-2896
             // Initially this methods was found occasionally and supported without any request
