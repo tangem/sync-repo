@@ -220,8 +220,8 @@ private extension SolanaWalletManager {
                     if let existingTokenAccount = info.tokensByMint[token.contractAddress] {
                         return AccountExistsInfo(isExist: true, space: existingTokenAccount.space)
                     } else {
-                        // It is valid to take the value this way since the size of the space will be the same
-                        // Therefore, we take the sender's size
+                        // The size of every token account for the same token will be the same
+                        // Therefore, we take the sender's token account size
                         return AccountExistsInfo(isExist: false, space: manager.spacesByMint[token.contractAddress])
                     }
                 case .reserve, .feeResource:
