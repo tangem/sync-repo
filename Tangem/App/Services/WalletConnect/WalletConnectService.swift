@@ -15,7 +15,7 @@ protocol WalletConnectService {
 
     func initialize(with infoProvider: WalletConnectUserWalletInfoProvider)
     func reset()
-    func openSession(with uri: WalletConnectRequestURI)
+    func openSession(with uri: WalletConnectRequestURI, source: WalletConnectSessionSource)
     func disconnectSession(with id: Int) async
     func disconnectAllSessionsForUserWallet(with userWalletId: String)
 }

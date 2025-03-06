@@ -68,7 +68,7 @@ class WalletConnectViewModel: ObservableObject {
     func pasteFromClipboard() {
         guard let pendingURI else { return }
 
-        openSession(with: pendingURI)
+        openSession(with: pendingURI, source: .clipboard)
         self.pendingURI = nil
     }
 
@@ -89,9 +89,9 @@ class WalletConnectViewModel: ObservableObject {
         }
     }
 
-    private func openSession(with uri: WalletConnectRequestURI) {
+    private func openSession(with uri: WalletConnectRequestURI, source: WalletConnectSessionSource) {
         Analytics.debugLog(eventInfo: Analytics.WalletConnectDebugEvent.attemptingToOpenSession(url: uri.debugString))
-        walletConnectService.openSession(with: uri)
+        walletConnectService.openSession(with: uri, source: source)
     }
 
     private func bind() {
@@ -112,7 +112,7 @@ class WalletConnectViewModel: ObservableObject {
                 self?.parseURI($0)
             }
             .sink { [weak self] uri in
-                self?.openSession(with: uri)
+                self?.openSession(with: uri, source: .qrCode)
             }
             .store(in: &bag)
     }

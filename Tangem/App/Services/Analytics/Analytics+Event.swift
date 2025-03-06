@@ -138,8 +138,12 @@ extension Analytics {
         case settingsNoticeEnableBiometrics = "[Settings / App Settings] Notice - Enable Biometric"
         case buttonEnableBiometricAuthentication = "[Settings / App Settings] Button - Enable Biometric Authentication"
         case mainCurrencyChanged = "[Settings / App Settings] Main Currency Changed"
+
+        // MARK: - Wallet Connect
+
         case walletConnectScreenOpened = "[Wallet Connect] WC Screen Opened"
-        case newSessionEstablished = "[Wallet Connect] New Session Established"
+        case walletConnectSessionInitiated = "[Wallet Connect] Session Initiated"
+        case walletConnectSessionFailed = "[Wallet Connect] Session Failed"
         case sessionDisconnected = "[Wallet Connect] Session Disconnected"
         case requestHandled = "[Wallet Connect] Request Handled"
         case chatScreenOpened = "[Chat] Chat Screen Opened"

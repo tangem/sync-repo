@@ -95,10 +95,10 @@ final class WalletConnectV2Service {
         }
     }
 
-    func openSession(with uri: WalletConnectV2URI) {
+    func openSession(with uri: WalletConnectV2URI, source: WalletConnectSessionSource) {
         canEstablishNewSessionSubject.send(false)
         runTask(withTimeout: 20) { [weak self] in
-            await self?.pairClient(with: uri)
+            await self?.pairClient(with: uri, source: source)
         } onTimeout: { [weak self] in
             self?.displayErrorUI(WalletConnectV2Error.sessionConnetionTimeout)
             self?.canEstablishNewSessionSubject.send(true)
@@ -154,8 +154,10 @@ final class WalletConnectV2Service {
         }
     }
 
-    private func pairClient(with url: WalletConnectURI) async {
+    private func pairClient(with url: WalletConnectURI, source: WalletConnectSessionSource) async {
         WCLogger.info("Trying to pair client: \(url)")
+        Analytics.log(event: .walletConnectSessionInitiated, params: [Analytics.ParameterKey.source: source.rawValue])
+
         do {
             try await WalletKit.instance.pair(uri: url)
             try Task.checkCancellation()
@@ -170,6 +172,7 @@ final class WalletConnectV2Service {
         } catch {
             displayErrorUI(WalletConnectV2Error.pairClientError(error.localizedDescription))
             WCLogger.error("Failed to connect to \(url)", error: error)
+            Analytics.log(event: .walletConnectSessionFailed)
 
             // Hack to delete the topic from the user default storage inside the WC 2.0 SDK
             await disconnect(topic: url.topic)
@@ -219,15 +222,6 @@ final class WalletConnectV2Service {
                         blockChain.wcChainID?.contains(account.reference) == true
                     }?.currencySymbol
                 }.toSet().sorted()
-
-                Analytics.log(
-                    event: .newSessionEstablished,
-                    params: [
-                        .dAppName: session.peer.name,
-                        .dAppUrl: session.peer.url,
-                        .blockchain: blockChainReferences.joined(separator: "/"),
-                    ]
-                )
 
                 canEstablishNewSessionSubject.send(true)
 
