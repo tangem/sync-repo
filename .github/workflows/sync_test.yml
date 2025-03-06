@@ -45,8 +45,14 @@ jobs:
            git clone --mirror git@github.com:tangem-developments/tangem-app-ios.git
            cd tangem-app-ios.git
            git config --global user.name "Service Account"
-           git config --global user.email "service@tangem.com"
-           git filter-repo --name-callback 'return "Service Account"' --email-callback 'return "service@tangem.com"'
+           git config --global user.email "service@example.com"
+           git filter-repo --replace-refs delete-no-add \
+              --commit-callback '
+              commit.author_name = b"Service Account"
+              commit.author_email = b"service@example.com"
+              commit.committer_name = b"Service Account"
+              commit.committer_email = b"service@example.com"
+              '
 
 
       - name: Cleanup SSH keys
