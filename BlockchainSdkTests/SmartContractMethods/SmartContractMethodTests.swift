@@ -9,9 +9,11 @@
 import XCTest
 import BigInt
 @testable import BlockchainSdk
+import Testing
 
-final class SmartContractMethodTests: XCTestCase {
-    func testTransferERC20TokenMethod() throws {
+struct SmartContractMethodTests {
+    @Test
+    func transferERC20TokenMethod() throws {
         // give
         let destination = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
         let amount = BigUInt("1000000")
@@ -26,10 +28,11 @@ final class SmartContractMethodTests: XCTestCase {
             "00000000000000000000000000000000000000000000000000000000000f4240",
         ]
 
-        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
+        #expect(data.hexString.lowercased() == expectedData.joined().lowercased())
     }
 
-    func testApproveERC20TokenMethod() throws {
+    @Test
+    func approveERC20TokenMethod() throws {
         // give
         let spender = "0x1111111254EEB25477B68fb85Ed929f73A960582"
         let amount = BigUInt("1000000")
@@ -44,10 +47,11 @@ final class SmartContractMethodTests: XCTestCase {
             "00000000000000000000000000000000000000000000000000000000000f4240",
         ]
 
-        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
+        #expect(data.hexString.lowercased() == expectedData.joined().lowercased())
     }
 
-    func testAllowanceERC20TokenMethod() throws {
+    @Test
+    func allowanceERC20TokenMethod() throws {
         // give
         let owner = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
         let spender = "0x1111111254EEB25477B68fb85Ed929f73A960582"
@@ -62,10 +66,11 @@ final class SmartContractMethodTests: XCTestCase {
             "0000000000000000000000001111111254EEB25477B68fb85Ed929f73A960582",
         ]
 
-        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
+        #expect(data.hexString.lowercased() == expectedData.joined().lowercased())
     }
 
-    func testTokenBalanceERC20TokenMethod() throws {
+    @Test
+    func tokenBalanceERC20TokenMethod() throws {
         // give
         let owner = "0x90e4d59c8583e37426b37d1d7394b6008a987c67"
 
@@ -78,6 +83,6 @@ final class SmartContractMethodTests: XCTestCase {
             "00000000000000000000000090e4d59c8583e37426b37d1d7394b6008a987c67",
         ]
 
-        XCTAssertEqual(data.hexString.lowercased(), expectedData.joined().lowercased())
+        #expect(data.hexString.lowercased() == expectedData.joined().lowercased())
     }
 }

@@ -8,11 +8,13 @@
 
 import XCTest
 @testable import BlockchainSdk
+import Testing
 
-final class KoinosMethodResponseDecodingTests: XCTestCase {
+struct KoinosMethodResponseDecodingTests {
     private let decoder = JSONDecoder.withSnakeCaseStrategy
 
-    func testGetAccountNonceResponseDecoding1() throws {
+    @Test
+    func getAccountNonceResponseDecoding1() throws {
         let jsonData = """
         {
             "nonce": "KAA="
@@ -20,13 +22,14 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         """
         .data(using: .utf8)
 
-        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: XCTUnwrap(jsonData))
+        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: #require(jsonData))
         let nonce = try KoinosDTOMapper.convertNonce(response)
 
-        XCTAssertEqual(nonce.nonce, 0)
+        #expect(nonce.nonce == 0)
     }
 
-    func testGetAccountNonceResponseDecoding2() throws {
+    @Test
+    func getAccountNonceResponseDecoding2() throws {
         let jsonData = """
         {
             "nonce": "KAE="
@@ -37,30 +40,33 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
         let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: XCTUnwrap(jsonData))
         let nonce = try KoinosDTOMapper.convertNonce(response)
 
-        XCTAssertEqual(nonce.nonce, 1)
+        #expect(nonce.nonce == 1)
     }
 
-    func testNonceEncoding1() throws {
+    @Test
+    func nonceEncoding1() throws {
         let encodedNonce = try Koinos_Chain_value_type.with {
             $0.uint64Value = 0
         }
         .serializedData()
         .base64URLEncodedString()
 
-        XCTAssertEqual(encodedNonce, "KAA=")
+        #expect(encodedNonce == "KAA=")
     }
 
-    func testNonceEncoding2() throws {
+    @Test
+    func nonceEncoding2() throws {
         let encodedNonce = try Koinos_Chain_value_type.with {
             $0.uint64Value = 1
         }
         .serializedData()
         .base64URLEncodedString()
 
-        XCTAssertEqual(encodedNonce, "KAE=")
+        #expect(encodedNonce == "KAE=")
     }
 
-    func testDecodeSubmitTransaction() throws {
+    @Test
+    func decodeSubmitTransaction() throws {
         let jsonData = """
         {
           "jsonrpc": "2.0",
@@ -128,10 +134,11 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
                 from: XCTUnwrap(jsonData)
             )
 
-        XCTAssertEqual(response.id, 1)
+        #expect(response.id == 1)
     }
 
-    func testDecodeEmptyResult() throws {
+    @Test
+    func decodeEmptyResult() throws {
         let jsonData = """
         {
             "jsonrpc": "2.0",
@@ -152,13 +159,13 @@ final class KoinosMethodResponseDecodingTests: XCTestCase {
                 from: XCTUnwrap(jsonData)
             )
 
-        XCTAssertEqual(result.jsonrpc, "2.0")
-        XCTAssertEqual(result.id, 1)
+        #expect(result.jsonrpc == "2.0")
+        #expect(result.id == 1)
 
         if case .success(let value) = result.result {
-            XCTAssertEqual(value.result, nil)
+            #expect(value.result == nil)
         } else {
-            XCTFail("Expected result to be .success")
+            #expect(Bool(false), Comment(rawValue: "Expected result to be .success"))
         }
     }
 }
