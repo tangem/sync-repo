@@ -42,7 +42,7 @@ class SolanaWalletManager: BaseManager, WalletManager {
     private func updateWallet(info: SolanaAccountInfoResponse) {
         mainAccountRentExemption = info.mainAccountRentExemption
         
-        // Store mint sizes for define minimal rent for empty destination addresses
+        // Store token account sizes for define minimal rent when destination token account is not created
         spacesByMint = info.tokensByMint.reduce(into: [:]) { $0[$1.key] = $1.value.space }
 
         wallet.add(coinValue: info.balance)
