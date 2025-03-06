@@ -43,10 +43,16 @@ jobs:
       - name: Checkout private repo
         run: |
            git clone --mirror git@github.com:tangem-developments/tangem-app-ios.git
+           cd tangem-app-ios.git
+           git config --global user.name "Service Account"
+           git config --global user.email "service@tangem.com"
+           git filter-repo --name-callback 'return "Service Account"' --email-callback 'return "service@tangem.com"'
+
 
       - name: Cleanup SSH keys
         run: |
           rm -rf ~/.ssh
+
         
       - name: Set up SSH
         run: |
@@ -64,9 +70,8 @@ jobs:
 
       - name: Push mirror to public repo
         run: |
-          ls
-          cd tangem-app-ios.git
           git push --mirror git@github.com:tangem/sync-repo.git
+
 
       - name: Cleanup SSH keys
         if: always()
