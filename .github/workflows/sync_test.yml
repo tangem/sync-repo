@@ -23,7 +23,7 @@ jobs:
           
       - name: Checkout private repo
         run: |
-           git clone --recursive git@github.com:tangem-developments/tangem-app-ios.git
+           git clone --mirror git@github.com:tangem-developments/tangem-app-ios.git
 
       - name: Cleanup SSH keys
         run: |
