@@ -19,7 +19,11 @@ class SolanaWalletManager: BaseManager, WalletManager {
     var currentHost: String { networkService.host }
 
     var usePriorityFees = !NFCUtils.isPoorNfcQualityDevice
-    var spacesByMint: [String: UInt64] = [:]
+
+    /// Dictionary storing token account space requirements for each mint address.
+    /// Used when sending tokens to accounts that don't exist yet to calculate minimum rent.
+    /// Key is mint address, value is required space in bytes.
+    var ownerTokenAccountSpacesByMint: [String: UInt64] = [:]
 
     /// It is taken into account in the calculation of the account rent commission for the sender
     private var mainAccountRentExemption: Decimal = 0
@@ -41,9 +45,9 @@ class SolanaWalletManager: BaseManager, WalletManager {
 
     private func updateWallet(info: SolanaAccountInfoResponse) {
         mainAccountRentExemption = info.mainAccountRentExemption
-        
+
         // Store token account sizes for define minimal rent when destination token account is not created
-        spacesByMint = info.tokensByMint.reduce(into: [:]) { $0[$1.key] = $1.value.space }
+        ownerTokenAccountSpacesByMint = info.tokensByMint.reduce(into: [:]) { $0[$1.key] = $1.value.space }
 
         wallet.add(coinValue: info.balance)
 
@@ -222,7 +226,7 @@ private extension SolanaWalletManager {
                     } else {
                         // The size of every token account for the same token will be the same
                         // Therefore, we take the sender's token account size
-                        return AccountExistsInfo(isExist: false, space: manager.spacesByMint[token.contractAddress])
+                        return AccountExistsInfo(isExist: false, space: manager.ownerTokenAccountSpacesByMint[token.contractAddress])
                     }
                 case .reserve, .feeResource:
                     return AccountExistsInfo(isExist: false, space: nil)
