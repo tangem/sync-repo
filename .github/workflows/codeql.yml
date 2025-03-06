@@ -1,0 +1,57 @@
+name: "CodeQL Advanced"
+
+on:
+    push:
+        branches: ["develop"]
+    workflow_dispatch:
+
+jobs:
+    analyze:
+        name: Analyze (${{ matrix.language }})
+        runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+        # runs on public repo only
+        if: github.repository == 'tangem/tangem-app-ios'
+        permissions:
+            # required for all workflows
+            security-events: write
+
+            # required to fetch internal or private CodeQL packs
+            packages: read
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - language: swift
+                      build-mode: manual
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  submodules: true
+                  token: ${{ secrets.GH_MOBILE_PAT }}
+
+            # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
+            - name: Install Ruby
+              uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc # v1.202.0
+
+            # Skipping Ruby installation since it has been already installed by an action above
+            - name: Install required dependencies
+              run: ./bootstrap.sh --skip-ruby
+
+            # Initializes the CodeQL tools for scanning.
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: ${{ matrix.language }}
+                  build-mode: ${{ matrix.build-mode }}
+
+            - if: matrix.build-mode == 'manual'
+              shell: bash
+              run: |
+                  bundle exec fastlane build_simulator
+
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
+              with:
+                  category: "/language:${{matrix.language}}"

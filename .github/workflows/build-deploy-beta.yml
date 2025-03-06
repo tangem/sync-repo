@@ -6,6 +6,20 @@ on:
       - 'develop'
   workflow_dispatch:
     inputs:
+      runner_name:
+        type: choice
+        description: >
+          Self-hosted runner to run the build. Leave blank (default value) to use the runner selected by GitHub
+        options:
+          - ''
+          - bamboo
+          - builder1
+          - builder2
+          - builder3
+          - builder4
+          - builder5
+          - builder6
+        default: ''
       build_description:
         description: >
           Optional additional info about the build
@@ -33,25 +47,44 @@ concurrency:
 env:
   next_version_name: 'Next Release'
   should_find_latest_release_branch: ${{ !inputs.base_branch || inputs.base_branch == '' }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 jobs:
   prepare:
     name: Prepare information
-    runs-on: ubuntu-latest
+    runs-on: macos-15
     outputs:
-      version: 'develop'
+      version: '${{ env.release_version_number }}'
       stage: 'Beta'
       build_number: '${{ github.run_number }}'
       jira-issues-summary: '${{ steps.jira-issues-summary.outputs.result }}'
     steps:
-      - name: Checkout 'find-latest-release-branch' script
-        if: ${{ env.should_find_latest_release_branch == 'true' }}
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          sparse-checkout: |
-            Utilites/find-latest-release-branch.sh
-          sparse-checkout-cone-mode: false
+          submodules: true
+          fetch-depth: 0  # Required, otherwise `git for-each-ref` won't work properly on MacOS-based runner
+          ssh-key: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+
+      - name: Authorize SSH session
+        env:
+          SSH_KEY: ${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com > ~/.ssh/known_hosts
+          echo "${SSH_KEY}" > ~/.ssh/ios_dependencies_ssh_key
+          chmod 600 ~/.ssh/ios_dependencies_ssh_key
+          ssh-agent -a "${SSH_AUTH_SOCK}" > /dev/null || true
+          ssh-add ~/.ssh/ios_dependencies_ssh_key
+
+      # When using Github runner images, the preferred way of setting the Ruby version is to use this official action instead of using rvm/rbenv
+      - name: Install Ruby
+        uses: ruby/setup-ruby@a2bbe5b1b236842c1cb7dd11e8e3b51e0a616acc  # v1.202.0
+
+      # Skipping Ruby installation since it has been already installed by an action above
+      # Skipping dependencies installation using Mint since we don't build the app in this job
+      - name: Install required dependencies
+        run: ./bootstrap.sh --skip-ruby --skip-mint
 
       - name: Find latest release branch
         id: find-latest-release-branch
@@ -110,6 +143,36 @@ jobs:
           version: '${{ env.next_version_name }}'
           issues: '${{ steps.git-diff.outputs.issues }}'
 
+      - name: Create version
+        id: version
+        env:
+          BRANCH_NAME: '${{ github.head_ref || github.ref_name }}'
+          BUILD_VERSION_FALLBACK: 'Develop'
+        run: |
+          # The initialization of rbenv is required before every `bundle` call since Gihub Actions spawns each 'run' step in a separate process
+          eval "$(rbenv init - bash)"
+
+          bundle exec fastlane \
+          get_alpha_beta_version_number \
+          branch_name:"${BRANCH_NAME}" \
+          build_version_fallback:"${BUILD_VERSION_FALLBACK}"
+
+  build_notification:
+    name: Build Notification
+    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    needs: prepare
+    with:
+      channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      status: 'building'
+      deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
+      version: '${{ needs.prepare.outputs.version }}'
+      build_number: '${{ needs.prepare.outputs.build_number }}'
+      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
+    secrets:
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+
   build:
     name: Tangem Beta
     needs: prepare
@@ -124,9 +187,31 @@ jobs:
       # GA boolean inputs are just awful https://stackoverflow.com/questions/76292948
       # The reusable workflow requires all input params to be of type string, so we use this ugly ternary operator here
       analyze_archive: ${{ inputs.analyze_archive == true && 'true' || 'false' }}
+      runner_name: ${{ inputs.runner_name }}
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
       IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
+      GH_MOBILE_PAT: '${{ secrets.GH_MOBILE_PAT }}'
+
+  deploy_notification:
+    name: Deploy Notification
+    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    needs:
+      - prepare
+      - build
+      - build_notification
+    with:
+      channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      message_ts: '${{ needs.build_notification.outputs.ts }}'
+      status: 'deploying'
+      deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
+      version: '${{ needs.prepare.outputs.version }}'
+      build_number: '${{ needs.prepare.outputs.build_number }}'
+      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
+    secrets:
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
   deploy:
     name: Google Distribution
@@ -141,28 +226,31 @@ jobs:
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
       filename: 'Tangem-${{ needs.prepare.outputs.stage }}-${{ needs.prepare.outputs.version }}(${{ needs.prepare.outputs.build_number }}).ipa'
+      runner_name: ${{ inputs.runner_name }}
     secrets:
       FIREBASE_APP_ID: '${{ secrets.FIREBASE_APP_ID }}'
       FIREBASE_CLI_TOKEN: '${{ secrets.FIREBASE_CLI_TOKEN }}'
       IOS_DEPENDENCIES_READ_ONLY_SSH_KEY: '${{ secrets.IOS_DEPENDENCIES_READ_ONLY_SSH_KEY }}'
 
-  notification:
-    name: Deploy Notification
+  success_notification:
+    name: Success Notification
     uses: tangem-developments/actions/.github/workflows/notification.yml@main
     needs:
       - prepare
       - build
       - deploy
+      - build_notification
     with:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      message_ts: '${{ needs.build_notification.outputs.ts }}'
       status: 'success'
-      app_name: '${{ vars.APP_BETA }}'
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
       build_description: '${{ inputs.build_description }}'
       encoded_release_url: '${{ needs.deploy.outputs.encoded_release_url }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
 
@@ -173,13 +261,39 @@ jobs:
     needs:
       - prepare
       - build
+      - deploy
+      - build_notification
     with:
       channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      message_ts: '${{ needs.build_notification.outputs.ts }}'
       status: 'error'
-      app_name: '${{ vars.APP_BETA }}'
       deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
       version: '${{ needs.prepare.outputs.version }}'
       build_number: '${{ needs.prepare.outputs.build_number }}'
       changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
+    secrets:
+      SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
+
+  cancel_notification:
+    name: Cancel Notification
+    if: cancelled()
+    uses: tangem-developments/actions/.github/workflows/notification.yml@main
+    needs:
+      - prepare
+      - build
+      - deploy
+      - build_notification
+    with:
+      channel: '${{ vars.SLACK_CHANNEL_DEPLOYMENTS_IOS }}'
+      message_ts: '${{ needs.build_notification.outputs.ts }}'
+      status: 'cancel'
+      deploy_to: '${{ vars.DEPLOYMENT_GOOGLE_DISTRIBUTION }}'
+      version: '${{ needs.prepare.outputs.version }}'
+      build_number: '${{ needs.prepare.outputs.build_number }}'
+      changelog: '${{ needs.prepare.outputs.jira-issues-summary }}'
+      build_description: '${{ inputs.build_description }}'
+      is_archive_analyzed: '${{ inputs.analyze_archive }}'
     secrets:
       SLACK_BOT_TOKEN: '${{ secrets.SLACK_BOT_TOKEN }}'
