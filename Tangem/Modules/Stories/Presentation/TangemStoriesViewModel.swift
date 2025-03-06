@@ -122,7 +122,7 @@ extension TangemStoriesViewModel {
         // TODO: @alobankov, refactor to support runtime story appending
         State(
             storiesHostViewModel: StoriesHostViewModel(
-                storyViewModels: [Self.makeStoryViewModel(for: story)],
+                storyViewModels: [makeStoryViewModel(for: story)],
                 onStoriesFinished: onStoriesFinished
             ),
             activeStory: story

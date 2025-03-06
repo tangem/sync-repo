@@ -30,7 +30,6 @@ struct PendingExpressTransactionFactory {
         switch params.externalStatus {
         case .created, .waiting:
             currentStatus = .awaitingDeposit
-
         case .confirming:
             currentStatus = .confirming
         case .exchanging:
