@@ -45,7 +45,7 @@ jobs:
 
       - name: Push mirror to public repo
         run: |
-          cd /home/runner/work/tangem-app-ios/tangem-app-ios/tangem-app-ios.git
+          cd /home/runner/work/tangem-app-ios/tangem-app-ios
           git push --mirror git@github.com:tangem/sync-repo.git
 
       - name: Cleanup SSH keys
