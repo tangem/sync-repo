@@ -224,7 +224,9 @@ class RadiantTransactionBuilder {
     }
 
     private func buildUnspents(signedOutputScripts: [Data]) -> [ScriptUnspentOutput] {
-        zip(unspentOutputManager.allOutputs(), signedOutputScripts)
+        assert(unspentOutputManager.allOutputs().count == signedOutputScripts.count)
+
+        return zip(unspentOutputManager.allOutputs(), signedOutputScripts)
             .map { output, signedOutputScript in
                 ScriptUnspentOutput(output: output.output, script: signedOutputScript)
             }
