@@ -6,7 +6,6 @@
 //  Copyright © 2021 Tangem AG. All rights reserved.
 //
 
-import XCTest
 import BigInt
 import TangemSdk
 @testable import BlockchainSdk
@@ -114,7 +113,7 @@ struct EthereumTransactionTests {
         #expect(signedTransaction.hexString == expectedSignedTransaction.hexString)
     }
 
-    // https://polygonscan.com/tx/0x8f7c7ffddfc9f45370cc5fbeb49df65bdf8976ba606d20705eea965ba96a1e8d
+    /// https://polygonscan.com/tx/0x8f7c7ffddfc9f45370cc5fbeb49df65bdf8976ba606d20705eea965ba96a1e8d
     @Test
     func EIP1559TokenTransfer() throws {
         // given
@@ -159,7 +158,7 @@ struct EthereumTransactionTests {
         #expect(signedTransaction.hexString == expectedSignedTransaction.hexString)
     }
 
-    // https://polygonscan.com/tx/0x2cb6831f4c1cb7b888707489cd60c42ff222b5b3230d74f25434d936c2ba7419
+    /// https://polygonscan.com/tx/0x2cb6831f4c1cb7b888707489cd60c42ff222b5b3230d74f25434d936c2ba7419
     @Test
     func EIP1559CoinTransfer() throws {
         // given
@@ -202,7 +201,7 @@ struct EthereumTransactionTests {
         #expect(signedTransaction.hexString == expectedSignedTransaction.hexString)
     }
 
-    // https://basescan.org/tx/0xb0df52cacd4a8d283e7f5ffe7b3f6d867fc5cb496f679b69b0b09a59651eb0e5
+    /// https://basescan.org/tx/0xb0df52cacd4a8d283e7f5ffe7b3f6d867fc5cb496f679b69b0b09a59651eb0e5
     @Test
     func EIP1559TokenApprove() throws {
         // given
@@ -252,7 +251,7 @@ struct EthereumTransactionTests {
         #expect(signedTransaction.hexString == expectedSignedTransaction.hexString)
     }
 
-    // https://basescan.org/tx/0x4648aee1b8498245eb425c94efcc7e4df8c1524be977fc43862b6a67038dcefb
+    /// https://basescan.org/tx/0x4648aee1b8498245eb425c94efcc7e4df8c1524be977fc43862b6a67038dcefb
     @Test
     func EIP1559TokenSwap() throws {
         // given
@@ -349,7 +348,7 @@ struct EthereumTransactionTests {
     @Test
     func buildingApproveTransactionPayload() throws {
         let transactionBuilder = EthereumTransactionBuilder(chainId: 10)
-        let amount = try XCTUnwrap(Decimal(stringValue: "1146241"))
+        let amount = try #require(Decimal(stringValue: "1146241"))
 
         let payload = transactionBuilder.buildForApprove(
             spender: "0x111111125421cA6dc452d289314280a0f8842A65",

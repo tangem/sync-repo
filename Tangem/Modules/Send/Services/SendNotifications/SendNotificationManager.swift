@@ -103,6 +103,11 @@ private extension CommonSendNotificationManager {
 private extension CommonSendNotificationManager {
     func updateNetworkFeeUnreachable(errors: [Error]) {
         if !errors.isEmpty {
+            if let oneSuiCoinRequiredError = errors.first(where: { ($0 as? SuiError) == .oneSuiCoinIsRequiredForTokenTransaction }) {
+                updateNotification(error: oneSuiCoinRequiredError)
+                return
+            }
+
             let hasActivationError = errors.contains { error in
                 if case WalletError.accountNotActivated = error {
                     return true
@@ -187,7 +192,7 @@ private extension CommonSendNotificationManager {
             guard let event = input.settings.event as? ValidationErrorEvent else {
                 return false
             }
-            if case .remainingAmountIsLessThanRentExtemption = event {
+            if case .remainingAmountIsLessThanRentExemption = event {
                 return true
             }
             return false
@@ -251,7 +256,7 @@ private extension CommonSendNotificationManager {
             let validationErrorEvent = factory.mapToValidationErrorEvent(validationError)
 
             switch validationErrorEvent {
-            case .remainingAmountIsLessThanRentExtemption:
+            case .remainingAmountIsLessThanRentExemption:
                 hideFeeWillBeSubtractedNotification()
                 fallthrough
             case .dustRestriction,
@@ -270,6 +275,9 @@ private extension CommonSendNotificationManager {
             case .invalidNumber:
                 hideAllValidationErrorEvent()
             }
+        case .some(SuiError.oneSuiCoinIsRequiredForTokenTransaction):
+            let currencySymbol = tokenItem.blockchain.currencySymbol
+            show(notification: .oneSuiCoinIsRequiredForTokenTransaction(currencySymbol: currencySymbol))
         case .some(let error):
             AppLogger.error("Transaction error will not show to user", error: error)
             hideAllValidationErrorEvent()

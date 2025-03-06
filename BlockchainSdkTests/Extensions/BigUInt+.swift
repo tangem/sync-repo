@@ -6,17 +6,19 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
-import XCTest
+import Testing
 import BigInt
+import Foundation
 
-final class BigUInt_: XCTestCase {
-    func testDecimalToBigUInt() throws {
+struct BigUInt_ {
+    @Test
+    func decimalToBigUInt() throws {
         let decimalToBigUIntFormatted: (String) -> String = { string in
             let decimal = Decimal(string: string)
-            XCTAssertNotNil(decimal)
+            #expect(decimal != nil)
 
             let bigUInt = BigUInt(decimal: decimal!)
-            XCTAssertNotNil(bigUInt)
+            #expect(bigUInt != nil)
 
             return String(bigUInt!)
         }
@@ -29,7 +31,7 @@ final class BigUInt_: XCTestCase {
             "123456789012345678901234567890",
         ]
         for string in validStrings {
-            XCTAssertEqual(string, decimalToBigUIntFormatted(string))
+            #expect(string == decimalToBigUIntFormatted(string))
         }
 
         // Overflows
@@ -37,15 +39,16 @@ final class BigUInt_: XCTestCase {
             "123456789012345678901234567890123456789012345678901234567890",
         ]
         for string in invalidStrings {
-            XCTAssertNotEqual(string, decimalToBigUIntFormatted(string))
+            #expect(string != decimalToBigUIntFormatted(string))
         }
 
         // Corner cases
-        XCTAssertNil(BigUInt(decimal: -1))
-        XCTAssertNil(BigUInt(decimal: 1.5))
+        #expect(BigUInt(decimal: -1) == nil)
+        #expect(BigUInt(decimal: 1.5) == nil)
     }
 
-    func testBigUIntToDecimal() throws {
+    @Test
+    func bigUIntToDecimal() throws {
         // Good numbers
         let validStrings: [String] = [
             "0",
@@ -55,7 +58,7 @@ final class BigUInt_: XCTestCase {
             "1234567890123456789012345678901234567890",
         ]
         for string in validStrings {
-            XCTAssertEqual(BigUInt(stringLiteral: string).decimal, Decimal(string: string))
+            #expect(BigUInt(stringLiteral: string).decimal == Decimal(string: string))
         }
 
         // Overflows
@@ -63,7 +66,7 @@ final class BigUInt_: XCTestCase {
             "12345678901234567890123456789012345678901234567890123456789012345678901234567890",
         ]
         for string in invalidStrings {
-            XCTAssertEqual(BigUInt(stringLiteral: string).decimal, nil)
+            #expect(BigUInt(stringLiteral: string).decimal == nil)
         }
     }
 }

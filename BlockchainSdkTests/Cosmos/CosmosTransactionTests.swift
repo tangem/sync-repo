@@ -6,13 +6,12 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
-import XCTest
 import WalletCore
 @testable import BlockchainSdk
 import Testing
 
 struct CosmosTransactionTests {
-    // From TrustWallet
+    /// From TrustWallet
     @Test
     func transaction() throws {
         // given
@@ -42,7 +41,7 @@ struct CosmosTransactionTests {
 
         // when
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)
-        let signature = try XCTUnwrap(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
+        let signature = try #require(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
         let transactionData = try txBuilder.buildForSend(
             transaction: transaction,
             signature: signature
@@ -87,9 +86,9 @@ struct CosmosTransactionTests {
 
         // when
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)
-        let signature = try XCTUnwrap(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
+        let signature = try #require(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
         let transactionData = try txBuilder.buildForSend(transaction: transaction, signature: signature)
-        let transactionString = try XCTUnwrap(String(data: transactionData, encoding: .utf8))
+        let transactionString = try #require(String(data: transactionData, encoding: .utf8))
 
         // then
         expectJSONEqual(transactionString, expectedOutput)
@@ -130,9 +129,9 @@ struct CosmosTransactionTests {
 
         // when
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)
-        let signature = try XCTUnwrap(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
+        let signature = try #require(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
         let transactionData = try txBuilder.buildForSend(transaction: transaction, signature: signature)
-        let transactionString = try XCTUnwrap(String(data: transactionData, encoding: .utf8))
+        let transactionString = try #require(String(data: transactionData, encoding: .utf8))
 
         // then
         expectJSONEqual(transactionString, expectedOutput)
@@ -140,7 +139,7 @@ struct CosmosTransactionTests {
         #expect(signature.hexString.lowercased() == "271779f928eb7cfc63f6a1ed256492886529a78c0cbb043a4da18df984fe704f5b1612dcd5559560c4f15fb1d79f25be499c5251709b562fa4e77bf0c2379c2200")
     }
 
-    // From TrustWallet
+    /// From TrustWallet
     @Test
     func terraV2Transaction() throws {
         // given
@@ -176,9 +175,9 @@ struct CosmosTransactionTests {
 
         // when
         let dataForSign = try txBuilder.buildForSign(transaction: transaction)
-        let signature = try XCTUnwrap(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
+        let signature = try #require(privateKey.sign(digest: dataForSign, curve: cosmosChain.coin.curve))
         let transactionData = try txBuilder.buildForSend(transaction: transaction, signature: signature)
-        let transactionString = try XCTUnwrap(String(data: transactionData, encoding: .utf8))
+        let transactionString = try #require(String(data: transactionData, encoding: .utf8))
 
         // then
         expectJSONEqual(transactionString, expectedOutput)

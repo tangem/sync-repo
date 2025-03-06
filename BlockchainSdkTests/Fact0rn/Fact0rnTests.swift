@@ -7,8 +7,8 @@
 //
 
 import BitcoinCore
-import XCTest
+import Testing
 @testable import BlockchainSdk
 
 // TODO: - Will be implement IOS-8557
-final class Fact0rnTests: XCTestCase {}
+struct Fact0rnTests {}

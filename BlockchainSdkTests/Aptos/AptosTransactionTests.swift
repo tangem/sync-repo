@@ -14,8 +14,7 @@ import Testing
 
 struct AptosTransactionTests {
     private let coinType: CoinType = .aptos
-
-    /*
+    /**
      - Use private key for aptos coin at tests in wallet-code aptos
      - Address for sender 0x07968dab936c1bad187c60ce4082f307d030d780e91e694ae03aef16aba73f30
      */
@@ -47,7 +46,7 @@ struct AptosTransactionTests {
         #expect(nonsignificantZeroAddress.value.removeHexPrefix().contains(defaultAddress.value.removeHexPrefix()))
     }
 
-    /*
+    /**
      - https://github.com/trustwallet/wallet-core/blob/master/tests/chains/Aptos/CompilerTests.cpp
      */
     @Test(arguments: [EllipticCurve.ed25519, .ed25519_slip0010])

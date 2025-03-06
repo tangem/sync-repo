@@ -35,8 +35,8 @@ struct CommonMainUserWalletPageBuilderFactory: MainUserWalletPageBuilderFactory 
         singleWalletContentDelegate: SingleWalletMainContentDelegate,
         multiWalletContentDelegate: MultiWalletMainContentDelegate?
     ) -> MainUserWalletPageBuilder {
-        if model.config is VisaConfig {
-            return createVisaPage(userWalletModel: model, lockedUserWalletDelegate: lockedUserWalletDelegate)
+        if let visaUserWalletModel = model as? VisaUserWalletModel {
+            return createVisaPage(visaUserWalletModel: visaUserWalletModel, lockedUserWalletDelegate: lockedUserWalletDelegate)
         }
 
         let id = model.userWalletId
@@ -129,12 +129,6 @@ struct CommonMainUserWalletPageBuilderFactory: MainUserWalletPageBuilderFactory 
             contextDataProvider: model
         )
 
-        let exchangeUtility = ExchangeCryptoUtility(
-            blockchain: walletModel.blockchainNetwork.blockchain,
-            address: walletModel.wallet.address,
-            amountType: walletModel.amountType
-        )
-
         let expressFactory = CommonExpressModulesFactory(
             inputModel: .init(userWalletModel: model, initialWalletModel: walletModel)
         )
@@ -144,7 +138,6 @@ struct CommonMainUserWalletPageBuilderFactory: MainUserWalletPageBuilderFactory 
         let viewModel = SingleWalletMainContentViewModel(
             userWalletModel: model,
             walletModel: walletModel,
-            exchangeUtility: exchangeUtility,
             userWalletNotificationManager: userWalletNotificationManager,
             pendingExpressTransactionsManager: pendingTransactionsManager,
             tokenNotificationManager: singleWalletNotificationManager,
@@ -178,22 +171,20 @@ struct CommonMainUserWalletPageBuilderFactory: MainUserWalletPageBuilderFactory 
         }
     }
 
-    private func createVisaPage(userWalletModel: UserWalletModel, lockedUserWalletDelegate: MainLockedUserWalletDelegate?) -> MainUserWalletPageBuilder {
-        let id = userWalletModel.userWalletId
-        let isUserWalletLocked = userWalletModel.isUserWalletLocked
+    private func createVisaPage(visaUserWalletModel: VisaUserWalletModel, lockedUserWalletDelegate: MainLockedUserWalletDelegate?) -> MainUserWalletPageBuilder {
+        let id = visaUserWalletModel.userWalletId
+        let isUserWalletLocked = visaUserWalletModel.isUserWalletLocked
 
-        let visaWalletModel = VisaWalletModel(userWalletModel: userWalletModel)
-
-        let subtitleProvider = VisaWalletMainHeaderSubtitleProvider(isUserWalletLocked: isUserWalletLocked, dataSource: visaWalletModel)
+        let subtitleProvider = VisaWalletMainHeaderSubtitleProvider(isUserWalletLocked: isUserWalletLocked, dataSource: visaUserWalletModel)
         let headerModel = MainHeaderViewModel(
-            isUserWalletLocked: userWalletModel.isUserWalletLocked,
-            supplementInfoProvider: userWalletModel,
+            isUserWalletLocked: visaUserWalletModel.isUserWalletLocked,
+            supplementInfoProvider: visaUserWalletModel,
             subtitleProvider: subtitleProvider,
-            balanceProvider: visaWalletModel
+            balanceProvider: visaUserWalletModel
         )
 
         let viewModel = VisaWalletMainContentViewModel(
-            visaWalletModel: visaWalletModel,
+            visaWalletModel: visaUserWalletModel,
             coordinator: coordinator
         )
 
@@ -202,7 +193,7 @@ struct CommonMainUserWalletPageBuilderFactory: MainUserWalletPageBuilderFactory 
                 id: id,
                 headerModel: headerModel,
                 bodyModel: .init(
-                    userWalletModel: userWalletModel,
+                    userWalletModel: visaUserWalletModel,
                     isMultiWallet: false,
                     lockedUserWalletDelegate: lockedUserWalletDelegate
                 )
@@ -210,7 +201,7 @@ struct CommonMainUserWalletPageBuilderFactory: MainUserWalletPageBuilderFactory 
         }
 
         return .visaWallet(
-            id: userWalletModel.userWalletId,
+            id: visaUserWalletModel.userWalletId,
             headerModel: headerModel,
             bodyModel: viewModel
         )

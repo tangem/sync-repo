@@ -13,15 +13,9 @@ import WalletCore
 import Testing
 
 struct AlgorandTransactionTests {
-    private let coinType: CoinType = .algorand
-    /*
-     - Use private key for Algorand coin at test mnemonic
-     - tiny escape drive pupil flavor endless love walk gadget match filter luxury
-     - Address for coin EH5I3KCDCTB4AOML3E4W5BIGQMPA7GT5Q3PUMK3AIXNFYQHMX5KOJBOJRM
-     */
     private let privateKeyData = Data(hexString: "F3903F329F8F52BCA0F92ACD127A3EC9A939028951D6EBAB72DD22C966EADFAB")
 
-    /*
+    /**
      https://algoexplorer.io/tx/GMS3DRWDCL3SC57BCKCTOBV2SBIZZMTHNYEUZEV6A6WWH4DOS6TQ
      */
     @Test(arguments: [EllipticCurve.ed25519, .ed25519_slip0010])
@@ -65,12 +59,15 @@ struct AlgorandTransactionTests {
         let expectedBuildForSign = "545889A3616D74CE0007A120A3666565CD03E8A26676CE021F9D7FA367656EAC6D61696E6E65742D76312E30A26768C420C061C4D8FC1DBDDED2D7604BE4568E3F6D041987AC37BDE4B620B5AB39248ADFA26C76CE021FA167A3726376C420CCFAFC7254E2C54AF754ECCF6071AC7A44D0D34F19BE1E60B560B745653081A9A3736E64C42021FA8DA84314C3C0398BD9396E8506831E0F9A7D86DF462B6045DA5C40ECBF54A474797065A3706179"
 
         #expect(buildForSign.hexString == expectedBuildForSign)
+        let sizeTester = TransactionSizeTesterUtility()
+
+        // Validate hash size
+        #expect(!sizeTester.isValidForiPhone7(buildForSign))
+        #expect(sizeTester.isValidForCosBelow4_52(buildForSign))
+        #expect(sizeTester.isValidForCos4_52AndAbove(buildForSign))
 
         let signature = privateKey.sign(digest: buildForSign, curve: .ed25519)
         #expect(signature != nil)
-
-        // Validate hash size
-        TransactionSizeTesterUtility().testTxSizes([signature ?? Data()])
 
         let buildForSend = try transactionBuilder.buildForSend(
             transaction: transaction,

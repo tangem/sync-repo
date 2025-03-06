@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import XCTest
 import WalletCore
 import BitcoinCore
 @testable import BlockchainSdk
@@ -54,7 +53,7 @@ final class RadiantTests {
         #expect(adapterAddress.description == legacyAddress.value)
     }
 
-    /*
+    /**
      https://radiantexplorer.com/tx/4190920ce863b70174e476d45c39b5b505dd244157a38dbaf3ce3c8794cd5789
      */
     @Test

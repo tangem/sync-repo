@@ -19,6 +19,6 @@ func expectJSONEqual(_ lhs: String, _ rhs: String) {
 
         #expect(lstring == rstring, "\(lhs) is not equal to \(rhs)")
     } catch {
-        #expect(false, Comment(rawValue: error.localizedDescription))
+        #expect(Bool(false), Comment(rawValue: error.localizedDescription))
     }
 }

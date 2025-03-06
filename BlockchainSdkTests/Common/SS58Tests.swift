@@ -9,9 +9,9 @@
 import Testing
 @testable import BlockchainSdk
 
-// Hardcoded addresses provided via 'subkey' command line tool
-// either 'subkey generate -n <network>'
-// or 'subkey inspect --public <hex address> -n <network>'
+/// Hardcoded addresses provided via 'subkey' command line tool
+/// either 'subkey generate -n <network>'
+/// or 'subkey inspect --public <hex address> -n <network>'
 struct SS58Tests {
     private let ss58 = SS58()
 

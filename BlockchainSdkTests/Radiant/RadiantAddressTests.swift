@@ -12,7 +12,7 @@ import CryptoKit
 import Testing
 
 struct RadiantAddressTests {
-    // Validate by https://github.com/RadiantBlockchain/radiantjs
+    /// Validate by https://github.com/RadiantBlockchain/radiantjs
     @Test
     func addressGeneration() throws {
         let addressServiceFactory = AddressServiceFactory(blockchain: .radiant(testnet: false))
@@ -41,7 +41,7 @@ struct RadiantAddressTests {
         }
     }
 
-    // https://github.com/RadiantBlockchain/radiantjs/blob/master/test/address.js
+    /// https://github.com/RadiantBlockchain/radiantjs/blob/master/test/address.js
     @Test
     func addressValidation() throws {
         let addressServiceFactory = AddressServiceFactory(blockchain: .radiant(testnet: false))

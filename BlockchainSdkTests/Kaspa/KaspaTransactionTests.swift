@@ -13,7 +13,6 @@ import Testing
 
 struct KaspaTransactionTests {
     private let blockchain = Blockchain.kaspa(testnet: false)
-    private let sizeTester = TransactionSizeTesterUtility()
     private let txBuilder: KaspaTransactionBuilder
 
     init() {

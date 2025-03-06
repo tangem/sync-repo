@@ -44,7 +44,7 @@ struct AlephiumTransactionTests {
         #expect(hashForSign.hexString.lowercased() == "3a939f591a551830c19ca88ffc63a51d5f2328aee994d5e6013406aea2831b65")
     }
 
-    // Validate by https://wallet.mainnet.alephium.org/docs/#/Transactions/postTransactionsBuild
+    /// Validate by https://wallet.mainnet.alephium.org/docs/#/Transactions/postTransactionsBuild
     @Test
     func buildForSend() throws {
         let transaction = transactionData()

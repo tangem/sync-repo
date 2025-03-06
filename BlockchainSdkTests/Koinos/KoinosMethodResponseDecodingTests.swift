@@ -6,7 +6,6 @@
 //  Copyright © 2024 Tangem AG. All rights reserved.
 //
 
-import XCTest
 @testable import BlockchainSdk
 import Testing
 
@@ -37,7 +36,7 @@ struct KoinosMethodResponseDecodingTests {
         """
         .data(using: .utf8)
 
-        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: XCTUnwrap(jsonData))
+        let response = try decoder.decode(KoinosMethod.GetAccountNonce.Response.self, from: #require(jsonData))
         let nonce = try KoinosDTOMapper.convertNonce(response)
 
         #expect(nonce.nonce == 1)
@@ -131,7 +130,7 @@ struct KoinosMethodResponseDecodingTests {
                     KoinosMethod.SubmitTransaction.Response,
                     JSONRPC.APIError
                 >.self,
-                from: XCTUnwrap(jsonData)
+                from: #require(jsonData)
             )
 
         #expect(response.id == 1)
@@ -156,7 +155,7 @@ struct KoinosMethodResponseDecodingTests {
                     KoinosMethod.ReadContract.Response,
                     JSONRPC.APIError
                 >.self,
-                from: XCTUnwrap(jsonData)
+                from: #require(jsonData)
             )
 
         #expect(result.jsonrpc == "2.0")

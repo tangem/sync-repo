@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import XCTest
 import TangemSdk
 import enum WalletCore.Curve
 import class WalletCore.PrivateKey
@@ -91,7 +90,7 @@ final class HederaTests {
         hashesToSign.forEach { sizeTester.testTxSize($0) }
 
         let signatures = try hashesToSign.map { digest in
-            let signature = try XCTUnwrap(privateKey.sign(digest: digest, curve: curve))
+            let signature = try #require(privateKey.sign(digest: digest, curve: curve))
             return try Secp256k1Signature(with: signature).normalize()
         }
 
@@ -293,7 +292,7 @@ final class HederaTests {
 
         // Stripping out Hedera DER prefix from the given private key
         let privateKeyRaw = Data(hederaPrivateKeyRaw[hederaDerPrefixPrivate.count...])
-        let privateKey = try XCTUnwrap(WalletCore.PrivateKey(data: privateKeyRaw))
+        let privateKey = try #require(PrivateKey(data: privateKeyRaw))
         let publicKeyRaw = try privateKey.getPublicKeyByType(pubkeyType: .init(blockchain)).data
 
         // MARK: - Building & compiling transaction
@@ -561,8 +560,8 @@ final class HederaTests {
         }
     }
 
-    @Test
     /// Values for https://www.coingecko.com/en/coins/hbarbarian
+    @Test
     func contractAddressConversionFromEVMWithPrefixToHederaPositiveCase() throws {
         let converter = HederaTokenContractAddressConverter()
         let converted = try converter.convertFromEVMToHedera("0x0000000000000000000000000000000000497fbc") // Valid EVM address with 0x prefix
@@ -571,8 +570,8 @@ final class HederaTests {
         #expect(converted == expected)
     }
 
-    @Test
     /// Values for https://www.coingecko.com/en/coins/usdc
+    @Test
     func contractAddressConversionFromEVMWithoutPrefixToHederaPositiveCase() throws {
         let converter = HederaTokenContractAddressConverter()
         let converted = try converter.convertFromEVMToHedera("000000000000000000000000000000000006f89a") // Valid EVM address w/o 0x prefix
@@ -581,8 +580,8 @@ final class HederaTests {
         #expect(converted == expected)
     }
 
-    @Test
     /// Values for https://www.coingecko.com/en/coins/hbarsuite
+    @Test
     func contractAddressConversionFromHederaToEVMPositiveCase() throws {
         let converter = HederaTokenContractAddressConverter()
         let converted = try converter.convertFromHederaToEVM("0.0.786931") // Valid Hedera address

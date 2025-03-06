@@ -6,7 +6,6 @@
 //  Copyright © 2022 Tangem AG. All rights reserved.
 //
 
-import XCTest
 import Combine
 @testable import BlockchainSdk
 @testable import SolanaSwift
@@ -19,9 +18,7 @@ struct SolanaEd25519Tests {
     private let address = "Cw3YcfqzRSa7xT7ecpR5E4FKDQU6aaxz5cWje366CZbf"
     private let blockchain = Blockchain.solana(curve: .ed25519, testnet: false)
     private let feeParameters = SolanaFeeParameters(computeUnitLimit: nil, computeUnitPrice: nil, accountCreationFee: 0)
-
     private let coinSigner = SolanaSignerTestUtility.CoinSigner()
-    private let tokenSigner = SolanaSignerTestUtility.TokenSigner()
 
     init() {
         let networkingRouter = SolanaDummyNetworkRouter(

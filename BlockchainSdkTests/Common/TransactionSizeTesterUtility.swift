@@ -6,7 +6,8 @@
 //  Copyright © 2022 Tangem AG. All rights reserved.
 //
 
-import XCTest
+import Foundation
+import Testing
 
 final class TransactionSizeTesterUtility {
     private let iPhone7MaxSize = 150
@@ -15,14 +16,14 @@ final class TransactionSizeTesterUtility {
 
     func testTxSize(_ data: Data?, file: String = #fileID, function: String = #function) {
         guard let data = data else {
-            XCTFail("Transaction data for size test is nil")
+            #expect(Bool(false), Comment(rawValue: "Transaction data for size test is nil"))
             return
         }
 
         let callerFunction = "\(file) - \(function). TX size = \(data.count)"
-        XCTAssertTrue(isValidForiPhone7(data), "Testing tx size for iPhone 7 from: \(callerFunction)")
-        XCTAssertTrue(isValidForCosBelow4_52(data), "Testing tx size for COS below 4.52 from: \(callerFunction)")
-        XCTAssertTrue(isValidForCos4_52AndAbove(data), "Testing tx size for COS 4.52 and above from: \(callerFunction)")
+        #expect(isValidForiPhone7(data), "Testing tx size for iPhone 7 from: \(callerFunction)")
+        #expect(isValidForCosBelow4_52(data), "Testing tx size for COS below 4.52 from: \(callerFunction)")
+        #expect(isValidForCos4_52AndAbove(data), "Testing tx size for COS 4.52 and above from: \(callerFunction)")
     }
 
     func testTxSizes(_ data: [Data], file: String = #fileID, function: String = #function) {

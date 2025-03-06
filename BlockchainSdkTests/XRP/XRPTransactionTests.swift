@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import XCTest
 import Combine
 import CryptoKit
 import WalletCore

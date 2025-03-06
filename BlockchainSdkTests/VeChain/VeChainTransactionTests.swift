@@ -6,8 +6,8 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
-import Foundation
 import XCTest
+import Foundation
 import WalletCore
 @testable import BlockchainSdk
 import Testing
@@ -36,10 +36,10 @@ struct VeChainTransactionTests {
 
     // MARK: - Building & signing
 
-    // VeChain VET coin transfer transaction:
-    // https://explore-testnet.vechain.org/transactions/0x4c596f671d3b48a8a973494699875feb9d4ed8304bfde5ec1547620a4320d9dc
-    //
-    // Made using VeChain Thor Devkit (SDK) for Python 3, https://github.com/vechain/thor-devkit.py
+    /// VeChain VET coin transfer transaction:
+    /// https://explore-testnet.vechain.org/transactions/0x4c596f671d3b48a8a973494699875feb9d4ed8304bfde5ec1547620a4320d9dc
+    ///
+    /// Made using VeChain Thor Devkit (SDK) for Python 3, https://github.com/vechain/thor-devkit.py
     @Test
     func signingCoinTransaction() throws {
         // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic
@@ -107,10 +107,10 @@ struct VeChainTransactionTests {
         #expect(encodedTransaction == expectedEncodedTransaction)
     }
 
-    // VeChain VTHO token transfer transaction:
-    // https://explore-testnet.vechain.org/transactions/0x5cf9d03b97460768b9d86718fbec03f09ed0e41467b7df4eaa68f1115abd4cf9
-    //
-    // Made using VeChain Thor Devkit (SDK) for Python 3, https://github.com/vechain/thor-devkit.py
+    /// VeChain VTHO token transfer transaction:
+    /// https://explore-testnet.vechain.org/transactions/0x5cf9d03b97460768b9d86718fbec03f09ed0e41467b7df4eaa68f1115abd4cf9
+    ///
+    /// Made using VeChain Thor Devkit (SDK) for Python 3, https://github.com/vechain/thor-devkit.py
     @Test
     func signingTokenTransaction() throws {
         // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic

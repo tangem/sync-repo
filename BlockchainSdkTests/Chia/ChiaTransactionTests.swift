@@ -6,7 +6,6 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
-import XCTest
 import CryptoKit
 import TangemSdk
 @testable import BlockchainSdk
@@ -22,8 +21,6 @@ struct ChiaTransactionTests {
 
     private let blockchain = Blockchain.chia(testnet: false)
     private let addressService = ChiaAddressService(isTestnet: false)
-    private var decimals: Int { blockchain.decimalCount }
-
     private var testSignatures: [Data] {
         [
             "8C7470BEE98156B48A0909F6EF321DE86F073101399ACD160ACFEF57B943B6E76E22DC89D9C75ABBFAC97DC317FEA3CC0AD744F55E2EAA3AE3C099AFC89FE652B8B054C5AB1F6A11559A9BCFD132EE0F434BA4D7968A33EA1807CFAB097789B7",
@@ -189,6 +186,11 @@ struct ChiaTransactionTests {
 
         // when
         let buildToSignResult = try transactionBuilder.buildForSign(transaction: transactionData)
+
+        buildToSignResult.forEach {
+            sizeUtility.testTxSizes([$0])
+        }
+
         let signedTransaction = try transactionBuilder.buildToSend(signatures: signatures)
 
         // then

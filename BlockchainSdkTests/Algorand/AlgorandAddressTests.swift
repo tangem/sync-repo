@@ -8,7 +8,6 @@
 
 import Foundation
 import TangemSdk
-import XCTest
 import WalletCore
 import CryptoKit
 @testable import BlockchainSdk

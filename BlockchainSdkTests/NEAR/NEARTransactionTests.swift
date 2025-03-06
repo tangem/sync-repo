@@ -21,7 +21,7 @@ struct NEARTransactionTests {
         sizeTester = .init()
     }
 
-    // Using example values from https://nomicon.io/DataStructures/Account#examples
+    /// Using example values from https://nomicon.io/DataStructures/Account#examples
     @Test
     func addressUtilImplicitAccountsDetection() {
         #expect(NEARAddressUtil.isImplicitAccount(accountId: "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86"))
@@ -66,7 +66,7 @@ struct NEARTransactionTests {
         #expect(!NEARAddressUtil.isImplicitAccount(accountId: "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz"))
     }
 
-    // Using example values from https://nomicon.io/DataStructures/Account#examples
+    /// Using example values from https://nomicon.io/DataStructures/Account#examples
     @Test
     func addressUtilNamedAccountValidation() {
         #expect(NEARAddressUtil.isValidNamedAccount(accountId: "f69cd39f654845e2059899a888681187f2cda95f29256329aea1700f50f8ae86"))
@@ -107,8 +107,8 @@ struct NEARTransactionTests {
         #expect(!NEARAddressUtil.isValidNamedAccount(accountId: "abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz.abcdefghijklmnopqrstuvwxyz"))
     }
 
-    // NEAR transfer transaction https://testnet.nearblocks.io/txns/Cr3QyJoFNtQvFTfc45WDTM4GvLxQtFigSjP7wcRrwiwW
-    // Made using NEAR JS API, see https://github.com/deprecated-near-examples/transaction-examples for examples
+    /// NEAR transfer transaction https://testnet.nearblocks.io/txns/Cr3QyJoFNtQvFTfc45WDTM4GvLxQtFigSjP7wcRrwiwW
+    /// Made using NEAR JS API, see https://github.com/deprecated-near-examples/transaction-examples for examples
     @Test
     func signingTransaction() throws {
         // Private key for the "tiny escape drive pupil flavor endless love walk gadget match filter luxury" mnemonic

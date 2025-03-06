@@ -6,7 +6,6 @@
 //  Copyright © 2023 Tangem AG. All rights reserved.
 //
 
-import XCTest
 import Combine
 @testable import BlockchainSdk
 @testable import SolanaSwift
@@ -21,8 +20,6 @@ struct SolanaEd25519Slip0010Tests {
     private let feeParameters = SolanaFeeParameters(computeUnitLimit: nil, computeUnitPrice: nil, accountCreationFee: 0)
 
     private let coinSigner = SolanaSignerTestUtility.CoinSigner()
-    private let tokenSigner = SolanaSignerTestUtility.TokenSigner()
-
     init() {
         let networkingRouter = SolanaDummyNetworkRouter(
             endpoints: [.devnetSolana],

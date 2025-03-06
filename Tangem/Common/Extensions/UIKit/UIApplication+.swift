@@ -28,7 +28,7 @@ extension UIApplication {
     }
 
     static var topViewController: UIViewController? {
-        let mainWindow = UIApplication.shared.windows.first { $0 is MainWindow }
+        let mainWindow = UIApplication.shared.windows.last { $0 is MainWindow }
         return mainWindow?.topViewController
     }
 
@@ -52,7 +52,7 @@ extension UIApplication {
         }
     }
 
-    // withTransaction not working with iOS16, UIView.performWithoutAnimations block not working
+    /// withTransaction not working with iOS16, UIView.performWithoutAnimations block not working
     static func performWithoutAnimations(_ block: () -> Void) {
         UIView.setAnimationsEnabled(false)
 

@@ -72,7 +72,7 @@ struct HederaAddressTests {
         #expect(expectedAddress == address.value)
     }
 
-    // Includes account IDs with checksums from https://hips.hedera.com/hip/hip-15
+    /// Includes account IDs with checksums from https://hips.hedera.com/hip/hip-15
     private func testHederaAddressValidation(blockchain: Blockchain) throws {
         let addressServiceFactory = AddressServiceFactory(blockchain: blockchain)
         let addressService = addressServiceFactory.makeAddressService()
