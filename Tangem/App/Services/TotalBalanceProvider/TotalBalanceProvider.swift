@@ -58,7 +58,6 @@ private extension TotalBalanceProvider {
         let hasEntriesWithoutDerivationPublisher = derivationManager?.hasPendingDerivations ?? .just(output: false)
         let balanceStatePublisher = walletModelsManager
             .walletModelsPublisher
-            .removeDuplicates()
             .receive(on: DispatchQueue.global())
             .withWeakCaptureOf(self)
             .flatMapLatest { balanceProvider, walletModels in
@@ -142,7 +141,7 @@ private extension TotalBalanceProvider {
         )
     }
 
-    func trackTokenBalanceLoaded(walletModels: [WalletModel]) {
+    func trackTokenBalanceLoaded(walletModels: [any WalletModel]) {
         let trackedItems = walletModels.compactMap { walletModel -> (symbol: String, balance: Decimal)? in
             switch (walletModel.tokenItem.blockchain, walletModel.fiatTotalTokenBalanceProvider.balanceType) {
             case (.polkadot, .loaded(let balance)): (symbol: walletModel.tokenItem.currencySymbol, balance: balance)

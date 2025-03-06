@@ -120,7 +120,6 @@ class ManageTokensViewModel: ObservableObject {
             .store(in: &bag)
 
         walletModelsManager.walletModelsPublisher
-            .removeDuplicates()
             .withWeakCaptureOf(self)
             .map { viewModel, walletModels in
                 viewModel.prepareCustomTokensList(from: walletModels)
@@ -129,7 +128,7 @@ class ManageTokensViewModel: ObservableObject {
             .store(in: &bag)
     }
 
-    private func prepareCustomTokensList(from walletModels: [WalletModel]) -> [CustomTokenItemViewInfo] {
+    private func prepareCustomTokensList(from walletModels: [any WalletModel]) -> [CustomTokenItemViewInfo] {
         let iconInfoBuilder = TokenIconInfoBuilder()
         return walletModels.compactMap {
             guard $0.isCustom else {
