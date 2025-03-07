@@ -49,9 +49,9 @@ jobs:
            git filter-repo --replace-refs delete-no-add \
               --commit-callback '
               commit.author_name = b"Service Account"
-              commit.author_email = b"service@example.com"
+              commit.author_email = b"service@tangem.com"
               commit.committer_name = b"Service Account"
-              commit.committer_email = b"service@example.com"
+              commit.committer_email = b"service@tangem.com"
               '
 
 
@@ -80,7 +80,7 @@ jobs:
       - name: Push mirror to public repo
         run: |
           cd tangem-app-ios.git
-          git push --mirror git@github.com:tangem/sync-repo.git
+          git push --mirror git@github.com:tangem/sync-repo2.git
 
 
       - name: Cleanup SSH keys
