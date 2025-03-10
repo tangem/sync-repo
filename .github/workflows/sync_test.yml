@@ -30,14 +30,14 @@ jobs:
           git-filter-repo --version
 
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.IOS_PRIVATE_REPO_SYNC_TOKEN }}
+      #- name: Set up SSH
+      #  run: |
+      #    mkdir -p ~/.ssh
+      #    echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+      #    chmod 600 ~/.ssh/id_rsa
+      #    ssh-keyscan github.com >> ~/.ssh/known_hosts
+       # env:
+        #  SSH_PRIVATE_KEY: ${{ secrets.IOS_PRIVATE_REPO_SYNC_TOKEN }}
 
           
       - name: Checkout default branch
@@ -59,9 +59,9 @@ jobs:
               '
 
 
-      - name: Cleanup SSH keys
-        run: |
-          rm -rf ~/.ssh
+     # - name: Cleanup SSH keys
+      #  run: |
+       #   rm -rf ~/.ssh
 
         
       - name: Set up SSH
