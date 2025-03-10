@@ -42,7 +42,7 @@ jobs:
           
       - name: Checkout private repo
         run: |
-           git clone --mirror git@github.com:tangem-developments/tangem-app-ios.git
+           git checkout --mirror git@github.com:tangem-developments/tangem-app-ios.git
            cd tangem-app-ios.git
            git config --global user.name "Service Account"
            git config --global user.email "service@example.com"
