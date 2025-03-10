@@ -83,7 +83,7 @@ jobs:
 
       - name: Push mirror to public repo
         run: |
-          git push --mirror git@github.com:tangem/sync-repo.git
+          git push git@github.com:tangem/sync-repo.git develop
 
 
       - name: Cleanup SSH keys
