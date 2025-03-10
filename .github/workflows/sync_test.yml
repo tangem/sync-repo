@@ -48,7 +48,6 @@ jobs:
       
       - name: Clean private repo
         run: |
-           cd tangem-app-ios.git
            git config --global user.name "Service Account"
            git config --global user.email "service@example.com"
            git filter-repo --replace-refs delete-no-add \
@@ -84,7 +83,6 @@ jobs:
 
       - name: Push mirror to public repo
         run: |
-          cd tangem-app-ios.git
           git push --mirror git@github.com:tangem/sync-repo2.git
 
 
