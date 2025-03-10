@@ -40,9 +40,14 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.IOS_PRIVATE_REPO_SYNC_TOKEN }}
 
           
-      - name: Checkout private repo
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: develop  
+          fetch-depth: 0
+      
+      - name: Clean private repo
         run: |
-           git checkout --mirror git@github.com:tangem-developments/tangem-app-ios.git
            cd tangem-app-ios.git
            git config --global user.name "Service Account"
            git config --global user.email "service@example.com"
